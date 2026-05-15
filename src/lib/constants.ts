@@ -45,6 +45,7 @@ export const NAV_LINKS = [
   { label: "Fees", href: "/fees" },
   { label: "Subjects", href: "/subjects" },
   { label: "Gallery", href: "/gallery" },
+  { label: "Code of Conduct", href: "/code-of-conduct" },
   { label: "Contact", href: "/contact" },
 ]
 
