@@ -27,7 +27,7 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-gray-400">
-              An independent combined school in Tembisa, Johannesburg, dedicated to providing quality
+              An independent combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}, dedicated to providing quality
               education and fostering a disciplined, cohesive learning environment.
             </p>
           </div>

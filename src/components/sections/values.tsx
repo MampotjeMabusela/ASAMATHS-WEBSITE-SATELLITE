@@ -44,7 +44,7 @@ export function Values() {
             </p>
             <p className="mt-3 text-sm leading-relaxed sm:text-base">
               From the classroom to the playground, we nurture discipline, curiosity, and belonging—so every
-              child can thrive in Tembisa and beyond.
+              child can thrive in {SCHOOL_INFO.suburb} and beyond.
             </p>
           </div>
         </FadeIn>

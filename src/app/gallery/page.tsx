@@ -9,7 +9,7 @@ import { GALLERY_ITEMS } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Gallery",
-  description: `View photos and images from ${SCHOOL_INFO.name} in Tembisa, Johannesburg.`,
+  description: `View photos and images from ${SCHOOL_INFO.name} in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}.`,
 }
 
 export default function GalleryPage() {

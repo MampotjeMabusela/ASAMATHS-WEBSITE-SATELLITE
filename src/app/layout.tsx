@@ -24,22 +24,22 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SCHOOL_INFO.name} | Independent Combined School in Johannesburg`,
+    default: `${SCHOOL_INFO.name} | Independent Combined School in ${SCHOOL_INFO.city}`,
     template: `%s | ${SCHOOL_INFO.shortName}`,
   },
-  description: `${SCHOOL_INFO.name} is an independent combined school in Tembisa, Johannesburg, Gauteng. Serving ${SCHOOL_INFO.totalLearners} learners with a ${SCHOOL_INFO.studentTeacherRatio} student-teacher ratio. Contact us at ${SCHOOL_INFO.phone}.`,
+  description: `${SCHOOL_INFO.name} is an independent combined school in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}, Gauteng. Serving ${SCHOOL_INFO.totalLearners} learners with a ${SCHOOL_INFO.studentTeacherRatio} student-teacher ratio. Contact us at ${SCHOOL_INFO.phone}.`,
   keywords: [
     "Asamaths Institute",
-    "Johannesburg school",
-    "Tembisa school",
+    "Midrand school",
+    "Thembisa school",
     "independent school Gauteng",
-    "combined school Johannesburg",
+    "combined school Midrand",
     "private school South Africa",
     SCHOOL_INFO.name,
   ],
   openGraph: {
     title: SCHOOL_INFO.name,
-    description: `Independent combined school in Tembisa, Johannesburg. ${SCHOOL_INFO.totalLearners} learners, ${SCHOOL_INFO.totalEducators} educators.`,
+    description: `Independent combined school in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}. ${SCHOOL_INFO.totalLearners} learners, ${SCHOOL_INFO.totalEducators} educators.`,
     type: "website",
     locale: "en_ZA",
     siteName: SCHOOL_INFO.name,

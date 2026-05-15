@@ -22,7 +22,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
     },
     {
       id: "about",
-      keywords: ["about", "who are you", "history", "mission", "tembisa", "johannesburg", "location", "map", "where are you"],
+      keywords: ["about", "who are you", "history", "mission", "thembisa", "midrand", "location", "map", "where are you"],
       buildAnswer: () =>
         `**About** covers who we are: ${SCHOOL_INFO.name} is an independent **${SCHOOL_INFO.phase.toLowerCase()}** in **${SCHOOL_INFO.suburb}**, ${SCHOOL_INFO.city} (${SCHOOL_INFO.province}). You'll find our address, principal (**${SCHOOL_INFO.principal}**), learner stats from ${SCHOOL_INFO.surveyYear}, and a map.`,
       navigateTo: "/about#asa-about-map",
@@ -30,7 +30,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
     },
     {
       id: "address",
-      keywords: ["address", "located", "where is the school", "directions", "find you", "visit", "rabat", "conakry", "tembisa"],
+      keywords: ["address", "located", "where is the school", "directions", "find you", "visit", "rabat", "conakry", "thembisa"],
       buildAnswer: () =>
         `We're at **${SCHOOL_INFO.address}**. Opening **About** or **Contact** shows the map embed too.`,
       navigateTo: "/contact#asa-contact-form",

@@ -104,7 +104,7 @@ export function Hero() {
 
             <p className="max-w-none text-lg leading-relaxed text-primary-100">
               Welcome to <strong className="text-white">{SCHOOL_INFO.name}</strong>, an independent
-              combined school in Tembisa, Johannesburg. With {SCHOOL_INFO.totalLearners} learners and
+              combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}. With {SCHOOL_INFO.totalLearners} learners and
               a dedicated team of {SCHOOL_INFO.totalEducators} educators, we provide quality education
               in a disciplined, nurturing environment.
             </p>

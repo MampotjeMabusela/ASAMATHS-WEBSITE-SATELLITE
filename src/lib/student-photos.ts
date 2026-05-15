@@ -48,7 +48,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     src: STUDENT_PHOTOS.focus,
     title: "Learning spaces",
     caption: "Bright, structured environments for study.",
-    alt: "Learner focused at a desk during independent classwork in Tembisa, Johannesburg.",
+    alt: "Learner focused at a desk during independent classwork in Thembisa, Midrand.",
   },
   {
     src: STUDENT_PHOTOS.smile,

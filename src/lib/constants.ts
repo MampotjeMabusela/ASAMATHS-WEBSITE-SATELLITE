@@ -1,9 +1,9 @@
 /** Printed address and map search string — keep in sync everywhere (footer, contact, fees, maps). */
 export const SCHOOL_MAP_ADDRESS =
-  "601 Rabat and Conakry Street, Tembisa, Johannesburg" as const
+  "601 Rabat and Conakry Street, Thembisa, Midrand" as const
 
 export const SCHOOL_INFO = {
-  name: "Asamaths Institute Of Learning – Johannesburg",
+  name: "Asamaths Institute Of Learning – Midrand",
   shortName: "Asamaths Institute",
   address: SCHOOL_MAP_ADDRESS,
   phone: "+27 12 725 8044",
@@ -18,15 +18,15 @@ export const SCHOOL_INFO = {
   sector: "Independent",
   specialisation: "Ordinary",
   province: "Gauteng",
-  city: "Johannesburg",
-  suburb: "Tembisa",
-  neighbourhood: "Tembisa",
+  city: "Midrand",
+  suburb: "Thembisa",
+  neighbourhood: "Thembisa",
   totalLearners: 923,
   totalEducators: 28,
   studentTeacherRatio: "33:1",
   surveyYear: 2023,
   /**
-   * OSM pin near Rabat & Conakry Streets, Jiyana, Tembisa (intersection area).
+   * OSM pin near Rabat & Conakry Streets, Jiyana, Thembisa (intersection area).
    * Set `NEXT_PUBLIC_GOOGLE_MAPS_EMBED_API_KEY` for Google’s embed geocoded to `address`.
    */
   coordinates: { lat: -26.0293392, lng: 28.217104 },
@@ -85,7 +85,7 @@ export const VALUES = [
   },
   {
     title: "Community",
-    description: "Building strong bonds between learners, educators, and the Tembisa community.",
+    description: "Building strong bonds between learners, educators, and the Thembisa community.",
     icon: "Users",
   },
   {
@@ -111,7 +111,7 @@ export const TESTIMONIALS = [
   {
     name: "Nomvula S.",
     role: "Parent · Grade 6",
-    text: "This school is a pillar of the Tembisa community, providing quality education to our children.",
+    text: "This school is a pillar of the Thembisa community, providing quality education to our children.",
     rating: 5,
   },
 ]

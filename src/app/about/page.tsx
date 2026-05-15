@@ -13,7 +13,7 @@ import { GoogleMap } from "@/components/shared/google-map"
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: `Learn about ${SCHOOL_INFO.name}, an independent combined school in Tembisa, Johannesburg. Meet our principal, ${SCHOOL_INFO.principal}, and discover our mission.`,
+  description: `Learn about ${SCHOOL_INFO.name}, an independent combined school in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}. Meet our principal, ${SCHOOL_INFO.principal}, and discover our mission.`,
 }
 
 const infoCards = [
@@ -32,7 +32,7 @@ export default function AboutPage() {
           <FadeIn>
             <SectionHeading
               title="About Our School"
-              subtitle="Discover the story behind Asamaths Institute Of Learning – Johannesburg"
+              subtitle={`Discover the story behind Asamaths Institute Of Learning – ${SCHOOL_INFO.city}`}
             />
           </FadeIn>
 

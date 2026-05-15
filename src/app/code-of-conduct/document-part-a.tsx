@@ -62,7 +62,7 @@ export function CodeOfConductPartA() {
         <h2 className="font-display text-xl font-bold text-primary-950 md:text-2xl">1. School Background</h2>
         <p className="mt-3 text-sm leading-relaxed text-gray-700 md:text-[15px] md:leading-relaxed">
           The school was established in May 2016 and opened its doors to its first enrolment in January 2017 and
-          November 2017 in Tembisa. The school is 100% black owned with a wide view of empowering all learners
+          November 2017 in Thembisa. The school is 100% black owned with a wide view of empowering all learners
           living in South Africa with much needed life skills and academic excellence.
         </p>
       </section>

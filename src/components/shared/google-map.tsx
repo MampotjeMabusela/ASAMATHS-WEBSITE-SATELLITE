@@ -44,7 +44,7 @@ export function GoogleMap() {
       </div>
       {!apiKey ? (
         <p className="text-center text-xs text-gray-600">
-          Embedded map shows the Rabat and Conakry Street area in Tembisa. For the exact property, use{" "}
+          Embedded map shows the Rabat and Conakry Street area in Thembisa. For the exact property, use{" "}
           <strong>Open in Google Maps</strong> below (same address as above).
         </p>
       ) : null}
