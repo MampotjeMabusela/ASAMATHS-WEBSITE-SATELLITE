@@ -30,7 +30,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
     },
     {
       id: "address",
-      keywords: ["address", "located", "where is the school", "directions", "find you", "visit", "7th road"],
+      keywords: ["address", "located", "where is the school", "directions", "find you", "visit", "rabat", "conakry", "tembisa"],
       buildAnswer: () =>
         `We're at **${SCHOOL_INFO.address}**. Opening **About** or **Contact** shows the map embed too.`,
       navigateTo: "/contact#asa-contact-form",

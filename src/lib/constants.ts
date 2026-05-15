@@ -1,7 +1,11 @@
+/** Printed address and map search string — keep in sync everywhere (footer, contact, fees, maps). */
+export const SCHOOL_MAP_ADDRESS =
+  "601 Rabat and Conakry Street, Tembisa, Johannesburg" as const
+
 export const SCHOOL_INFO = {
   name: "Asamaths Institute Of Learning – Johannesburg",
   shortName: "Asamaths Institute",
-  address: "1287, 7th Road, Tembisa, Johannesburg, Johannesburg",
+  address: SCHOOL_MAP_ADDRESS,
   phone: "+27 12 725 8044",
   rawPhone: "+27127258044",
   phoneAlt: "+27 11 925 8074",
@@ -21,9 +25,12 @@ export const SCHOOL_INFO = {
   totalEducators: 28,
   studentTeacherRatio: "33:1",
   surveyYear: 2023,
-  coordinates: { lat: -25.6250, lng: 28.1000 },
-  googleMapsEmbedUrl:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3592.5!2d28.0975!3d-25.6250!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDM3JzMwLjAiUyAyOMKwMDYnMDAuMCJF!5e0!3m2!1sen!2sza!4v1700000000000",
+  /**
+   * OSM pin near Rabat & Conakry Streets, Jiyana, Tembisa (intersection area).
+   * Set `NEXT_PUBLIC_GOOGLE_MAPS_EMBED_API_KEY` for Google’s embed geocoded to `address`.
+   */
+  coordinates: { lat: -26.0293392, lng: 28.217104 },
+  googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SCHOOL_MAP_ADDRESS)}`,
 }
 
 /** Official crest — file: /public/images/logo-official.png */
