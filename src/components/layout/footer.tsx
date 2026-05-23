@@ -1,6 +1,8 @@
 import Link from "next/link"
 import { MapPin, Phone, Mail, Clock } from "lucide-react"
 import { BRAND, NAV_LINKS, SCHOOL_INFO, hasSisterSchoolLink, SISTER_SCHOOL_LINK } from "@/lib/constants"
+import { getWhatsAppUrl } from "@/lib/whatsapp"
+import { WhatsAppIcon } from "@/components/shared/whatsapp-icon"
 import { SiteLogo } from "./site-logo"
 
 export function Footer() {
@@ -27,8 +29,8 @@ export function Footer() {
               </div>
             </Link>
             <p className="text-sm leading-relaxed text-gray-400">
-              An independent combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}, dedicated to providing quality
-              education and fostering a disciplined, cohesive learning environment.
+              An independent combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}, dedicated to
+              providing quality education and fostering a disciplined, cohesive learning environment.
             </p>
           </div>
 
@@ -49,16 +51,25 @@ export function Footer() {
                 </li>
               ))}
               {hasSisterSchoolLink() ? (
-                <li>
+                <li className="pt-2">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-primary-400/90">
+                    Our campuses
+                  </p>
                   <a
                     href={SISTER_SCHOOL_LINK.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-sm text-sm text-gray-400 transition hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1a]"
+                    className="inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-gray-300 transition hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1a]"
                   >
-                    {SISTER_SCHOOL_LINK.label}{" "}
-                    <span className="text-primary-500/90" aria-hidden>
-                      ↗
+                    Thembisa (this site)
+                    <span className="text-gray-500" aria-hidden>
+                      ·
+                    </span>
+                    <span>
+                      {SISTER_SCHOOL_LINK.label}
+                      <span className="ml-0.5 text-primary-500/90" aria-hidden>
+                        ↗
+                      </span>
                     </span>
                   </a>
                 </li>
@@ -87,6 +98,17 @@ export function Footer() {
               </li>
               <li>
                 <a
+                  href={getWhatsAppUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 rounded-sm text-sm text-gray-400 transition hover:text-[#25D366] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1a]"
+                >
+                  <WhatsAppIcon className="h-4 w-4 flex-shrink-0 text-[#25D366]" />
+                  WhatsApp: {SCHOOL_INFO.whatsapp}
+                </a>
+              </li>
+              <li>
+                <a
                   href={`mailto:${SCHOOL_INFO.email}`}
                   className="flex items-center gap-2.5 rounded-sm text-sm text-gray-400 transition hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1a]"
                 >
@@ -96,7 +118,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-2.5">
                 <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-400" />
-                <span className="text-sm text-gray-400">Mon–Fri: 07:30 – 15:00</span>
+                <span className="text-sm text-gray-400">{SCHOOL_INFO.officeHours}</span>
               </li>
             </ul>
           </div>
@@ -123,7 +145,8 @@ export function Footer() {
                 <strong className="text-gray-300">Principal:</strong> {SCHOOL_INFO.principal}
               </li>
               <li>
-                <strong className="text-gray-300">Learners:</strong> {SCHOOL_INFO.totalLearners} (2023)
+                <strong className="text-gray-300">Learners:</strong> {SCHOOL_INFO.totalLearners} (
+                {SCHOOL_INFO.surveyYear})
               </li>
               <li>
                 <strong className="text-gray-300">Ratio:</strong> {SCHOOL_INFO.studentTeacherRatio}

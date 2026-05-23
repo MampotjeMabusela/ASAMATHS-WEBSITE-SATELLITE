@@ -1,59 +1,155 @@
-import { NAV_LINKS, SCHOOL_INFO, TESTIMONIALS, VALUES } from "@/lib/constants"
+import {
+  BRAND,
+  NAV_LINKS,
+  SCHOOL_INFO,
+  TESTIMONIALS,
+  VALUES,
+  hasSisterSchoolLink,
+  SISTER_SCHOOL_LINK,
+} from "@/lib/constants"
 import type { AsaKnowledgeEntry } from "@/types/asa"
 
-/** Curated passages Asa uses to answer; keywords cover common phrasing. */
-export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
-  const vLines = VALUES.map((v) => `${v.title}: ${v.description}`).join(" ")
+const { shortName, name, officeHoursLong, email, phone, phoneAlt, whatsapp } = SCHOOL_INFO
 
-  return [
+/** Curated knowledge Asa uses to answer — keywords cover everyday family questions. */
+export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
+  const valueSummary = VALUES.map((v) => `${v.title} (${v.description})`).join(" ")
+  const parentQuote = TESTIMONIALS.find((t) => t.role === "Parent")
+
+  const entries: AsaKnowledgeEntry[] = [
     {
       id: "greeting",
-      keywords: ["hi", "hello", "hey", "good morning", "good day", "start", "help", "menu"],
+      priority: 2,
+      keywords: [
+        "hi",
+        "hello",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good day",
+        "howdy",
+        "start",
+        "who are you",
+        "what can you do",
+        "what do you do",
+      ],
       buildAnswer: () =>
-        `Hi! I'm **Asa**, your guide for ${SCHOOL_INFO.shortName}. I can explain our school, **subjects** and phases, fees, admissions, how to reach us, and move you to the right page—just ask naturally.`,
+        `Hi there! I'm **Asa**, your guide to **${shortName}**. I can explain admissions, fees, subjects, how to reach us, and jump you to the right page. What would you like to know?`,
+      suggestions: ["How do I apply?", "Contact details", "What grades do you offer?", "School fees"],
+    },
+    {
+      id: "thanks",
+      keywords: ["thank", "thanks", "appreciate", "cheers", "great help"],
+      buildAnswer: () =>
+        `You're welcome! If you need anything else about **${shortName}**, just ask — or use **Contact** to speak with the office.`,
+      suggestions: ["Contact details", "How do I apply?"],
+    },
+    {
+      id: "goodbye",
+      keywords: ["bye", "goodbye", "good night", "see you", "later"],
+      buildAnswer: () =>
+        `Goodbye — and good luck! Remember you can reach us on **${phone}** or **${email}** during **${officeHoursLong}**.`,
     },
     {
       id: "home",
-      keywords: ["home", "homepage", "main page", "landing", "start page"],
+      keywords: ["home", "homepage", "main page", "landing", "website"],
       buildAnswer: () =>
-        `The **Home** page introduces ${SCHOOL_INFO.name}, our learner numbers, values, and what families say about us.`,
+        `The **Home** page introduces **${name}**, our learner community, values, and what families say about us.`,
       navigateTo: "/#asa-home-hero",
       linkLabel: "Go to Home",
     },
     {
       id: "about",
-      keywords: ["about", "who are you", "history", "mission", "thembisa", "midrand", "location", "map", "where are you"],
+      priority: 1,
+      keywords: [
+        "about",
+        "who are you",
+        "tell me about the school",
+        "what is asamaths",
+        "mission",
+        "vision",
+        "winterveldt",
+        "pretoria",
+        "gauteng",
+        "independent",
+        "combined school",
+      ],
       buildAnswer: () =>
-        `**About** covers who we are: ${SCHOOL_INFO.name} is an independent **${SCHOOL_INFO.phase.toLowerCase()}** in **${SCHOOL_INFO.suburb}**, ${SCHOOL_INFO.city} (${SCHOOL_INFO.province}). You'll find our address, principal (**${SCHOOL_INFO.principal}**), learner stats from ${SCHOOL_INFO.surveyYear}, and a map.`,
-      navigateTo: "/about#asa-about-map",
-      linkLabel: "Open About",
+        `**${name}** is an independent **${SCHOOL_INFO.phase.toLowerCase()}** in **${SCHOOL_INFO.suburb}**, ${SCHOOL_INFO.city}. We focus on disciplined, nurturing education from **Grade R through Grade 7**. Principal: **${SCHOOL_INFO.principal}** (${SCHOOL_INFO.principalYear}). About **${SCHOOL_INFO.totalLearners}** learners and **${SCHOOL_INFO.totalEducators}** educators.`,
+      navigateTo: "/about#asa-about-content",
+      linkLabel: "About the school",
+      suggestions: ["Admissions", "Contact details", "What grades?"],
     },
     {
       id: "address",
-      keywords: ["address", "located", "where is the school", "directions", "find you", "visit", "rabat", "conakry", "thembisa"],
+      priority: 1,
+      keywords: [
+        "address",
+        "located",
+        "where is the school",
+        "where are you",
+        "directions",
+        "find you",
+        "visit",
+        "7th road",
+        "map",
+        "location",
+      ],
       buildAnswer: () =>
-        `We're at **${SCHOOL_INFO.address}**. Opening **About** or **Contact** shows the map embed too.`,
+        `You'll find us at **${SCHOOL_INFO.address}**. The **Contact** and **About** pages include a map — handy for directions or planning a visit.`,
       navigateTo: "/contact#asa-contact-form",
       linkLabel: "Contact & map",
     },
     {
       id: "contact",
-      keywords: ["contact", "email", "message", "form", "write", "reach", "website form"],
+      priority: 2,
+      keywords: [
+        "contact",
+        "email",
+        "message",
+        "form",
+        "write",
+        "reach",
+        "get in touch",
+        "enquiry",
+        "inquiry",
+        "send message",
+        "talk to someone",
+      ],
       buildAnswer: () =>
-        `Email us at **${SCHOOL_INFO.email}** or phone **${SCHOOL_INFO.phone}** / **${SCHOOL_INFO.phoneAlt}**. Office hours: **Monday–Friday, 07:30–15:00**. The **Contact** page has our enquiry form.`,
+        `The easiest ways to reach us:\n\n• **Email:** ${email}\n• **Phone:** ${phone} (main) or ${phoneAlt}\n• **Office hours:** ${officeHoursLong}\n\nUse the **Send an Inquiry** form on the **Contact** page — messages go straight to the school inbox.`,
+      navigateTo: "/contact#asa-contact-form",
+      linkLabel: "Contact & inquiry form",
+      suggestions: ["WhatsApp number", "How do I apply?", "Office hours"],
+    },
+    {
+      id: "whatsapp",
+      priority: 2,
+      keywords: ["whatsapp", "whats app", "wa me", "chat on whatsapp", "text the school"],
+      buildAnswer: () =>
+        `You can **WhatsApp** us on **${whatsapp}** — there's also a chat button on the site. For formal enquiries, the **Contact** form or email works well too.`,
       navigateTo: "/contact#asa-contact-form",
       linkLabel: "Contact page",
     },
     {
       id: "phone",
-      keywords: ["phone", "call", "number", "telephone", "whatsapp", "ring"],
+      keywords: ["phone", "call", "number", "telephone", "ring", "dial"],
       buildAnswer: () =>
-        `Phone lines: **${SCHOOL_INFO.phone}** (main), **${SCHOOL_INFO.phoneAlt}** (additional).`,
+        `Call **${phone}** (main line) or **${phoneAlt}** (additional). The office can help with admissions, fees, and general questions during **${officeHoursLong}**.`,
       navigateTo: "/contact#asa-contact-form",
-      linkLabel: "Contact details",
+      linkLabel: "All contact details",
+    },
+    {
+      id: "hours",
+      keywords: ["hours", "open", "closing", "when open", "office hours", "what time", "school hours"],
+      buildAnswer: () =>
+        `Our office is generally open **${officeHoursLong}**, Monday to Friday. If you're unsure about a specific visit, call **${phone}** first — the team will confirm.`,
+      navigateTo: "/contact#asa-contact-form",
+      linkLabel: "Contact",
     },
     {
       id: "admissions",
+      priority: 3,
       keywords: [
         "admission",
         "admissions",
@@ -62,43 +158,56 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
         "enrol",
         "enroll",
         "register",
+        "registration",
         "placement",
         "interview",
-        "documentation",
+        "assessment",
+        "documents",
+        "birth certificate",
+        "transfer",
+        "new learner",
+        "new student",
+        "join the school",
+        "how do i apply",
       ],
       buildAnswer: () =>
-        `**Admissions** is a stepped process: contact the school, submit documents (birth certificate, reports, transfer card where applicable), interview/assessment, then enrollment once accepted. Fees and registration apply—see **Fees** or call us.`,
+        `Here's the usual **admissions** path:\n\n1. **Contact** the school to express interest\n2. Submit documents (birth certificate, recent reports, transfer card if applicable)\n3. **Interview or assessment** for placement\n4. **Enrolment** once accepted — fees and registration apply\n\nEvery family is different, so the office can walk you through the latest steps.`,
       navigateTo: "/admissions#asa-admissions",
-      linkLabel: "Admissions",
+      linkLabel: "Admissions page",
+      suggestions: ["School fees", "Contact details", "What grades?"],
     },
     {
       id: "subjects",
+      priority: 2,
       keywords: [
         "subject",
         "subjects",
         "curriculum",
         "syllabus",
+        "what do you teach",
+        "learning areas",
         "grade r",
-        "foundation phase",
-        "intermediate phase",
-        "senior phase",
-        "fet",
-        "life orientation",
+        "foundation",
+        "intermediate",
+        "grade 7",
         "math",
         "mathematics",
-        "literacy",
+        "english",
+        "afrikaans",
         "natural sciences",
-        "electives",
-        "grades",
-        "what do you teach",
+        "life orientation",
+        "ems",
+        "creative arts",
       ],
       buildAnswer: () =>
-        `We offer **Grade R through Grade 7** only. The **Subjects** page describes **Foundation** (R–3), **Intermediate** (4–6), and **Grade 7** senior-phase learning areas. We do **not** enrol **Grades 8–12** or FET. Contact us for specifics per grade.`,
+        `We offer **Grade R through Grade 7** only. On **Subjects** you'll see three bands:\n\n• **Foundation** (R–3)\n• **Intermediate** (4–6)\n• **Grade 7** senior-phase areas\n\nWe do **not** enrol Grades 8–12 or FET. For a specific grade's timetable, contact the office.`,
       navigateTo: "/subjects#asa-subjects",
-      linkLabel: "Subjects page",
+      linkLabel: "Subjects & curriculum",
+      suggestions: ["Admissions", "Grade 8 or matric?", "Contact"],
     },
     {
       id: "grades-high",
+      priority: 3,
       keywords: [
         "grade 8",
         "grade 9",
@@ -108,79 +217,138 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
         "matric",
         "fet",
         "high school",
-        "senior phase grades",
+        "secondary school",
+        "after grade 7",
       ],
       buildAnswer: () =>
-        `${SCHOOL_INFO.shortName} enrols **Grade R through Grade 7** only—**not** Grades 8–12 or FET. See **Subjects** for our learning areas, or **contact** us for guidance after Grade 7.`,
+        `**${shortName}** enrols **Grade R through Grade 7** only — we don't offer Grades 8–12 or matric on this campus. After Grade 7, families typically look at high schools in the area. Our team can still offer general guidance if you call **${phone}**.`,
       navigateTo: "/subjects#asa-subjects",
-      linkLabel: "Subjects page",
+      linkLabel: "See our grades",
+      suggestions: ["Admissions", "Contact"],
     },
     {
       id: "fees",
-      keywords: ["fee", "fees", "tuition", "cost", "price", "payment", "pay", "registration fee", "money"],
+      priority: 3,
+      keywords: [
+        "fee",
+        "fees",
+        "tuition",
+        "cost",
+        "price",
+        "how much",
+        "payment",
+        "pay",
+        "registration fee",
+        "bank",
+        "deposit",
+        "school fees",
+        "afford",
+      ],
       buildAnswer: () =>
-        `${SCHOOL_INFO.shortName} is **fee-paying**; amounts vary by grade and services. For the current schedule, **contact the office** directly—the **Fees** page explains how this works.`,
+        `**${shortName}** is fee-paying; amounts depend on grade and services. The **Fees** page explains the **2026** schedule, payment options, and banking details. For your child's exact amount or a payment plan, contact the office — they'll give you the current figures.`,
       navigateTo: "/fees#asa-fees",
-      linkLabel: "Fees info",
+      linkLabel: "Fees page",
+      suggestions: ["How do I apply?", "Contact details"],
     },
     {
       id: "gallery",
-      keywords: ["gallery", "photos", "pictures", "images", "campus", "tour"],
+      keywords: ["gallery", "photos", "pictures", "images", "campus photos", "see the school", "tour"],
       buildAnswer: () =>
-        `Our **Gallery** is being updated—placeholders explain that real photos will appear soon. You can **book a visit** from prompts on that page.`,
+        `Our **Gallery** has real photos of campus life, classrooms, and learners. It's a good way to get a feel for the school before you visit. You can also book a visit from prompts on that page.`,
       navigateTo: "/gallery#asa-gallery",
-      linkLabel: "Gallery",
+      linkLabel: "View gallery",
+    },
+    {
+      id: "conduct",
+      keywords: [
+        "code of conduct",
+        "conduct",
+        "uniform",
+        "discipline",
+        "rules",
+        "policy",
+        "behaviour",
+        "behavior",
+        "dress code",
+      ],
+      buildAnswer: () =>
+        `Our **Code of Conduct** covers uniforms, discipline, attendance, and family responsibilities. It's worth reading before enrolment so everyone knows the expectations.`,
+      navigateTo: "/code-of-conduct#asa-code-of-conduct",
+      linkLabel: "Code of Conduct",
     },
     {
       id: "stats",
-      keywords: ["how many", "learners", "students", "pupils", "teachers", "educators", "ratio", "nat emis", "natemis"],
+      keywords: [
+        "how many",
+        "learners",
+        "students",
+        "pupils",
+        "teachers",
+        "educators",
+        "ratio",
+        "nat emis",
+        "natemis",
+        "size",
+        "enrolment numbers",
+      ],
       buildAnswer: () =>
-        `About **${SCHOOL_INFO.totalLearners} learners** and **${SCHOOL_INFO.totalEducators} educators** (${SCHOOL_INFO.studentTeacherRatio} ratio, ${SCHOOL_INFO.surveyYear} survey data). NatEmis: **${SCHOOL_INFO.natEmis}**. Sector: **${SCHOOL_INFO.sector}**; phase: **${SCHOOL_INFO.phase}**.`,
+        `At a glance: about **${SCHOOL_INFO.totalLearners} learners**, **${SCHOOL_INFO.totalEducators} educators**, ratio **${SCHOOL_INFO.studentTeacherRatio}** (${SCHOOL_INFO.surveyYear} survey). **NatEmis:** ${SCHOOL_INFO.natEmis}. We're **${SCHOOL_INFO.sector}**, **${SCHOOL_INFO.phase}**.`,
       navigateTo: "/about#asa-about-content",
-      linkLabel: "About stats",
+      linkLabel: "About — facts",
     },
     {
       id: "principal",
-      keywords: ["principal", "head", "makeche"],
-      buildAnswer: () => `Principal (as listed for ${SCHOOL_INFO.principalYear}): **${SCHOOL_INFO.principal}**.`,
-      navigateTo: "/about#asa-about-content",
-      linkLabel: "About school",
-    },
-    {
-      id: "values",
-      keywords: ["value", "values", "culture", "excellence", "discipline", "community", "innovation", "philosophy"],
-      buildAnswer: () => `Our core values include: ${vLines}`,
-      navigateTo: "/#asa-home-values",
-      linkLabel: "Home — values section",
-    },
-    {
-      id: "testimonials",
-      keywords: ["testimonial", "review", "parents say", "what people say"],
+      keywords: ["principal", "headmaster", "head teacher", "makeche", "who is in charge"],
       buildAnswer: () =>
-        `Here's what visitors and families said (summaries): ${TESTIMONIALS.map((t) => `"${t.text.slice(0, 80)}…" (${t.name}, ${t.role})`).join(" ")}`,
-      navigateTo: "/#asa-home-testimonials",
-      linkLabel: "Home — testimonials",
-    },
-    {
-      id: "hours",
-      keywords: ["hours", "open", "closing", "time", "when open", "office hours"],
-      buildAnswer: () => `The school operates **Monday–Friday, 07:30–15:00** (general hours shown on site).`,
-      navigateTo: "/contact#asa-contact-form",
-      linkLabel: "Contact",
-    },
-    {
-      id: "nav-all",
-      keywords: ["pages", "sections", "sitemap", "where can i go"],
-      buildAnswer: () =>
-        `Pages on this website: ${NAV_LINKS.map((l) => `**${l.label}** (${l.href})`).join(", ")}. Ask “take me to fees” etc. anytime.`,
-    },
-    {
-      id: "combined",
-      keywords: ["combined school", "independent school", "private school", "gauteng", "phase", "sector"],
-      buildAnswer: () =>
-        `We're an **${SCHOOL_INFO.sector.toLowerCase()} ${SCHOOL_INFO.phase.toLowerCase()}** in **${SCHOOL_INFO.province}** (${SCHOOL_INFO.specialisation.toLowerCase()} specialization on record).`,
+        `Our principal (listed for ${SCHOOL_INFO.principalYear}) is **${SCHOOL_INFO.principal}**. For appointments or official matters, contact the office on **${phone}**.`,
       navigateTo: "/about#asa-about-content",
       linkLabel: "About",
     },
+    {
+      id: "values",
+      keywords: ["value", "values", "culture", "excellence", "community", "innovation", "motto", "philosophy"],
+      buildAnswer: () =>
+        `Our motto is **${BRAND.motto}**. Core values: ${valueSummary}`,
+      navigateTo: "/#asa-home-values",
+      linkLabel: "Our values",
+    },
+    {
+      id: "testimonials",
+      keywords: ["testimonial", "review", "parents say", "what people say", "feedback", "reputation"],
+      buildAnswer: () =>
+        parentQuote
+          ? `Families share positive feedback on our site. For example, **${parentQuote.name}** (${parentQuote.role}) said: "${parentQuote.text.slice(0, 120)}…" See more on the **Home** page.`
+          : `Families share positive feedback on the **Home** page — visit the testimonials section to read more.`,
+      navigateTo: "/#asa-home-testimonials",
+      linkLabel: "Community voices",
+    },
+    {
+      id: "nav-all",
+      keywords: ["pages", "sections", "sitemap", "where can i go", "what's on the site", "website pages"],
+      buildAnswer: () =>
+        `Pages here: ${NAV_LINKS.map((l) => `**${l.label}**`).join(", ")}. Say something like "take me to admissions" and I'll point you there.`,
+      suggestions: ["Admissions", "Fees", "Contact"],
+    },
+    {
+      id: "motto",
+      keywords: ["knowledge wisdom humanity", "school motto", "crest", "logo"],
+      buildAnswer: () =>
+        `Our motto is **${BRAND.motto}** — you'll see it on our crest and across the site.`,
+      navigateTo: "/",
+      linkLabel: "Home",
+    },
   ]
+
+  if (hasSisterSchoolLink()) {
+    entries.push({
+      id: "sister-campus",
+      keywords: ["pretoria", "winterveldt", "other campus", "sister school", "second campus", "other site"],
+      buildAnswer: () =>
+        `We also have **${SISTER_SCHOOL_LINK.label}** — a separate campus site you can open from the menu. This site covers **${SCHOOL_INFO.suburb}**, ${SCHOOL_INFO.city}.`,
+      navigateTo: SISTER_SCHOOL_LINK.url,
+      linkLabel: SISTER_SCHOOL_LINK.label,
+    })
+  }
+
+  return entries
 }

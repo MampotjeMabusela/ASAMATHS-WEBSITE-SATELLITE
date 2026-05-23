@@ -1,10 +1,12 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Inter, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/layout/header"
+import { SkipLink } from "@/components/shared/skip-link"
 import { Footer } from "@/components/layout/footer"
 import { ScrollToTop } from "@/components/shared/scroll-to-top"
 import { AsaChat } from "@/components/shared/asa-chat"
+import { WhatsAppFloat } from "@/components/shared/whatsapp-float"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { BRAND, SCHOOL_INFO } from "@/lib/constants"
@@ -22,6 +24,12 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700", "800"],
 })
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+}
+
 export const metadata: Metadata = {
   title: {
     default: `${SCHOOL_INFO.name} | Independent Combined School in ${SCHOOL_INFO.city}`,
@@ -30,8 +38,8 @@ export const metadata: Metadata = {
   description: `${SCHOOL_INFO.name} is an independent combined school in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}, Gauteng. Serving ${SCHOOL_INFO.totalLearners} learners with a ${SCHOOL_INFO.studentTeacherRatio} student-teacher ratio. Contact us at ${SCHOOL_INFO.phone}.`,
   keywords: [
     "Asamaths Institute",
-    "Midrand school",
     "Thembisa school",
+    "Midrand school",
     "independent school Gauteng",
     "combined school Midrand",
     "private school South Africa",
@@ -60,10 +68,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="flex min-h-screen min-w-0 flex-col font-sans">
+        <SkipLink />
         <Header />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1 scroll-mt-28" tabIndex={-1}>
+          {children}
+        </main>
         <Footer />
         <ScrollToTop />
+        <WhatsAppFloat />
         <AsaChat />
         <Analytics />
         <SpeedInsights />

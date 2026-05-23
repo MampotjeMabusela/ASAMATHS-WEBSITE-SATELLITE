@@ -11,6 +11,7 @@ function osmEmbedSrc(lat: number, lng: number): string {
   }).toString()}`
 }
 
+/** Requires `NEXT_PUBLIC_GOOGLE_MAPS_EMBED_API_KEY` (Maps Embed API). `q` uses the full postal address. */
 function googleEmbedSrc(apiKey: string): string {
   const q = encodeURIComponent(SCHOOL_INFO.address)
   const key = encodeURIComponent(apiKey)
@@ -44,7 +45,7 @@ export function GoogleMap() {
       </div>
       {!apiKey ? (
         <p className="text-center text-xs text-gray-600">
-          Embedded map shows the Rabat and Conakry Street area in Thembisa. For the exact property, use{" "}
+          Embedded map uses OpenStreetMap at the mapped 7th Road area. For the exact property, use{" "}
           <strong>Open in Google Maps</strong> below (same address as above).
         </p>
       ) : null}

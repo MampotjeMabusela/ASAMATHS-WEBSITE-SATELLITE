@@ -1,36 +1,100 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
-import { STUDENT_PHOTOS } from "@/lib/student-photos"
+import { HERO_SLIDESHOW, STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
 
-function HeroStudentImage({ className }: { className?: string }) {
+const SLIDE_INTERVAL_MS = 3000
+
+function HeroStudentSlideshow({ className }: { className?: string }) {
+  const reduceMotion = useReducedMotion()
+  const [index, setIndex] = useState(0)
+  const slideCount = HERO_SLIDESHOW.length
+  const slide = HERO_SLIDESHOW[index]
+
+  useEffect(() => {
+    if (reduceMotion || slideCount <= 1) return
+    const id = window.setInterval(() => {
+      setIndex((current) => (current + 1) % slideCount)
+    }, SLIDE_INTERVAL_MS)
+    return () => window.clearInterval(id)
+  }, [reduceMotion, slideCount])
+
+  useEffect(() => {
+    if (slideCount <= 1) return
+    const next = HERO_SLIDESHOW[(index + 1) % slideCount]
+    const img = new window.Image()
+    img.src = photoSrc(next.src)
+  }, [index, slideCount])
+
+  if (!slide) {
+    return null
+  }
+
   return (
     <div
-      className={`relative aspect-[4/5] w-full max-w-none overflow-hidden rounded-3xl border border-white/25 bg-primary-900/40 shadow-2xl lg:max-h-[min(620px,72vh)] ${className ?? ""}`}
+      className={cn(
+        "relative aspect-[4/5] w-full max-w-none overflow-hidden rounded-3xl border border-white/25 bg-primary-900/40 shadow-2xl lg:max-h-[min(620px,72vh)]",
+        className
+      )}
     >
-      <Image
-        src={STUDENT_PHOTOS.hero}
-        alt={`Grade R–7 learner participating confidently in a whole-class lesson at ${SCHOOL_INFO.shortName}`}
-        fill
-        placeholder="blur"
-        blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-        className="object-cover object-[center_25%]"
-        sizes="(max-width: 1024px) 100vw, 50vw"
-        priority
-      />
+      <AnimatePresence mode="sync">
+        <motion.div
+          key={slide.src}
+          className="absolute inset-0"
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={reduceMotion ? undefined : { opacity: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+        >
+          <Image
+            src={photoSrc(slide.src)}
+            alt={slide.alt}
+            fill
+            placeholder="blur"
+            blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
+            className="object-cover"
+            style={{ objectPosition: slide.objectPosition ?? "center 25%" }}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            quality={95}
+            priority={index === 0}
+          />
+        </motion.div>
+      </AnimatePresence>
+
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-primary-950/50 via-transparent to-primary-950/20" />
-      <div className="absolute -bottom-3 -left-3 rounded-xl border border-white/25 bg-white/15 px-4 py-2.5 text-xs text-white shadow-lg backdrop-blur-md sm:px-5 sm:py-3 sm:text-sm">
+
+      {/* Slide progress — subtle dots */}
+      {slideCount > 1 && !reduceMotion ? (
+        <div
+          className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 rounded-full bg-primary-950/40 px-2.5 py-1.5 backdrop-blur-sm"
+          aria-hidden
+        >
+          {HERO_SLIDESHOW.map((slide, i) => (
+            <span
+              key={slide.src}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-500",
+                i === index ? "w-5 bg-accent-400" : "w-1.5 bg-white/50"
+              )}
+            />
+          ))}
+        </div>
+      ) : null}
+
+      <div className="absolute -bottom-3 -left-3 z-10 rounded-xl border border-white/25 bg-white/15 px-4 py-2.5 text-xs text-white shadow-lg backdrop-blur-md sm:px-5 sm:py-3 sm:text-sm">
         <p className="font-bold">NatEmis</p>
         <p className="text-primary-100">{SCHOOL_INFO.natEmis}</p>
       </div>
-      <div className="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-accent-500 text-xs font-bold text-gray-900 shadow-lg sm:h-16 sm:w-16 sm:text-sm">
+      <div className="absolute -right-3 -top-3 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-accent-500 text-xs font-bold text-gray-900 shadow-lg sm:h-16 sm:w-16 sm:text-sm">
         {SCHOOL_INFO.surveyYear}
       </div>
     </div>
@@ -49,12 +113,12 @@ export function Hero() {
   return (
     <section
       id="asa-home-hero"
-      className="relative flex min-h-[90vh] items-center overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 pt-24 scroll-mt-24"
+      className="relative flex min-h-[85svh] items-center overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 pt-24 scroll-mt-24 supports-[min-height:100dvh]:min-h-[85dvh]"
     >
       {/* Optional depth: classroom layer (very subtle, right side) */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.14]">
         <Image
-          src={STUDENT_PHOTOS.classroom}
+          src={photoSrc(STUDENT_PHOTOS.classroom)}
           alt=""
           fill
           placeholder="blur"
@@ -90,7 +154,7 @@ export function Hero() {
               {SCHOOL_INFO.sector} {SCHOOL_INFO.phase}
             </Badge>
 
-            <h1 className="font-display text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="text-balance font-display text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
               Shaping Future
               <br />
               <span className="text-accent-400">Leaders</span> with
@@ -99,12 +163,13 @@ export function Hero() {
             </h1>
 
             <div className="lg:hidden">
-              <HeroStudentImage />
+              <HeroStudentSlideshow />
             </div>
 
             <p className="max-w-none text-lg leading-relaxed text-primary-100">
               Welcome to <strong className="text-white">{SCHOOL_INFO.name}</strong>, an independent
-              combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}. With {SCHOOL_INFO.totalLearners} learners and
+              combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}. With {SCHOOL_INFO.totalLearners}{" "}
+              learners and
               a dedicated team of {SCHOOL_INFO.totalEducators} educators, we provide quality education
               in a disciplined, nurturing environment.
             </p>
@@ -120,7 +185,7 @@ export function Hero() {
                 </Button>
               </Link>
               <Link href="/about">
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                <Button size="lg" variant="outlineOnDark">
                   Learn More
                 </Button>
               </Link>
@@ -148,7 +213,7 @@ export function Hero() {
             transition={heroImgTransition}
             className="hidden justify-center lg:flex lg:justify-end"
           >
-            <HeroStudentImage />
+            <HeroStudentSlideshow />
           </motion.div>
         </div>
       </div>

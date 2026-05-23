@@ -8,13 +8,13 @@ import {
   MapPin,
   MessageCircle,
   Mic,
-  MicOff,
   Send,
   Volume2,
   VolumeX,
   X,
 } from "lucide-react"
-import { getAsaReply, stripAsaFormattingForSpeech } from "@/lib/asa-respond"
+import { getAsaReply } from "@/lib/asa-respond"
+import { initAsaVoice, speakNaturally, stopAsaSpeech } from "@/lib/asa-voice"
 import { prefersReducedMotion } from "@/lib/motion-preference"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -27,27 +27,38 @@ type Msg = {
   text: string
   navigateTo?: string
   linkLabel?: string
+  suggestions?: string[]
 }
 
 function AsaFormattedText({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  const lines = text.split("\n")
   return (
     <>
-      {parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return (
-            <strong key={i} className="font-semibold text-primary-800">
-              {part.slice(2, -2)}
-            </strong>
-          )
-        }
-        return <span key={i}>{part}</span>
-      })}
+      {lines.map((line, lineIndex) => (
+        <span key={lineIndex}>
+          {lineIndex > 0 && <br />}
+          {line.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
+            if (part.startsWith("**") && part.endsWith("**")) {
+              return (
+                <strong key={i} className="font-semibold text-primary-800">
+                  {part.slice(2, -2)}
+                </strong>
+              )
+            }
+            return <span key={i}>{part}</span>
+          })}
+        </span>
+      ))}
     </>
   )
 }
 
 function navigateWithHash(router: ReturnType<typeof useRouter>, dest: string, currentPath: string) {
+  if (/^https?:\/\//i.test(dest)) {
+    window.open(dest, "_blank", "noopener,noreferrer")
+    return
+  }
+
   const hashIndex = dest.indexOf("#")
   const pathOnly = hashIndex >= 0 ? dest.slice(0, hashIndex) : dest
   const hash = hashIndex >= 0 ? dest.slice(hashIndex + 1) : ""
@@ -77,24 +88,17 @@ function navigateWithHash(router: ReturnType<typeof useRouter>, dest: string, cu
   window.setTimeout(goScroll, 900)
 }
 
-function speak(text: string, voiceOn: boolean) {
-  if (typeof window === "undefined" || !voiceOn || !window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(stripAsaFormattingForSpeech(text))
-  u.lang = "en-ZA"
-  u.rate = 0.92
-  window.speechSynthesis.speak(u)
-}
-
 export function AsaChat() {
   const router = useRouter()
   const pathname = usePathname()
   const reduceMotion = useReducedMotion()
   const panelId = useId()
+  const scrollRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState("")
   const [voiceOn, setVoiceOn] = useState(true)
   const [listening, setListening] = useState(false)
+  const [lastTopicId, setLastTopicId] = useState<string | undefined>()
   const recognitionRef = useRef<{ stop(): void } | null>(null)
 
   const [messages, setMessages] = useState<Msg[]>(() => {
@@ -106,6 +110,7 @@ export function AsaChat() {
         text: first.text,
         navigateTo: first.navigateTo,
         linkLabel: first.linkLabel,
+        suggestions: first.suggestions,
       },
     ]
   })
@@ -118,6 +123,16 @@ export function AsaChat() {
     }
     return !!(w.SpeechRecognition || w.webkitSpeechRecognition)
   }, [])
+
+  useEffect(() => {
+    initAsaVoice()
+  }, [])
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [messages, open])
 
   const stopRecognition = useCallback(() => {
     try {
@@ -132,13 +147,15 @@ export function AsaChat() {
   useEffect(() => {
     return () => {
       stopRecognition()
-      if (typeof window !== "undefined") window.speechSynthesis.cancel()
+      stopAsaSpeech()
     }
   }, [stopRecognition])
 
   const appendAsaReply = useCallback(
     (userText: string) => {
-      const reply = getAsaReply(userText)
+      const reply = getAsaReply(userText, { lastTopicId })
+      if (reply.topicId) setLastTopicId(reply.topicId)
+
       const id = `asa-${Date.now()}`
       setMessages((prev) => [
         ...prev,
@@ -148,20 +165,37 @@ export function AsaChat() {
           text: reply.text,
           navigateTo: reply.navigateTo,
           linkLabel: reply.linkLabel,
+          suggestions: reply.suggestions,
         },
       ])
-      speak(reply.text, voiceOn)
+      speakNaturally(reply.text, voiceOn)
     },
-    [voiceOn]
+    [voiceOn, lastTopicId]
+  )
+
+  const sendUserMessage = useCallback(
+    (text: string) => {
+      const trimmed = text.trim()
+      if (!trimmed) return
+      setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: trimmed }])
+      window.setTimeout(() => appendAsaReply(trimmed), 0)
+    },
+    [appendAsaReply]
   )
 
   const onSend = useCallback(() => {
     const trimmed = input.trim()
     if (!trimmed) return
     setInput("")
-    setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: trimmed }])
-    window.setTimeout(() => appendAsaReply(trimmed), 0)
-  }, [input, appendAsaReply])
+    sendUserMessage(trimmed)
+  }, [input, sendUserMessage])
+
+  const onSuggestion = useCallback(
+    (prompt: string) => {
+      sendUserMessage(prompt)
+    },
+    [sendUserMessage]
+  )
 
   const toggleListen = useCallback(() => {
     if (!micSupported || typeof window === "undefined") return
@@ -199,10 +233,7 @@ export function AsaChat() {
         .map((r) => r[0]?.transcript ?? "")
         .join(" ")
         .trim()
-      if (text) {
-        setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text }])
-        appendAsaReply(text)
-      }
+      if (text) sendUserMessage(text)
     }
     rec.onerror = () => setListening(false)
     rec.onend = () => {
@@ -217,11 +248,20 @@ export function AsaChat() {
     } catch {
       setListening(false)
     }
-  }, [micSupported, listening, stopRecognition, appendAsaReply])
+  }, [micSupported, listening, stopRecognition, sendUserMessage])
+
+  const latestAsaSuggestions = useMemo((): string[] => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const msg = messages[i]
+      if (msg.role === "asa" && msg.suggestions && msg.suggestions.length > 0) {
+        return msg.suggestions
+      }
+    }
+    return ["Menu", "How do I apply?", "Contact details"]
+  }, [messages])
 
   return (
     <>
-      {/* Launcher */}
       <button
         type="button"
         onClick={() => setOpen(true)}
@@ -271,9 +311,7 @@ export function AsaChat() {
                 scale: reduceMotion ? 1 : 0.98,
               }}
               transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : { type: "spring", stiffness: 320, damping: 28 }
+                reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 28 }
               }
               className={cn(
                 "fixed bottom-24 right-6 z-[100] flex max-h-[min(72vh,560px)] w-[calc(100vw-3rem)] max-w-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl md:bottom-6"
@@ -288,7 +326,7 @@ export function AsaChat() {
                     <h2 id="asa-chat-title" className="font-display text-lg font-bold leading-tight">
                       Asa
                     </h2>
-                    <p className="text-xs text-primary-100">Website guide · local &amp; free</p>
+                    <p className="text-xs text-primary-100">School guide · voice &amp; chat</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -297,10 +335,10 @@ export function AsaChat() {
                     onClick={() => {
                       const next = !voiceOn
                       setVoiceOn(next)
-                      if (!next) window.speechSynthesis.cancel()
+                      if (!next) stopAsaSpeech()
                     }}
                     className="rounded-lg p-2 text-white/90 hover:bg-white/10"
-                    title={voiceOn ? "Mute voice" : "Enable voice"}
+                    title={voiceOn ? "Mute voice replies" : "Enable voice replies"}
                     aria-pressed={voiceOn}
                   >
                     {voiceOn ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
@@ -316,7 +354,7 @@ export function AsaChat() {
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto bg-gray-50 px-3 py-3">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto bg-gray-50 px-3 py-3">
                 <div className="flex flex-col gap-3">
                   {messages.map((m) => (
                     <div
@@ -352,6 +390,18 @@ export function AsaChat() {
               </div>
 
               <div className="border-t border-gray-200 bg-white p-3">
+                <div className="mb-2 flex flex-wrap gap-1.5">
+                  {latestAsaSuggestions.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => onSuggestion(prompt)}
+                      className="rounded-full border border-primary-200 bg-primary-50 px-2.5 py-1 text-[11px] font-medium text-primary-800 transition hover:bg-primary-100"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex gap-2">
                   {micSupported && (
                     <Button
@@ -378,7 +428,9 @@ export function AsaChat() {
                       }
                     }}
                     placeholder={
-                      micSupported ? "Ask or use the mic…" : "Ask about admissions, fees, contact…"
+                      micSupported
+                        ? "Ask about admissions, fees, contact…"
+                        : "Ask about admissions, fees, contact…"
                     }
                     className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
                     aria-label="Message to Asa"
@@ -387,12 +439,11 @@ export function AsaChat() {
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
-                {!micSupported && (
-                  <p className="mt-2 flex items-center gap-1 text-[11px] text-gray-400">
-                    <MicOff className="h-3 w-3" />
-                    Voice input needs Chrome / Edge / Safari. Voice replies use your browser speaker.
-                  </p>
-                )}
+                <p className="mt-2 text-[11px] text-gray-400">
+                  {micSupported
+                    ? "Tip: say “take me to admissions” or tap a suggestion above."
+                    : "Voice replies use your browser — enable sound for a natural read-aloud."}
+                </p>
               </div>
             </motion.div>
           </>

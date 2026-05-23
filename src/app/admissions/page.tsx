@@ -13,13 +13,16 @@ import {
   Calendar,
   type LucideIcon,
 } from "lucide-react"
-import { SectionHeading } from "@/components/shared/section-heading"
 import { FadeIn } from "@/components/shared/fade-in"
+import { PageIntro } from "@/components/shared/page-intro"
+import { AtAGlanceStrip } from "@/components/shared/at-a-glance-strip"
+import { StickyMobileCta } from "@/components/shared/sticky-mobile-cta"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { PageBanner } from "@/components/shared/page-banner"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
-import { STUDENT_PHOTOS } from "@/lib/student-photos"
+import { CAMPUS_PHOTOS, photoSrc } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Admissions",
@@ -88,31 +91,30 @@ const steps = [
 export default function AdmissionsPage() {
   return (
     <>
-      <section id="asa-admissions" className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-16 pt-32">
+      <section id="asa-admissions" className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-24 pt-32 md:pb-16">
         <div className="container-custom">
-          <FadeIn>
-            <SectionHeading
-              title="Admissions"
-              subtitle="Your child's journey to quality education begins here"
-            />
+          <PageIntro
+            eyebrow="Join us"
+            title="Admissions"
+            subtitle="Your child's journey to quality education begins here"
+            breadcrumbs={[{ label: "Admissions" }]}
+          />
+
+          <FadeIn delay={0.04}>
+            <AtAGlanceStrip />
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <div className="relative mb-12 h-48 w-full overflow-hidden rounded-3xl shadow-lg ring-1 ring-primary-100 sm:h-52 md:h-56">
-              <Image
-                src={STUDENT_PHOTOS.focus}
-                alt={`Intermediate-phase learner focused on written classwork at ${SCHOOL_INFO.shortName}`}
-                fill
-                placeholder="blur"
-                blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-                className="object-cover object-center"
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 to-transparent" />
-              <p className="absolute bottom-4 left-4 right-4 text-sm font-medium text-white/95 sm:text-base">
-                A place where your child is known, supported, and challenged to grow.
-              </p>
-            </div>
+            <PageBanner
+              src={CAMPUS_PHOTOS.courtyardWalk}
+              alt={`Educator and learner on the school courtyard at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
+              headline="A welcoming path into our school family"
+              subline="A place where your child is known, supported, and challenged to grow."
+              badge="Admissions"
+              variant="wide"
+              objectPosition="center 40%"
+              className="mb-12"
+            />
           </FadeIn>
 
           <FadeIn delay={0.2}>
@@ -187,6 +189,26 @@ export default function AdmissionsPage() {
             </Card>
           </FadeIn>
 
+          <FadeIn delay={0.24} className="mb-12">
+            <div className="grid gap-8 lg:grid-cols-5 lg:items-center">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-lg ring-1 ring-primary-100 lg:col-span-2">
+                <Image
+                  src={photoSrc(CAMPUS_PHOTOS.friends)}
+                  alt={`Learners in Asamaths uniform at ${SCHOOL_INFO.shortName}`}
+                  fill
+                  placeholder="blur"
+                  blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
+                  className="object-cover object-[center_30%]"
+                  sizes="(max-width:1024px)100vw,40vw"
+                />
+              </div>
+              <p className="text-center text-base leading-relaxed text-gray-600 lg:col-span-3 lg:text-left">
+                Every enrolment begins with a conversation. We take time to understand your child&apos;s
+                strengths, needs, and goals—so placement in the right grade feels confident from day one.
+              </p>
+            </div>
+          </FadeIn>
+
           <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {steps.map((step, i) => (
               <FadeIn key={step.title} delay={i * 0.15}>
@@ -223,6 +245,7 @@ export default function AdmissionsPage() {
           </FadeIn>
         </div>
       </section>
+      <StickyMobileCta enquireLabel="Apply enquiry" />
     </>
   )
 }

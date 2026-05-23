@@ -11,6 +11,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import type { ContactFormData } from "@/types"
 import { SCHOOL_INFO } from "@/lib/constants"
+import {
+  getInquiryInbox,
+  getWeb3FormsPublicAccessKey,
+  submitInquiryToWeb3FormsClient,
+} from "@/lib/web3forms"
 
 const contactSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -27,6 +32,15 @@ type FormStatus = {
   message: string
 }
 
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null
+  return (
+    <p id={id} role="alert" className="text-xs text-red-600">
+      {message}
+    </p>
+  )
+}
+
 export function ContactForm() {
   const [status, setStatus] = useState<FormStatus>({ type: null, message: "" })
 
@@ -41,23 +55,54 @@ export function ContactForm() {
 
   const onSubmit = async (data: ContactFormData) => {
     setStatus({ type: null, message: "" })
+    const inbox = getInquiryInbox()
     try {
+      // Web3Forms recommends browser-side submit; fall back to /api/contact if only server key is set.
+      const publicKey = getWeb3FormsPublicAccessKey()
+      if (publicKey) {
+        const result = await submitInquiryToWeb3FormsClient(data)
+        if (!result.ok) {
+          throw new Error(`${result.detail} You can also email ${inbox} directly.`)
+        }
+        setStatus({
+          type: "success",
+          message: `Your inquiry was sent to ${inbox}. We will reply during school hours.`,
+        })
+        reset()
+        return
+      }
+
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error || "Something went wrong")
+      const json = (await res.json()) as { error?: string; message?: string; fallbackEmail?: string }
+
+      if (!res.ok) {
+        const fallback = json.fallbackEmail || inbox
+        throw new Error(json.error || `Could not send your inquiry. Please email ${fallback} directly.`)
+      }
+
       setStatus({
         type: "success",
-        message: "Message sent successfully! We'll get back to you soon.",
+        message:
+          json.message ||
+          `Your inquiry was sent to ${inbox}. We will reply during school hours.`,
       })
       reset()
     } catch (err) {
+      const fallback = inbox
+      const isNetwork =
+        err instanceof TypeError ||
+        (err instanceof Error && /failed to fetch/i.test(err.message))
       setStatus({
         type: "error",
-        message: err instanceof Error ? err.message : "Failed to send. Please try again.",
+        message: isNetwork
+          ? `Connection problem. Check your internet and try again, or email ${fallback} directly.`
+          : err instanceof Error
+            ? err.message
+            : `Failed to send. Please email ${fallback} directly.`,
       })
     }
   }
@@ -66,6 +111,7 @@ export function ContactForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       {status.type && (
         <div
+          role="status"
           className={`flex items-center gap-2 rounded-lg p-4 text-sm ${
             status.type === "success"
               ? "border border-green-200 bg-green-50 text-green-700"
@@ -84,26 +130,52 @@ export function ContactForm() {
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="firstName">First Name *</Label>
-          <Input id="firstName" {...register("firstName")} placeholder="John" />
-          {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
+          <Input
+            id="firstName"
+            placeholder="John"
+            aria-invalid={errors.firstName ? true : undefined}
+            aria-describedby={errors.firstName ? "firstName-error" : undefined}
+            {...register("firstName")}
+          />
+          <FieldError id="firstName-error" message={errors.firstName?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="lastName">Last Name *</Label>
-          <Input id="lastName" {...register("lastName")} placeholder="Doe" />
-          {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
+          <Input
+            id="lastName"
+            placeholder="Doe"
+            aria-invalid={errors.lastName ? true : undefined}
+            aria-describedby={errors.lastName ? "lastName-error" : undefined}
+            {...register("lastName")}
+          />
+          <FieldError id="lastName-error" message={errors.lastName?.message} />
         </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="email">Email *</Label>
-          <Input id="email" type="email" {...register("email")} placeholder="john@example.com" />
-          {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+          <Input
+            id="email"
+            type="email"
+            placeholder="john@example.com"
+            aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? "email-error" : undefined}
+            {...register("email")}
+          />
+          <FieldError id="email-error" message={errors.email?.message} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="phone">Phone *</Label>
-          <Input id="phone" type="tel" {...register("phone")} placeholder="+27 12 345 6789" />
-          {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="+27 12 345 6789"
+            aria-invalid={errors.phone ? true : undefined}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
+            {...register("phone")}
+          />
+          <FieldError id="phone-error" message={errors.phone?.message} />
         </div>
       </div>
 
@@ -128,16 +200,38 @@ export function ContactForm() {
 
       <div className="space-y-2">
         <Label htmlFor="subject">Subject *</Label>
-        <Input id="subject" {...register("subject")} placeholder="Admission inquiry" />
-        {errors.subject && <p className="text-xs text-red-500">{errors.subject.message}</p>}
+        <Input
+          id="subject"
+          placeholder="Admission inquiry"
+          aria-invalid={errors.subject ? true : undefined}
+          aria-describedby={errors.subject ? "subject-error" : undefined}
+          {...register("subject")}
+        />
+        <FieldError id="subject-error" message={errors.subject?.message} />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="message">Message *</Label>
-        <Textarea id="message" {...register("message")} placeholder="Tell us about your inquiry..." />
-        {errors.message && <p className="text-xs text-red-500">{errors.message.message}</p>}
+        <Textarea
+          id="message"
+          placeholder="Tell us about your inquiry..."
+          aria-invalid={errors.message ? true : undefined}
+          aria-describedby={errors.message ? "message-error" : undefined}
+          {...register("message")}
+        />
+        <FieldError id="message-error" message={errors.message?.message} />
       </div>
 
+      <p className="text-xs leading-relaxed text-gray-500">
+        Messages are sent securely to{" "}
+        <a
+          href={`mailto:${SCHOOL_INFO.email}`}
+          className="font-medium text-primary-700 underline decoration-primary-700/40 underline-offset-2 hover:text-primary-900"
+        >
+          {SCHOOL_INFO.email}
+        </a>
+        . We aim to reply during school hours.
+      </p>
       <p className="border-t border-gray-100 pt-4 text-xs leading-relaxed text-gray-500">
         By sending this message, you consent to <strong>{SCHOOL_INFO.shortName}</strong> using the details
         above to respond to your enquiry and related administration (for example placements or fee
@@ -152,7 +246,7 @@ export function ContactForm() {
             Sending...
           </>
         ) : (
-          "Send Message"
+          "Send Inquiry"
         )}
       </Button>
     </form>

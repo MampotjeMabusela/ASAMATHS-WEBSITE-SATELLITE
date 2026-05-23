@@ -6,8 +6,8 @@ export function CodeOfConductPartB() {
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-700 md:text-[15px]">
           <li>
             Parents/guardians are welcome to make an appointment with the principal or educators to discuss any
-            issues regarding the learner. General times to see educators is between 07:30 hours - 07:50 hours
-            &amp; between 1430 - 15:00 hours.
+            issues regarding the learner. General times to see educators is between 06:45 hours - 07:50 hours
+            &amp; between 14:30 - 15:00 hours.
           </li>
           <li>
             Parents are expected to make an appointment to see the principal for any other queries since he/she
@@ -59,7 +59,7 @@ export function CodeOfConductPartB() {
       <section id="tuckshop" className="scroll-mt-32">
         <h2 className="font-display text-xl font-bold text-primary-950 md:text-2xl">15. Tuck shop hours</h2>
         <p className="mt-3 text-sm leading-relaxed text-gray-700 md:text-[15px] md:leading-relaxed">
-          Learners should not be seen buying from the tuck shop between 07:30 hours – 10:30 hours and between 11:00
+          Learners should not be seen buying from the tuck shop between 06:45 hours – 10:30 hours and between 11:00
           hours -13:00 hours in case of the Foundation Phase and between 11:30 hours -14:00 hours in case of
           Intermediate &amp; Senior Phase.
         </p>

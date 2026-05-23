@@ -44,4 +44,44 @@
   .text-shadow-sm {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
+
+  /** Horizontal nav: keep swipe scroll without a bulky bar on phones */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .banner-shimmer {
+    animation: banner-shimmer 8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .banner-shimmer {
+      animation: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .contact-crest-motion * {
+      animation: none !important;
+    }
+  }
+}
+
+@keyframes banner-shimmer {
+  0%,
+  100% {
+    transform: translateX(-120%) rotate(12deg);
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(220%) rotate(12deg);
+    opacity: 0.6;
+  }
 }

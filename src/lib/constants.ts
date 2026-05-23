@@ -10,7 +10,12 @@ export const SCHOOL_INFO = {
   rawPhone: "+27127258044",
   phoneAlt: "+27 11 925 8074",
   rawPhoneAlt: "+27119258074",
-  email: "asamathsinstitueoflearning@gmail.com",
+  whatsapp: "+27 61 530 9416",
+  /** Digits only — for https://wa.me/ links */
+  rawWhatsApp: "27615309416",
+  email: "asamathsinstituteoflearning@gmail.com",
+  officeHours: "Mon–Fri: 06:45 – 16:00",
+  officeHoursLong: "Monday – Friday: 06:45 – 16:00",
   principal: "Makeche Brighton",
   principalYear: 2023,
   natEmis: "700400979",
@@ -37,7 +42,7 @@ export const SCHOOL_INFO = {
 export const BRAND = {
   logoSrc: "/images/logo-official.png",
   /** Bust browser/CDN cache when the crest file is replaced. */
-  logoAssetVersion: "5",
+  logoAssetVersion: "10",
   logoAlt:
     "Asamath's Institute of Learning — official crest: Knowledge, Wisdom, Humanity",
   motto: "Knowledge · Wisdom · Humanity",
@@ -45,25 +50,44 @@ export const BRAND = {
   showLogoPlaceholder: false,
 }
 
-export const NAV_LINKS = [
-  { label: "Home", href: "/" },
+export type NavLinkItem = {
+  label: string
+  href: string
+  highlight?: boolean
+}
+
+export const NAV_HOME: NavLinkItem = { label: "Home", href: "/" }
+
+export const NAV_LEARN: NavLinkItem[] = [
   { label: "About", href: "/about" },
-  { label: "Admissions", href: "/admissions" },
-  { label: "Fees", href: "/fees" },
   { label: "Subjects", href: "/subjects" },
   { label: "Gallery", href: "/gallery" },
-  { label: "Code of Conduct", href: "/code-of-conduct" },
+]
+
+export const NAV_JOIN: NavLinkItem[] = [
+  { label: "Admissions", href: "/admissions", highlight: true },
+  { label: "Fees", href: "/fees" },
   { label: "Contact", href: "/contact" },
+]
+
+export const NAV_CONDUCT: NavLinkItem = { label: "Code of Conduct", href: "/code-of-conduct" }
+
+/** Flat list for footer and legacy consumers */
+export const NAV_LINKS: NavLinkItem[] = [
+  NAV_HOME,
+  ...NAV_LEARN,
+  ...NAV_JOIN,
+  NAV_CONDUCT,
 ]
 
 /**
  * Optional link to a sibling campus (duplicate site). Set in `.env.local` / Vercel:
  * `NEXT_PUBLIC_SISTER_SCHOOL_URL` — full URL, e.g. https://other-campus.vercel.app
- * `NEXT_PUBLIC_SISTER_SCHOOL_LABEL` — button text (default: "Our other campus")
+ * `NEXT_PUBLIC_SISTER_SCHOOL_LABEL` — button text (default: "Pretoria campus")
  */
 export const SISTER_SCHOOL_LINK = {
   url: (process.env.NEXT_PUBLIC_SISTER_SCHOOL_URL ?? "").trim(),
-  label: (process.env.NEXT_PUBLIC_SISTER_SCHOOL_LABEL ?? "Our other campus").trim() || "Our other campus",
+  label: (process.env.NEXT_PUBLIC_SISTER_SCHOOL_LABEL ?? "Pretoria campus").trim() || "Pretoria campus",
 } as const
 
 export function hasSisterSchoolLink(): boolean {
@@ -98,19 +122,25 @@ export const VALUES = [
 export const TESTIMONIALS = [
   {
     name: "Nomsa M.",
-    role: "Parent · Grade R",
+    initials: "NM",
+    role: "Parent",
+    roleDetail: "Grade R",
     text: "Asamaths has transformed my child's educational journey. The dedicated teachers and structured environment make all the difference.",
     rating: 5,
   },
   {
     name: "Thabo N.",
+    initials: "TN",
     role: "Former learner",
+    roleDetail: "Alumni",
     text: "The foundation I received at Asamaths prepared me exceptionally well for high school. I'm forever grateful.",
     rating: 5,
   },
   {
     name: "Nomvula S.",
-    role: "Parent · Grade 6",
+    initials: "NS",
+    role: "Parent",
+    roleDetail: "Grade 6",
     text: "This school is a pillar of the Thembisa community, providing quality education to our children.",
     rating: 5,
   },

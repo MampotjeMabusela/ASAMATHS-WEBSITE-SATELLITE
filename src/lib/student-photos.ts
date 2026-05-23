@@ -14,7 +14,37 @@ export const STUDENT_PHOTOS = {
   studentReadingPortrait: "/images/students/student-reading-portrait.png",
   mathWhiteboardStudent: "/images/students/math-whiteboard-student.png",
   mathChalkboardLesson: "/images/students/math-chalkboard-lesson.png",
+  productiveCollaborations: "/images/students/productive-collaborations.png",
   classroomCelebration: "/images/students/classroom-celebration.png",
+} as const
+
+/** Bump when any public site photo is reprocessed so browsers fetch fresh files. */
+export const SITE_PHOTOS_VERSION = "4k6"
+
+export function photoSrc(path: string): string {
+  const base = path.split("?")[0] ?? path
+  return `${base}?v=${SITE_PHOTOS_VERSION}`
+}
+
+/** @deprecated Use photoSrc — kept for gallery imports */
+export const GALLERY_PHOTOS_VERSION = SITE_PHOTOS_VERSION
+
+export function galleryPhotoSrc(path: string): string {
+  return photoSrc(path)
+}
+
+/** Campus and page-specific photography (see /public/images/campus). */
+export const CAMPUS_PHOTOS = {
+  friends: "/images/campus/campus-friends.png",
+  courtyardWalk: "/images/campus/campus-courtyard-walk.png",
+  adminOffice: "/images/campus/admin-office.png",
+  building: "/images/campus/campus-building.png",
+  classroomGroup: "/images/campus/classroom-group.png",
+  /** Subjects page — Curriculum banner */
+  curriculumPlayground: "/images/campus/curriculum-playground.png",
+  literacyNotebook: "/images/campus/literacy-notebook.png",
+  /** Fees page — major SA bank brands (payment context) */
+  bankLogos: "/images/campus/fee-bank-logos.png",
 } as const
 
 export type GalleryItem = {
@@ -25,36 +55,70 @@ export type GalleryItem = {
   alt: string
 }
 
+export const CAMPUS_GALLERY_ITEMS: GalleryItem[] = [
+  {
+    src: CAMPUS_PHOTOS.building,
+    title: "Our campus",
+    caption: "Brick buildings, courtyards, and space to learn and play.",
+    alt: "Exterior view of Asamaths Institute brick school buildings and paved courtyard under a clear sky.",
+  },
+  {
+    src: CAMPUS_PHOTOS.friends,
+    title: "Friendships at school",
+    caption: "Learners who support and encourage one another every day.",
+    alt: "Two primary learners in Asamaths tracksuit uniform smiling together in a bright classroom.",
+  },
+  {
+    src: CAMPUS_PHOTOS.courtyardWalk,
+    title: "Life on campus",
+    caption: "Staff and learners moving between lessons with purpose.",
+    alt: "Educator and learner walking across the school courtyard in uniform, carrying books and folders.",
+  },
+  {
+    src: CAMPUS_PHOTOS.classroomGroup,
+    title: "Focused classrooms",
+    caption: "Structured lessons across the foundation and intermediate phases.",
+    alt: "Group of learners in grey school sweaters seated at desks during an attentive classroom lesson.",
+  },
+  {
+    src: CAMPUS_PHOTOS.literacyNotebook,
+    title: "Literacy in action",
+    caption: "Confident reading and writing in every grade.",
+    alt: "Smiling learner in blue school jacket writing in an open notebook during an English lesson.",
+  },
+  {
+    src: CAMPUS_PHOTOS.adminOffice,
+    title: "Here to help",
+    caption: "Our office team supports admissions, fees, and family enquiries.",
+    alt: "School administrator working at a desk in the Asamaths Institute office with awards displayed nearby.",
+  },
+]
+
 export const GALLERY_ITEMS: GalleryItem[] = [
+  ...CAMPUS_GALLERY_ITEMS,
   {
     src: STUDENT_PHOTOS.hero,
-    title: "Engaged in class",
-    caption: "Learners ready to participate in lessons.",
-    alt: "Primary-phase learner confidently taking part in a whole-class lesson with hand raised.",
+    title: "Our learners",
+    caption: "Proud, happy faces in the Asamaths family.",
+    alt: "Two primary learners in school uniform smiling together outdoors at Asamaths Institute.",
   },
   {
     src: STUDENT_PHOTOS.classroom,
-    title: "Active learning",
-    caption: "Hands up, minds on—collaborative classroom moments.",
-    alt: "Group of intermediate-phase learners with hands raised during an interactive lesson.",
-  },
-  {
-    src: STUDENT_PHOTOS.reading,
-    title: "Focus on literacy",
-    caption: "Building strong reading habits every day.",
-    alt: "Learner concentrating on literacy work at a desk in a bright classroom.",
+    title: "Learning together",
+    caption: "Focused classrooms across the phases.",
+    alt: "Primary-phase learners in uniform working diligently at their desks in a bright classroom.",
   },
   {
     src: STUDENT_PHOTOS.focus,
     title: "Learning spaces",
     caption: "Bright, structured environments for study.",
-    alt: "Learner focused at a desk during independent classwork in Thembisa, Midrand.",
+    alt: "Learner focused at a desk during independent classwork at Asamaths Institute.",
   },
   {
     src: STUDENT_PHOTOS.smile,
     title: "Proud moment",
     caption: "Confidence grows with every small success.",
-    alt: "Smiling learner in school uniform reflecting a confident classroom moment.",
+    alt: "Learners in grey and blue school uniform during a calm, focused lesson in class.",
   },
   {
     src: STUDENT_PHOTOS.foundation,
@@ -66,48 +130,63 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     src: STUDENT_PHOTOS.playground,
     title: "Play and movement",
     caption: "Break time energy and teamwork outdoors.",
-    alt: "Learners outdoors on the playground during break with space for play and movement.",
+    alt: "Learners in school uniform playing on the outdoor playground with a red slide.",
   },
   {
     src: STUDENT_PHOTOS.sports,
-    title: "On the field",
-    caption: "Physical education and sporty afternoons.",
-    alt: "Learners during physical-education-style activity with open grass and sunshine.",
+    title: "Guided learning",
+    caption: "Educators and learners working side by side.",
+    alt: "Educators reviewing work with learners at a desk in a well-equipped classroom.",
   },
   {
     src: STUDENT_PHOTOS.joy,
     title: "Together we grow",
     caption: "Friendships and smiles across the phases we offer.",
-    alt: "Cheerful group of classmates celebrating learning together indoors.",
+    alt: "Senior-phase learners in uniform seated at desks during an attentive classroom lesson.",
   },
   {
     src: STUDENT_PHOTOS.scienceLesson,
-    title: "Science in action",
-    caption: "Hands-on investigations with educators alongside our learners.",
-    alt: "Natural sciences exploration: educator and learner with magnets during a lesson.",
+    title: "Senior-phase classroom",
+    caption: "Focused lessons across Grades 7–9 with educators at the front of the room.",
+    alt: "Senior-phase learners in blue school uniform seated at desks during a lesson while an educator writes on the chalkboard.",
   },
   {
-    src: STUDENT_PHOTOS.studentReadingPortrait,
-    title: "Every reader matters",
-    caption: "Confident literacy habits in calm, purposeful classrooms.",
-    alt: "Portrait-style photo of a primary learner reading attentively from a book.",
-  },
-  {
-    src: STUDENT_PHOTOS.mathWhiteboardStudent,
-    title: "Numeracy confidence",
-    caption: "Learners practising mathematics with focus and perseverance.",
-    alt: "Learner solving two-digit addition on a classroom whiteboard for numeracy practice.",
-  },
-  {
-    src: STUDENT_PHOTOS.mathChalkboardLesson,
-    title: "Mathematics explained",
-    caption: "Clear teaching guided by caring, experienced educators.",
-    alt: "Mathematics educator pointing to sums on the chalkboard while learners look on.",
+    src: STUDENT_PHOTOS.productiveCollaborations,
+    title: "Productive Collaborations",
+    caption: "Learners working together, sharing ideas, and supporting one another in class.",
+    alt: "Senior-phase learners in school uniform collaborating at their desks during a positive classroom lesson.",
   },
   {
     src: STUDENT_PHOTOS.classroomCelebration,
     title: "We celebrate progress",
     caption: "Joint success when effort turns into breakthrough moments.",
-    alt: "Classmates smiling and cheering during a participatory classroom celebration.",
+    alt: "Busy classroom of learners in uniform with colourful educational posters on the walls.",
   },
 ]
+
+export type HeroSlide = {
+  src: string
+  alt: string
+  objectPosition?: string
+}
+
+/** Home hero slideshow — gallery photos only (last five bonus slides removed per site request). */
+function buildHeroSlideshow(): HeroSlide[] {
+  const seen = new Set<string>()
+  const slides: HeroSlide[] = []
+
+  const add = (src: string, alt: string, objectPosition = "center 25%") => {
+    const base = src.split("?")[0] ?? src
+    if (seen.has(base)) return
+    seen.add(base)
+    slides.push({ src, alt, objectPosition })
+  }
+
+  for (const item of GALLERY_ITEMS) {
+    add(item.src, item.alt)
+  }
+
+  return slides
+}
+
+export const HERO_SLIDESHOW = buildHeroSlideshow()
