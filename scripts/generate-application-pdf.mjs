@@ -25,7 +25,7 @@ const SCHOOL_INFO = {
   phase: "Combined School",
 }
 
-const BRAND = { motto: "Knowledge · Wisdom · Humanity" }
+const BRAND = { motto: "Knowledge | Wisdom | Humanity" }
 
 const PRIMARY = { r: 30, g: 58, b: 138 }
 const INK = { r: 15, g: 23, b: 42 }
@@ -46,7 +46,7 @@ function drawPageFooter(doc, pageNum) {
   doc.setFontSize(8)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
   doc.text(
-    `${SCHOOL_INFO.shortName} — Admission Application · ${SCHOOL_INFO.email}`,
+    `${SCHOOL_INFO.shortName} - Admission Application | ${SCHOOL_INFO.email}`,
     MARGIN_L,
     pageH - 10
   )
@@ -156,7 +156,7 @@ function drawHeader(doc, logoDataUrl) {
     `Email: ${SCHOOL_INFO.email}`,
     `Office hours: ${SCHOOL_INFO.officeHoursLong}`,
     `Principal: ${SCHOOL_INFO.principal} (${SCHOOL_INFO.principalYear})`,
-    `NatEmis: ${SCHOOL_INFO.natEmis} · ${SCHOOL_INFO.phase}`,
+    `NatEmis: ${SCHOOL_INFO.natEmis} | ${SCHOOL_INFO.phase}`,
   ]) {
     doc.text(line, col2, ly)
     ly += 4.5

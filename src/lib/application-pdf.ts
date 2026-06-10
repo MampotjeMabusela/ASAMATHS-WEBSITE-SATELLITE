@@ -39,7 +39,7 @@ function drawPageFooter(doc: jsPDF, pageNum: number) {
   doc.setFontSize(8)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
   doc.text(
-    `${SCHOOL_INFO.shortName} — Admission Application · ${SCHOOL_INFO.email}`,
+    `${SCHOOL_INFO.shortName} - Admission Application | ${SCHOOL_INFO.email}`,
     MARGIN_L,
     pageH - 10
   )
@@ -119,7 +119,7 @@ function drawHeader(doc: jsPDF, logoDataUrl: string | null): number {
   doc.setFont("helvetica", "italic")
   doc.setFontSize(9)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(BRAND.motto, textX, y + 12)
+  doc.text(BRAND.motto.replace(/·/g, "|"), textX, y + 12)
 
   doc.setFont("helvetica", "bold")
   doc.setFontSize(12)
@@ -155,7 +155,7 @@ function drawHeader(doc: jsPDF, logoDataUrl: string | null): number {
     `Email: ${SCHOOL_INFO.email}`,
     `Office hours: ${SCHOOL_INFO.officeHoursLong}`,
     `Principal: ${SCHOOL_INFO.principal} (${SCHOOL_INFO.principalYear})`,
-    `NatEmis: ${SCHOOL_INFO.natEmis} · ${SCHOOL_INFO.phase}`,
+    `NatEmis: ${SCHOOL_INFO.natEmis} | ${SCHOOL_INFO.phase}`,
   ]
 
   let ly = y + 10
@@ -174,7 +174,7 @@ function drawHeader(doc: jsPDF, logoDataUrl: string | null): number {
   doc.setFontSize(7.5)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
   doc.text(
-    "Complete this form in block letters. Tick (✓) where applicable. Attach certified copies where noted. " +
+    "Complete this form in block letters. Tick where applicable. Attach certified copies where noted. " +
       "Return the completed form and documents to the school office or email " +
       SCHOOL_INFO.email +
       " (subject: Admission Application). You may also apply online at the school website.",
@@ -206,7 +206,7 @@ export function buildApplicationPdf(): Buffer {
   )
   doc.setFontSize(7)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(`School years: ${APPLICATION_SCHOOL_YEARS.join("  ·  ")}`, MARGIN_L, y)
+  doc.text(`School years: ${APPLICATION_SCHOOL_YEARS.join("  |  ")}`, MARGIN_L, y)
   y += 8
 
   y = sectionBar(doc, "B. Primary parent / guardian", y)
@@ -307,8 +307,8 @@ export function buildApplicationPdf(): Buffer {
   y = ensureSpace(doc, y, 12)
   doc.setFontSize(8)
   doc.text("Latest school reports available?", MARGIN_L, y)
-  y = checkboxLine(doc, "Yes — attached", y + 2)
-  y = checkboxLine(doc, "Not yet — will provide", y)
+  y = checkboxLine(doc, "Yes - attached", y + 2)
+  y = checkboxLine(doc, "Not yet - will provide", y)
 
   y = sectionBar(doc, "E. Residential address", y)
   y = ensureSpace(doc, y, 40)
