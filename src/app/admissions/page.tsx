@@ -13,6 +13,8 @@ import {
   Calendar,
   type LucideIcon,
 } from "lucide-react"
+import { ApplicationPdfDownload } from "@/components/admissions/application-pdf-download"
+import { ApplicationForm } from "@/components/forms/application-form"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
 import { AtAGlanceStrip } from "@/components/shared/at-a-glance-strip"
@@ -26,7 +28,7 @@ import { CAMPUS_PHOTOS, photoSrc } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Admissions",
-  description: `Learn about the admission process at ${SCHOOL_INFO.name}. Contact us directly for personalized guidance on enrolling your child.`,
+  description: `Apply online or learn about admissions at ${SCHOOL_INFO.name}. Submit your application to ${SCHOOL_INFO.email} and bring or email documents separately.`,
 }
 
 const enrolmentChecklist: {
@@ -39,13 +41,13 @@ const enrolmentChecklist: {
     icon: FolderOpen,
     title: "Gather documents early",
     body: "Typically include the learner’s birth certificate or ID, latest school report card, transfer or exit paperwork from a previous school, and any immunisation or clinic records requested. Admissions will confirm exactly what applies to your child.",
-    links: [{ label: "Send us an enquiry", href: "/contact#asa-contact-form" }],
+    links: [{ label: "Apply online", href: "#asa-apply-online" }],
   },
   {
     icon: ClipboardList,
     title: "Interview & readiness check",
     body: `After we’ve received your enquiry, we arrange a conversation and placement discussion so your child settles in the best grade.`,
-    links: [{ label: "Start on Contact", href: "/contact#asa-contact-form" }],
+    links: [{ label: "Apply online", href: "#asa-apply-online" }],
   },
   {
     icon: Wallet,
@@ -57,7 +59,7 @@ const enrolmentChecklist: {
     icon: Calendar,
     title: "Term dates & school calendar",
     body: `Provincial term dates vary by year. Ask the office for the current brochure, term-by-term calendar, and daily times so you’re aligned from week one.`,
-    links: [{ label: "Confirm with the office", href: "/contact#asa-contact-form" }],
+    links: [{ label: "Download PDF form", href: "#asa-print-application" }],
   },
 ]
 
@@ -179,9 +181,9 @@ export default function AdmissionsPage() {
                       Fees & finances
                     </Button>
                   </Link>
-                  <Link href="/contact#asa-contact-form">
+                  <Link href="#asa-apply-online">
                     <Button size="sm" className="bg-primary-600 text-white hover:bg-primary-700">
-                      Contact admissions
+                      Apply online
                     </Button>
                   </Link>
                 </div>
@@ -225,13 +227,50 @@ export default function AdmissionsPage() {
             ))}
           </div>
 
+          <FadeIn delay={0.25} className="mb-10">
+            <ApplicationPdfDownload />
+          </FadeIn>
+
+          <FadeIn delay={0.26} className="mb-16">
+            <div
+              id="asa-apply-online"
+              className="scroll-mt-28 rounded-2xl border border-primary-100 bg-white p-6 shadow-lg ring-1 ring-primary-100/80 sm:p-10"
+            >
+              <div className="mb-8 max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary-600">
+                  Online application
+                </p>
+                <h2 className="mt-2 font-display text-2xl font-bold text-gray-900 sm:text-3xl">
+                  Apply to {SCHOOL_INFO.shortName}
+                </h2>
+                <p className="mt-3 text-base leading-relaxed text-gray-600">
+                  Complete the form below in a few steps. Your application is sent securely to{" "}
+                  <a
+                    href={`mailto:${SCHOOL_INFO.email}`}
+                    className="font-medium text-primary-700 underline decoration-primary-700/35"
+                  >
+                    {SCHOOL_INFO.email}
+                  </a>
+                  . Bring supporting documents to the school office or email them separately—the
+                  admissions team will follow up to arrange an interview and confirm placement.
+                </p>
+              </div>
+              <ApplicationForm />
+            </div>
+          </FadeIn>
+
           <FadeIn>
             <div className="text-center">
               <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/contact">
+                <Link href="#asa-apply-online">
                   <Button size="lg" className="bg-primary-600 text-white hover:bg-primary-700">
-                    Contact Admissions
+                    Apply online
                     <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/contact">
+                  <Button size="lg" variant="outline">
+                    General enquiry
                   </Button>
                 </Link>
                 <a href={`tel:${SCHOOL_INFO.rawPhone}`}>
@@ -245,7 +284,7 @@ export default function AdmissionsPage() {
           </FadeIn>
         </div>
       </section>
-      <StickyMobileCta enquireLabel="Apply enquiry" />
+      <StickyMobileCta enquireHref="/admissions#asa-apply-online" enquireLabel="Apply online" />
     </>
   )
 }
