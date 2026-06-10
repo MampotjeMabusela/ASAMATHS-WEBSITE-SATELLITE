@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "enhance-photos": "node scripts/enhance-all-images.mjs",
-    "replace-photos": "node scripts/replace-site-photos.mjs"
+    "replace-photos": "node scripts/replace-site-photos.mjs",
+    "generate-application-pdf": "node scripts/generate-application-pdf.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

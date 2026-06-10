@@ -8,6 +8,7 @@ import {
   MAX_APPLICATION_TOTAL_BYTES,
   type ApplicationDocumentKey,
 } from "@/lib/application-constants"
+import { SCHOOL_INFO } from "@/lib/constants"
 
 export type ApplicationFiles = Record<ApplicationDocumentKey, File | null>
 
@@ -178,8 +179,8 @@ export const APPLICATION_DEFAULT_VALUES: ApplicationFormValues = {
   gradeApplyingFor: "Grade R",
   hasPreviousSchoolReports: "yes",
   physicalAddress: "",
-  suburb: "Thembisa",
-  city: "Midrand",
+  suburb: SCHOOL_INFO.suburb,
+  city: SCHOOL_INFO.city,
   postalCode: "",
   emergencyContactName: "",
   emergencyContactPhone: "",

@@ -11,9 +11,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, "..")
 
 const SCHOOL_INFO = {
-  name: "Asamaths Institute Of Learning – Pretoria",
+  name: "Asamaths Institute Of Learning – Midrand",
   shortName: "Asamaths Institute",
-  address: "1287, 7th Road, Winterveldt, Pretoria, Pretoria",
+  address: "601 Rabat and Conakry Street, Thembisa, Midrand",
   phone: "+27 12 725 8044",
   phoneAlt: "+27 11 925 8074",
   whatsapp: "+27 61 530 9416",
@@ -26,11 +26,6 @@ const SCHOOL_INFO = {
 }
 
 const BRAND = { motto: "Knowledge · Wisdom · Humanity" }
-const APPLICATION_SCHOOL_YEARS = ["2026", "2027"]
-const APPLICATION_GRADES = [
-  "Grade R", "Grade 1", "Grade 2", "Grade 3", "Grade 4",
-  "Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9",
-]
 
 const PRIMARY = { r: 30, g: 58, b: 138 }
 const INK = { r: 15, g: 23, b: 42 }
