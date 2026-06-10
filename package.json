@@ -9,7 +9,8 @@
     "lint": "next lint",
     "enhance-photos": "node scripts/enhance-all-images.mjs",
     "replace-photos": "node scripts/replace-site-photos.mjs",
-    "generate-application-pdf": "node scripts/generate-application-pdf.mjs"
+    "generate-application-pdf": "node scripts/generate-application-pdf.mjs",
+    "db:init": "node scripts/db-init.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -17,6 +18,7 @@
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.4",
+    "@vercel/postgres": "^0.10.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "class-variance-authority": "^0.7.1",
@@ -40,6 +42,7 @@
     "eslint-config-next": "14.2.35",
     "eslint-config-prettier": "^10.1.8",
     "postcss": "^8",
+    "pg": "^8.16.0",
     "prettier": "^3.8.3",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",

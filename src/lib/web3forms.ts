@@ -8,18 +8,22 @@ export function getInquiryInbox(): string {
   return SCHOOL_INFO.email
 }
 
-/** Server-side key (Vercel env). Preferred for API route. */
+/** Server-side key — never sent to the browser. Falls back to NEXT_PUBLIC_* on the server only. */
 export function getWeb3FormsAccessKey(): string | null {
-  return process.env.WEB3FORMS_ACCESS_KEY?.trim() || null
+  return (
+    process.env.WEB3FORMS_ACCESS_KEY?.trim() ||
+    process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() ||
+    null
+  )
 }
 
-/** Client-side key — Web3Forms documents this as safe to expose in the browser. */
+/** @deprecated Forms use /api routes; public key is read on the server via getWeb3FormsAccessKey(). */
 export function getWeb3FormsPublicAccessKey(): string | null {
   return process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() || null
 }
 
 export function isWeb3FormsConfigured(): boolean {
-  return Boolean(getWeb3FormsAccessKey() || getWeb3FormsPublicAccessKey())
+  return Boolean(getWeb3FormsAccessKey())
 }
 
 export function buildWeb3FormsPayload(data: ContactFormData, accessKey: string) {

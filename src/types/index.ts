@@ -6,6 +6,8 @@ export interface ContactFormData {
   subject: string
   message: string
   gradeInterested?: string
+  /** Honeypot — must stay empty */
+  website?: string
 }
 
 export interface NavLink {

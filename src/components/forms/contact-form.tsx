@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -9,13 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { HoneypotField } from "@/components/forms/honeypot-field"
 import type { ContactFormData } from "@/types"
 import { SCHOOL_INFO } from "@/lib/constants"
-import {
-  getInquiryInbox,
-  getWeb3FormsPublicAccessKey,
-  submitInquiryToWeb3FormsClient,
-} from "@/lib/web3forms"
+import { getInquiryInbox } from "@/lib/web3forms"
 
 const contactSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -25,6 +22,7 @@ const contactSchema = z.object({
   subject: z.string().min(3, "Subject is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),
   gradeInterested: z.string().optional(),
+  website: z.string().optional(),
 })
 
 type FormStatus = {
@@ -43,6 +41,14 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 export function ContactForm() {
   const [status, setStatus] = useState<FormStatus>({ type: null, message: "" })
+  const [configured, setConfigured] = useState(true)
+
+  useEffect(() => {
+    fetch("/api/forms/status")
+      .then((res) => res.json())
+      .then((json: { ready?: boolean }) => setConfigured(Boolean(json.ready)))
+      .catch(() => setConfigured(false))
+  }, [])
 
   const {
     register,
@@ -57,21 +63,6 @@ export function ContactForm() {
     setStatus({ type: null, message: "" })
     const inbox = getInquiryInbox()
     try {
-      // Web3Forms recommends browser-side submit; fall back to /api/contact if only server key is set.
-      const publicKey = getWeb3FormsPublicAccessKey()
-      if (publicKey) {
-        const result = await submitInquiryToWeb3FormsClient(data)
-        if (!result.ok) {
-          throw new Error(`${result.detail} You can also email ${inbox} directly.`)
-        }
-        setStatus({
-          type: "success",
-          message: `Your inquiry was sent to ${inbox}. We will reply during school hours.`,
-        })
-        reset()
-        return
-      }
-
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,7 +99,17 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-5" noValidate>
+      <HoneypotField register={register} />
+      {!configured ? (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          The enquiry form is temporarily unavailable. Please email{" "}
+          <a href={`mailto:${getInquiryInbox()}`} className="font-semibold underline">
+            {getInquiryInbox()}
+          </a>{" "}
+          directly.
+        </div>
+      ) : null}
       {status.type && (
         <div
           role="status"
@@ -239,7 +240,7 @@ export function ContactForm() {
         Information Act (POPIA): we keep what is necessary, retain it responsibly, respect your rights
         to access or correction, and do not sell your data.
       </p>
-      <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isSubmitting}>
+      <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isSubmitting || !configured}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
