@@ -9,7 +9,7 @@
     "lint": "next lint",
     "enhance-photos": "node scripts/enhance-all-images.mjs",
     "replace-photos": "node scripts/replace-site-photos.mjs",
-    "generate-application-pdf": "node scripts/generate-application-pdf.mjs",
+    "generate-application-pdf": "npx tsx scripts/generate-application-pdf.ts",
     "db:init": "node scripts/db-init.mjs"
   },
   "dependencies": {

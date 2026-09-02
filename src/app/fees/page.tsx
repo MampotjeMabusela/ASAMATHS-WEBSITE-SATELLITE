@@ -38,14 +38,14 @@ export const metadata: Metadata = {
 
 /** As published on the 2026 fees schedule (office contact on document). Address matches site-wide `SCHOOL_INFO.address`. */
 const FEES_OFFICE = {
-  telDisplay: "012 725 8044",
-  telHref: "tel:+27127258044",
+  telDisplay: "011 925 8074",
+  telHref: `tel:${SCHOOL_INFO.rawPhone}`,
   faxDisplay: "086 4653 150",
-  mobileDisplay: "061 530 9416",
-  mobileHref: "tel:+27615309416",
-  emailDisplay: "asamathsinstituteoflearning@gmail.com",
-  emailHref: "mailto:asamathsinstituteoflearning@gmail.com",
-  gdeLabel: "GDE 700400979",
+  mobileDisplay: "061 532 5019",
+  mobileHref: `tel:+${SCHOOL_INFO.rawWhatsApp}`,
+  emailDisplay: SCHOOL_INFO.email,
+  emailHref: `mailto:${SCHOOL_INFO.email}`,
+  gdeLabel: `GDE ${SCHOOL_INFO.natEmis}`,
 } as const
 
 const tuitionRows: {

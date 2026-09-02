@@ -9,7 +9,7 @@ import {
 } from "@/lib/constants"
 import type { AsaKnowledgeEntry } from "@/types/asa"
 
-const { shortName, name, officeHoursLong, email, phone, phoneAlt, whatsapp } = SCHOOL_INFO
+const { shortName, name, officeHoursLong, email, phone, whatsapp } = SCHOOL_INFO
 
 /** Curated knowledge Asa uses to answer — keywords cover everyday family questions. */
 export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
@@ -117,7 +117,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
         "talk to someone",
       ],
       buildAnswer: () =>
-        `The easiest ways to reach us:\n\n• **Email:** ${email}\n• **Phone:** ${phone} (main) or ${phoneAlt}\n• **Office hours:** ${officeHoursLong}\n\nUse the **Send an Inquiry** form on the **Contact** page — messages go straight to the school inbox.`,
+        `The easiest ways to reach us:\n\n• **Email:** ${email}\n• **Phone:** ${phone}\n• **Office hours:** ${officeHoursLong}\n\nUse the **Send an Inquiry** form on the **Contact** page — messages go straight to the school inbox.`,
       navigateTo: "/contact#asa-contact-form",
       linkLabel: "Contact & inquiry form",
       suggestions: ["WhatsApp number", "How do I apply?", "Office hours"],
@@ -135,7 +135,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
       id: "phone",
       keywords: ["phone", "call", "number", "telephone", "ring", "dial"],
       buildAnswer: () =>
-        `Call **${phone}** (main line) or **${phoneAlt}** (additional). The office can help with admissions, fees, and general questions during **${officeHoursLong}**.`,
+        `Call **${phone}** during **${officeHoursLong}**. The office can help with admissions, fees, and general questions.`,
       navigateTo: "/contact#asa-contact-form",
       linkLabel: "All contact details",
     },
@@ -300,7 +300,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
     },
     {
       id: "principal",
-      keywords: ["principal", "headmaster", "head teacher", "makeche", "who is in charge"],
+      keywords: ["principal", "headmaster", "head teacher", "khumalo", "selamiselo", "who is in charge"],
       buildAnswer: () =>
         `Our principal (listed for ${SCHOOL_INFO.principalYear}) is **${SCHOOL_INFO.principal}**. For appointments or official matters, contact the office on **${phone}**.`,
       navigateTo: "/about#asa-about-content",

@@ -589,13 +589,12 @@ export function ApplicationForm() {
           </label>
           <FieldError id="decl" message={errors.declarationAccurate?.message} />
           <p className="text-xs text-gray-500">
-            Submitting sends your application securely to{" "}
+            Submitting sends a completed PDF application (matching our official printable form) to{" "}
             <a href={`mailto:${inbox}`} className="font-medium text-primary-700 underline">
               {inbox}
             </a>
-            . You will receive a reference number on screen. Supporting documents (birth
-            certificate, school report, transfer letter) can be brought to the school office or
-            emailed separately with your reference.
+            , along with any documents you upload here. You will receive a reference number on
+            screen.
           </p>
         </div>
       )}

@@ -21,7 +21,7 @@ const infoCards = [
   { icon: MapPin, label: "Address", value: SCHOOL_INFO.address },
   { icon: Phone, label: "Phone", value: SCHOOL_INFO.phone, href: `tel:${SCHOOL_INFO.rawPhone}` },
   { icon: Mail, label: "Email", value: SCHOOL_INFO.email, href: `mailto:${SCHOOL_INFO.email}` },
-  { icon: User, label: "Principal (2023)", value: SCHOOL_INFO.principal },
+  { icon: User, label: `Principal (${SCHOOL_INFO.principalYear})`, value: SCHOOL_INFO.principal },
   { icon: Calendar, label: "Survey Year", value: SCHOOL_INFO.surveyYear.toString() },
 ]
 

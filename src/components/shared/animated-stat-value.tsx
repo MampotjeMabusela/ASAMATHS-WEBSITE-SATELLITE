@@ -19,7 +19,10 @@ function formatStatNumber(n: number): string {
 }
 
 function parseNumericValue(raw: string): number | null {
-  const digits = raw.replace(/[^\d]/g, "")
+  const trimmed = raw.trim()
+  // Ratios (e.g. "29:1") and labels (e.g. "Independent") should render literally.
+  if (!/^\d[\d\s]*$/.test(trimmed)) return null
+  const digits = trimmed.replace(/\s/g, "")
   if (!digits) return null
   const n = parseInt(digits, 10)
   return Number.isFinite(n) ? n : null

@@ -1,112 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { HeroHighlights } from "@/components/sections/hero-highlights"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
-import { HERO_SLIDESHOW, STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
-
-const SLIDE_INTERVAL_MS = 3000
-
-function HeroStudentSlideshow({ className }: { className?: string }) {
-  const reduceMotion = useReducedMotion()
-  const [index, setIndex] = useState(0)
-  const slideCount = HERO_SLIDESHOW.length
-  const slide = HERO_SLIDESHOW[index]
-
-  useEffect(() => {
-    if (reduceMotion || slideCount <= 1) return
-    const id = window.setInterval(() => {
-      setIndex((current) => (current + 1) % slideCount)
-    }, SLIDE_INTERVAL_MS)
-    return () => window.clearInterval(id)
-  }, [reduceMotion, slideCount])
-
-  useEffect(() => {
-    if (slideCount <= 1) return
-    const next = HERO_SLIDESHOW[(index + 1) % slideCount]
-    const img = new window.Image()
-    img.src = photoSrc(next.src)
-  }, [index, slideCount])
-
-  if (!slide) {
-    return null
-  }
-
-  return (
-    <div
-      className={cn(
-        "relative aspect-[4/5] w-full max-w-none overflow-hidden rounded-3xl border border-white/25 bg-primary-900/40 shadow-2xl lg:max-h-[min(620px,72vh)]",
-        className
-      )}
-    >
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={slide.src}
-          className="absolute inset-0"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reduceMotion ? undefined : { opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-        >
-          <Image
-            src={photoSrc(slide.src)}
-            alt={slide.alt}
-            fill
-            placeholder="blur"
-            blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-            className="object-cover"
-            style={{ objectPosition: slide.objectPosition ?? "center 25%" }}
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            quality={95}
-            priority={index === 0}
-          />
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-primary-950/50 via-transparent to-primary-950/20" />
-
-      {/* Slide progress — subtle dots */}
-      {slideCount > 1 && !reduceMotion ? (
-        <div
-          className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 rounded-full bg-primary-950/40 px-2.5 py-1.5 backdrop-blur-sm"
-          aria-hidden
-        >
-          {HERO_SLIDESHOW.map((slide, i) => (
-            <span
-              key={slide.src}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-500",
-                i === index ? "w-5 bg-accent-400" : "w-1.5 bg-white/50"
-              )}
-            />
-          ))}
-        </div>
-      ) : null}
-
-      <div className="absolute -bottom-3 -left-3 z-10 rounded-xl border border-white/25 bg-white/15 px-4 py-2.5 text-xs text-white shadow-lg backdrop-blur-md sm:px-5 sm:py-3 sm:text-sm">
-        <p className="font-bold">NatEmis</p>
-        <p className="text-primary-100">{SCHOOL_INFO.natEmis}</p>
-      </div>
-      <div className="absolute -right-3 -top-3 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-accent-500 text-xs font-bold text-gray-900 shadow-lg sm:h-16 sm:w-16 sm:text-sm">
-        {SCHOOL_INFO.surveyYear}
-      </div>
-    </div>
-  )
-}
+import { STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
 
 export function Hero() {
   const reduceMotion = useReducedMotion()
   const textMotionTransition = reduceMotion
     ? { duration: 0 }
     : { duration: 0.8, ease: "easeOut" as const }
-  const heroImgTransition = reduceMotion
+  const heroPanelTransition = reduceMotion
     ? { duration: 0 }
     : { duration: 1, delay: 0.2, ease: "easeOut" as const }
 
@@ -163,7 +73,7 @@ export function Hero() {
             </h1>
 
             <div className="lg:hidden">
-              <HeroStudentSlideshow />
+              <HeroHighlights />
             </div>
 
             <p className="max-w-none text-lg leading-relaxed text-primary-100">
@@ -210,10 +120,10 @@ export function Hero() {
           <motion.div
             initial={{ opacity: reduceMotion ? 1 : 0, scale: reduceMotion ? 1 : 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={heroImgTransition}
+            transition={heroPanelTransition}
             className="hidden justify-center lg:flex lg:justify-end"
           >
-            <HeroStudentSlideshow />
+            <HeroHighlights className="w-full max-w-md" />
           </motion.div>
         </div>
       </div>
