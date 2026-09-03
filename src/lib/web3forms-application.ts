@@ -1,8 +1,4 @@
 import { SCHOOL_INFO } from "@/lib/constants"
-import {
-  buildFilledApplicationPdf,
-  getFilledApplicationPdfFilename,
-} from "@/lib/application-pdf"
 import { WEB3FORMS_SUBMIT_URL, getWeb3FormsAccessKey, getWeb3FormsPublicAccessKey } from "@/lib/web3forms"
 import type { ApplicationFiles, ApplicationFormValues } from "@/types/application"
 
@@ -13,47 +9,27 @@ const FILE_FIELD_MAP: Record<keyof ApplicationFiles, string> = {
   guardianIdCopy: "guardian_id_copy",
 }
 
-function countAttachedDocuments(files: ApplicationFiles): number {
-  return Object.values(files).filter(Boolean).length
-}
-
-function buildApplicationEmailSummary(
-  data: ApplicationFormValues,
-  reference: string,
-  files: ApplicationFiles
-): string {
+function buildApplicationMessage(data: ApplicationFormValues, reference: string): string {
   const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
   const guardianName = `${data.guardian1FirstName} ${data.guardian1LastName}`.trim()
-  const attachedCount = countAttachedDocuments(files)
-  const campusLabel = SCHOOL_INFO.neighbourhood || SCHOOL_INFO.city
+  const submittedAt = new Date().toLocaleString("en-ZA", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  })
 
   return [
-    "ONLINE ADMISSION APPLICATION",
-    "===========================",
+    "Online admission application received.",
     "",
-    `Campus: ${SCHOOL_INFO.name} (${campusLabel})`,
     `Reference: ${reference}`,
-    `Submitted: ${new Date().toLocaleString("en-ZA", { dateStyle: "medium", timeStyle: "short" })}`,
-    "",
-    "SUMMARY",
-    "-------",
-    `Learner: ${learnerName}`,
-    `Grade applying for: ${data.gradeApplyingFor} (${data.schoolYear} school year)`,
+    `School year: ${data.schoolYear}`,
+    `Learner: ${learnerName} (${data.gradeApplyingFor})`,
     `Primary guardian: ${guardianName}`,
-    `Guardian email: ${data.guardian1Email}`,
-    `Guardian phone: ${data.guardian1Phone}`,
+    `Contact: ${data.guardian1Email} · ${data.guardian1Phone}`,
+    `Submitted: ${submittedAt}`,
     "",
-    "ATTACHMENTS",
-    "-----------",
-    `• Completed application form (PDF) — ${getFilledApplicationPdfFilename(reference)}`,
-    attachedCount > 0
-      ? `• ${attachedCount} supporting document(s) uploaded with this submission`
-      : "• No supporting documents were uploaded with this submission",
+    "The completed application is attached as a PDF — same layout as the printable admission form.",
     "",
-    "The attached PDF matches the official printable admission form and contains the full application details.",
-    "Please open the PDF for all sections (guardian, learner, address, medical, declaration).",
-    "",
-    `Reply to the guardian at ${data.guardian1Email} or call ${data.guardian1Phone} during ${SCHOOL_INFO.officeHoursLong}.`,
+    "Supporting documents (birth certificate, school report, transfer letter, ID copy) can be brought to the school office or emailed separately with this reference.",
   ].join("\n")
 }
 
@@ -61,20 +37,15 @@ export function buildApplicationFormData(
   data: ApplicationFormValues,
   files: ApplicationFiles,
   accessKey: string,
-  reference: string
+  reference: string,
+  pdfBlob?: Blob,
+  pdfFilename?: string
 ): FormData {
   const formData = new FormData()
   const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
-  const pdfBuffer = buildFilledApplicationPdf(data, reference, files)
-  const pdfFilename = getFilledApplicationPdfFilename(reference)
 
   formData.append("access_key", accessKey)
-  const campusLabel = SCHOOL_INFO.neighbourhood || SCHOOL_INFO.city
-  formData.append(
-    "subject",
-    `Online Application — ${campusLabel} — ${reference} — ${learnerName} (${data.gradeApplyingFor})`
-  )
-  formData.append("campus", SCHOOL_INFO.name)
+  formData.append("subject", `Online Application ${reference} — ${learnerName} (${data.gradeApplyingFor})`)
   formData.append("from_name", `${SCHOOL_INFO.shortName} Website`)
   formData.append("name", `${data.guardian1FirstName} ${data.guardian1LastName}`)
   formData.append("email", data.guardian1Email)
@@ -84,14 +55,12 @@ export function buildApplicationFormData(
   formData.append("school_year", data.schoolYear)
   formData.append("learner_name", learnerName)
   formData.append("grade_applying", data.gradeApplyingFor)
-  formData.append("message", buildApplicationEmailSummary(data, reference, files))
+  formData.append("message", buildApplicationMessage(data, reference))
   formData.append("botcheck", "")
 
-  formData.append(
-    "completed_application",
-    new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" }),
-    pdfFilename
-  )
+  if (pdfBlob && pdfFilename) {
+    formData.append("application_form", pdfBlob, pdfFilename)
+  }
 
   for (const [key, file] of Object.entries(files) as [keyof ApplicationFiles, File | null][]) {
     if (file) {
@@ -152,7 +121,7 @@ export async function submitApplicationToWeb3Forms(
   files: ApplicationFiles,
   reference: string
 ): Promise<{ ok: true } | { ok: false; status?: number; detail: string }> {
-  const accessKey = getWeb3FormsAccessKey()
+  const accessKey = getWeb3FormsAccessKey() || getWeb3FormsPublicAccessKey()
   if (!accessKey) {
     return { ok: false, detail: "Application form is not configured yet." }
   }

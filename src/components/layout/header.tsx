@@ -97,7 +97,7 @@ export function Header() {
                   {BRAND.motto}
                 </p>
                 <p className="mt-1.5 hidden text-xs font-medium text-gray-500 md:block md:text-[0.8125rem]">
-                  {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}
+                  {SCHOOL_INFO.suburb}
                 </p>
               </div>
               <div className="flex min-w-0 flex-col justify-center sm:hidden">

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -35,7 +35,7 @@ import {
   applicationFormSchema,
   createApplicationReference,
 } from "@/lib/application-schema"
-import { getInquiryInbox } from "@/lib/web3forms"
+import { getInquiryInbox, isWeb3FormsConfigured } from "@/lib/web3forms"
 import type { ApplicationFormValues } from "@/types/application"
 import { cn } from "@/lib/utils"
 
@@ -90,7 +90,6 @@ function StepProgress({ current }: { current: number }) {
 export function ApplicationForm() {
   const [stepIndex, setStepIndex] = useState(0)
   const [reference, setReference] = useState<string | null>(null)
-  const [configured, setConfigured] = useState(true)
   const [status, setStatus] = useState<{
     type: "success" | "error" | null
     message: string
@@ -98,13 +97,7 @@ export function ApplicationForm() {
   }>({ type: null, message: "" })
 
   const inbox = getInquiryInbox()
-
-  useEffect(() => {
-    fetch("/api/forms/status")
-      .then((res) => res.json())
-      .then((json: { ready?: boolean }) => setConfigured(Boolean(json.ready)))
-      .catch(() => setConfigured(false))
-  }, [])
+  const configured = isWeb3FormsConfigured()
 
   const {
     register,
@@ -173,7 +166,6 @@ export function ApplicationForm() {
         else body.append(k, String(val ?? ""))
       })
       body.append("applicationReference", ref)
-      body.append("website", "")
 
       const res = await fetch("/api/application", { method: "POST", body })
       const json = (await res.json()) as { error?: string; message?: string; reference?: string }
@@ -589,12 +581,14 @@ export function ApplicationForm() {
           </label>
           <FieldError id="decl" message={errors.declarationAccurate?.message} />
           <p className="text-xs text-gray-500">
-            Submitting sends a completed PDF application (matching our official printable form) to{" "}
+            Submitting sends your application securely to{" "}
             <a href={`mailto:${inbox}`} className="font-medium text-primary-700 underline">
               {inbox}
-            </a>
-            , along with any documents you upload here. You will receive a reference number on
-            screen.
+            </a>{" "}
+            as a professional PDF (same layout as the downloadable form). You will receive a
+            reference number on screen. Supporting documents (birth certificate, school report,
+            transfer letter) can be brought to the school office or emailed separately with your
+            reference.
           </p>
         </div>
       )}
@@ -619,7 +613,7 @@ export function ApplicationForm() {
           <Button
             type="submit"
             size="lg"
-            disabled={isSubmitting || !configured}
+            disabled={isSubmitting}
             className="gap-2 bg-primary-600 hover:bg-primary-700"
           >
             {isSubmitting ? (

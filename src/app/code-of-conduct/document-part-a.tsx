@@ -5,7 +5,7 @@ export function CodeOfConductPartA() {
         <h2 className="font-display text-xl font-bold text-primary-950 md:text-2xl">Introduction</h2>
         <p className="mt-3 text-sm leading-relaxed text-gray-700 md:text-[15px] md:leading-relaxed">
           This code of conduct aims at maintaining discipline and a purposeful school environment in
-          Asamath’s Institute of Learning, Thembisa, Midrand, South Africa. It is aimed at ensuring that quality learning
+          Asamath’s Institute of Learning, Thembisa, South Africa. It is aimed at ensuring that quality learning
           and teaching processes are inculcated in an environment that enhances a culture of effective and
           creative learning and teaching as espoused in the mission statement of the school.
         </p>

@@ -1,13 +1,15 @@
 /** Printed address and map search string — keep in sync everywhere (footer, contact, fees, maps). */
 export const SCHOOL_MAP_ADDRESS =
-  "601 Rabat and Conakry Street, Thembisa, Midrand" as const
+  "601 Rabat and Conakry Street, Thembisa" as const
 
 export const SCHOOL_INFO = {
-  name: "Asamaths Institute Of Learning – Midrand",
+  name: "Asamaths Institute Of Learning – Thembisa",
   shortName: "Asamaths Institute",
   address: SCHOOL_MAP_ADDRESS,
   phone: "+27 11 925 8074",
   rawPhone: "+27119258074",
+  phoneAlt: "+27 12 725 8044",
+  rawPhoneAlt: "+27127258044",
   whatsapp: "+27 61 532 5019",
   /** Digits only — for https://wa.me/ links */
   rawWhatsApp: "27615325019",
@@ -21,7 +23,7 @@ export const SCHOOL_INFO = {
   sector: "Independent",
   specialisation: "Ordinary",
   province: "Gauteng",
-  city: "Midrand",
+  city: "Thembisa",
   suburb: "Thembisa",
   neighbourhood: "Thembisa",
   totalLearners: 759,
@@ -59,7 +61,10 @@ export const NAV_HOME: NavLinkItem = { label: "Home", href: "/" }
 export const NAV_LEARN: NavLinkItem[] = [
   { label: "About", href: "/about" },
   { label: "Subjects", href: "/subjects" },
+  { label: "Sports", href: "/sports" },
+  { label: "Culture", href: "/culture" },
   { label: "Gallery", href: "/gallery" },
+  { label: "Uniform Catalog", href: "/uniform-catalog" },
 ]
 
 export const NAV_JOIN: NavLinkItem[] = [

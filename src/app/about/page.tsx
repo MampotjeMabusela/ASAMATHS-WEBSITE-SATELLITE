@@ -14,7 +14,7 @@ import { GoogleMap } from "@/components/shared/google-map"
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: `Learn about ${SCHOOL_INFO.name}, an independent combined school in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}. Meet our principal, ${SCHOOL_INFO.principal}, and discover our mission.`,
+  description: `Learn about ${SCHOOL_INFO.name}, an independent combined school in ${SCHOOL_INFO.suburb}. Meet our principal, ${SCHOOL_INFO.principal}, and discover our mission.`,
 }
 
 const infoCards = [
@@ -46,7 +46,7 @@ export default function AboutPage() {
               src={CAMPUS_PHOTOS.building}
               alt={`Brick campus buildings and courtyard at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
               headline="A campus built for learning, belonging, and growth"
-              subline={`Independent combined education in the heart of ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}.`}
+              subline={`Independent combined education in the heart of ${SCHOOL_INFO.suburb}.`}
               badge="Our campus"
               variant="hero"
               objectPosition="center 45%"
@@ -89,8 +89,8 @@ export default function AboutPage() {
                 <div className="prose prose-gray max-w-none space-y-4 text-gray-600">
                   <p>
                     <strong>{SCHOOL_INFO.name}</strong>, situated at {SCHOOL_INFO.address}, operates as
-                    an independent combined school within the {SCHOOL_INFO.neighbourhood},{" "}
-                    {SCHOOL_INFO.city} urban suburb of {SCHOOL_INFO.province} Province, South Africa.
+                    an independent combined school in {SCHOOL_INFO.suburb},{" "}
+                    {SCHOOL_INFO.province} Province, South Africa.
                   </p>
                   <p>
                     According to a survey conducted in {SCHOOL_INFO.surveyYear}, the school had a total

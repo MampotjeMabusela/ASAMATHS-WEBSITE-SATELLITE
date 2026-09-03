@@ -1,25 +1,27 @@
 /**
- * Weekly home-page highlights — edit this file to publish announcements.
+ * Weekly Highlights — update this file each week with school announcements.
  *
- * Update `weekLabel` and `items` each week (sports, culture, academics, general).
- * Set `published: false` on an item to hide it without deleting the entry.
+ * Categories: sports | culture | academic | general
+ * Set `weekLabel` to the current week (e.g. "Week of 2–6 September 2026").
+ * Replace `items` with that week's notices; newest or most important items first.
  */
 
 export type HighlightCategory = "sports" | "culture" | "academic" | "general"
 
-export type HighlightItem = {
+export type Highlight = {
   id: string
   category: HighlightCategory
   title: string
   description: string
-  /** Optional — e.g. "Mon 8 Sep" or "This Friday" */
+  /** Optional — e.g. "Wed 4 Sep" or "This Friday, 14:00" */
   when?: string
-  published?: boolean
 }
 
-export type WeeklyHighlights = {
+export type HighlightsWeek = {
   weekLabel: string
-  items: HighlightItem[]
+  /** ISO date when this list was last updated (YYYY-MM-DD) */
+  updatedAt: string
+  items: Highlight[]
 }
 
 export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
@@ -29,15 +31,17 @@ export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
   general: "General",
 }
 
-export const WEEKLY_HIGHLIGHTS: WeeklyHighlights = {
-  weekLabel: "Week of 2 – 6 September 2026",
+/** Current week's highlights — edit weekly */
+export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
+  weekLabel: "Week of 2–6 September 2026",
+  updatedAt: "2026-09-02",
   items: [
     {
       id: "term3-assessments",
       category: "academic",
       title: "Term 3 assessments underway",
       description:
-        "Grade 10–12 learners begin formal assessments this week. Study timetables were shared in class — please check bags and WhatsApp groups.",
+        "Formal assessments continue this week. Study timetables were shared in class — please check bags and WhatsApp groups.",
       when: "Mon – Fri",
     },
     {
@@ -46,7 +50,7 @@ export const WEEKLY_HIGHLIGHTS: WeeklyHighlights = {
       title: "Inter-house soccer fixtures",
       description:
         "House teams play after school on the main field. Spectators welcome — learners must stay in designated areas.",
-      when: "Wed 3 Sep, 14:30",
+      when: "Wed 3 Sep · 14:30",
     },
     {
       id: "heritage-prep",
@@ -64,8 +68,4 @@ export const WEEKLY_HIGHLIGHTS: WeeklyHighlights = {
         "Families interested in joining Asamaths next year may book a campus visit or start an online application on our Admissions page.",
     },
   ],
-}
-
-export function getPublishedHighlights(highlights: WeeklyHighlights = WEEKLY_HIGHLIGHTS): HighlightItem[] {
-  return highlights.items.filter((item) => item.published !== false)
 }

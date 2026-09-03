@@ -12,7 +12,7 @@ type GlanceItem = {
 const defaultItems: GlanceItem[] = [
   { icon: Building2, label: "Phase", value: SCHOOL_INFO.phase },
   { icon: Clock, label: "Office hours", value: SCHOOL_INFO.officeHours },
-  { icon: MapPin, label: "Location", value: `${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}` },
+  { icon: MapPin, label: "Location", value: SCHOOL_INFO.suburb },
   { icon: Hash, label: "NatEmis", value: SCHOOL_INFO.natEmis },
 ]
 

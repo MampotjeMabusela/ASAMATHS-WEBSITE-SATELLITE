@@ -242,7 +242,7 @@ export default function FeesPage() {
                     Visit or call the office for payment plans and proof of deposit.
                   </p>
                   <p className="mt-2 text-sm text-primary-100/95">
-                    {SCHOOL_INFO.shortName} · {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}
+                    {SCHOOL_INFO.shortName} · {SCHOOL_INFO.suburb}
                   </p>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import { CodeOfConductDocument } from "./document"
 
 export const metadata: Metadata = {
   title: "Code of Conduct",
-  description: `Code of conduct for learners and parents at ${SCHOOL_INFO.name}, ${SCHOOL_INFO.city}, South Africa.`,
+  description: `Code of conduct for learners and parents at ${SCHOOL_INFO.name}, ${SCHOOL_INFO.suburb}, South Africa.`,
 }
 
 export default function CodeOfConductPage() {
@@ -19,7 +19,7 @@ export default function CodeOfConductPage() {
         <PageIntro
           eyebrow="Policy"
           title="Code of Conduct"
-          subtitle={`Asamath's Institute of Learning · ${SCHOOL_INFO.city}, South Africa`}
+          subtitle={`Asamath's Institute of Learning · ${SCHOOL_INFO.suburb}, South Africa`}
           breadcrumbs={[{ label: "Code of Conduct" }]}
           className="mb-10"
         />

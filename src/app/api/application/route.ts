@@ -1,16 +1,10 @@
+export const runtime = "nodejs"
+
 import { NextResponse } from "next/server"
-import { applicationFormSchema } from "@/lib/application-schema"
+import { applicationFormSchema, validateApplicationFiles } from "@/lib/application-schema"
 import type { ApplicationDocumentKey } from "@/lib/application-constants"
-import {
-  HONEYPOT_FAKE_SUCCESS,
-  isHoneypotTripped,
-  readHoneypotValue,
-} from "@/lib/security/api-guard"
-import { containsSuspiciousPayload } from "@/lib/security/sanitize"
-import { isDatabaseConfigured } from "@/lib/db/client"
-import { markApplicationEmailSent, saveApplication } from "@/lib/db/applications"
 import { getInquiryInbox, isWeb3FormsConfigured } from "@/lib/web3forms"
-import { submitApplicationToWeb3Forms } from "@/lib/web3forms-application"
+import { submitApplicationWithPdf } from "@/lib/submit-application-email"
 import { createApplicationReference } from "@/lib/application-schema"
 import { SCHOOL_INFO } from "@/lib/constants"
 import type { ApplicationFiles, ApplicationFormValues } from "@/types/application"
@@ -87,23 +81,9 @@ function parseFormBody(form: FormData): { data: ApplicationFormValues; files: Ap
   return { data, files }
 }
 
-function hasSuspiciousApplicationFields(data: ApplicationFormValues): boolean {
-  const textFields = [
-    data.additionalNotes,
-    data.allergies,
-    data.medicalConditions,
-    data.currentSchoolName,
-    data.physicalAddress,
-  ]
-  return textFields.some((field) => field && containsSuspiciousPayload(field))
-}
-
 export async function POST(request: Request) {
   try {
-    const dbReady = isDatabaseConfigured()
-    const emailReady = isWeb3FormsConfigured()
-
-    if (!dbReady && !emailReady) {
+    if (!isWeb3FormsConfigured()) {
       return NextResponse.json(
         {
           error: `Application form is not configured yet. Please email ${SCHOOL_INFO.email} directly.`,
@@ -114,11 +94,15 @@ export async function POST(request: Request) {
     }
 
     const form = await request.formData()
-    if (isHoneypotTripped(readHoneypotValue(form))) {
-      return NextResponse.json(HONEYPOT_FAKE_SUCCESS)
+    const { data, files } = parseFormBody(form)
+    const fileValidation = validateApplicationFiles(files)
+    if (Object.keys(fileValidation).length > 0) {
+      return NextResponse.json(
+        { error: "Invalid or missing documents", details: fileValidation },
+        { status: 400 }
+      )
     }
 
-    const { data, files } = parseFormBody(form)
     const parsed = applicationFormSchema.safeParse(data)
     if (!parsed.success) {
       return NextResponse.json(
@@ -127,45 +111,26 @@ export async function POST(request: Request) {
       )
     }
 
-    if (hasSuspiciousApplicationFields(parsed.data)) {
-      return NextResponse.json({ error: "Invalid characters in application." }, { status: 400 })
-    }
-
     const reference =
       String(form.get("applicationReference") ?? "").trim() || createApplicationReference()
     const inbox = getInquiryInbox()
+    const result = await submitApplicationWithPdf(parsed.data, files, reference)
 
-    let stored = false
-    if (dbReady) {
-      const saved = await saveApplication(reference, parsed.data)
-      if (!saved.ok) {
-        return NextResponse.json({ error: saved.detail }, { status: saved.status })
-      }
-      stored = true
-    }
-
-    if (emailReady) {
-      const result = await submitApplicationToWeb3Forms(parsed.data, files, reference)
-      if (result.ok) {
-        if (stored) await markApplicationEmailSent(reference)
-      } else if (!stored) {
-        return NextResponse.json(
-          {
-            error: `${result.detail} You can also email ${inbox} with reference ${reference}.`,
-            fallbackEmail: inbox,
-            reference,
-          },
-          { status: result.status && result.status >= 400 ? result.status : 502 }
-        )
-      }
+    if (!result.ok) {
+      return NextResponse.json(
+        {
+          error: `${result.detail} You can also email ${inbox} with reference ${reference}.`,
+          fallbackEmail: inbox,
+          reference,
+        },
+        { status: result.status && result.status >= 400 ? result.status : 502 }
+      )
     }
 
     return NextResponse.json({
       success: true,
       reference,
-      message: stored
-        ? `Your application was saved securely. Reference: ${reference}. Our admissions team will contact you during school hours.`
-        : `Your application was sent to ${inbox}. Reference: ${reference}`,
+      message: `Your application was sent to ${inbox}. Reference: ${reference}`,
     })
   } catch (err) {
     console.error("Application API error:", err)

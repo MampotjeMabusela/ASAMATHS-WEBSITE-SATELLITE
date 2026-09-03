@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { HeroHighlights } from "@/components/sections/hero-highlights"
+import { HighlightsBox } from "@/components/sections/highlights-box"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
 import { STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
@@ -73,12 +73,12 @@ export function Hero() {
             </h1>
 
             <div className="lg:hidden">
-              <HeroHighlights />
+              <HighlightsBox />
             </div>
 
             <p className="max-w-none text-lg leading-relaxed text-primary-100">
               Welcome to <strong className="text-white">{SCHOOL_INFO.name}</strong>, an independent
-              combined school in {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}. With {SCHOOL_INFO.totalLearners}{" "}
+              combined school in {SCHOOL_INFO.suburb}. With {SCHOOL_INFO.totalLearners}{" "}
               learners and
               a dedicated team of {SCHOOL_INFO.totalEducators} educators, we provide quality education
               in a disciplined, nurturing environment.
@@ -123,7 +123,7 @@ export function Hero() {
             transition={heroPanelTransition}
             className="hidden justify-center lg:flex lg:justify-end"
           >
-            <HeroHighlights className="w-full max-w-md" />
+            <HighlightsBox className="w-full max-w-md xl:max-w-lg" />
           </motion.div>
         </div>
       </div>
