@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { HighlightsBox } from "@/components/sections/highlights-box"
 import { SCHOOL_INFO } from "@/lib/constants"
+import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
 import { STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
 
@@ -72,9 +73,11 @@ export function Hero() {
               Excellence
             </h1>
 
-            <div className="lg:hidden">
-              <HighlightsBox />
-            </div>
+            {TEMPORARY_VISIBILITY.homepageHighlights ? (
+              <div className="lg:hidden">
+                <HighlightsBox />
+              </div>
+            ) : null}
 
             <p className="max-w-none text-lg leading-relaxed text-primary-100">
               Welcome to <strong className="text-white">{SCHOOL_INFO.name}</strong>, an independent
@@ -117,14 +120,36 @@ export function Hero() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: reduceMotion ? 1 : 0, scale: reduceMotion ? 1 : 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={heroPanelTransition}
-            className="hidden justify-center lg:flex lg:justify-end"
-          >
-            <HighlightsBox className="w-full max-w-md xl:max-w-lg" />
-          </motion.div>
+          {TEMPORARY_VISIBILITY.homepageHighlights ? (
+            <motion.div
+              initial={{ opacity: reduceMotion ? 1 : 0, scale: reduceMotion ? 1 : 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={heroPanelTransition}
+              className="hidden justify-center lg:flex lg:justify-end"
+            >
+              <HighlightsBox className="w-full max-w-md xl:max-w-lg" />
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: reduceMotion ? 1 : 0, scale: reduceMotion ? 1 : 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={heroPanelTransition}
+              className="hidden lg:block"
+            >
+              <div className="relative aspect-[4/5] w-full max-w-md overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/20 xl:max-w-lg">
+                <Image
+                  src={photoSrc(STUDENT_PHOTOS.playground)}
+                  alt={`Learners at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
+                  fill
+                  placeholder="blur"
+                  blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
+                  className="object-cover object-center"
+                  sizes="(max-width: 1024px) 100vw, 480px"
+                  priority
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 

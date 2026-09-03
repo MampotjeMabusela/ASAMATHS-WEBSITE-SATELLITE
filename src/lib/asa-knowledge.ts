@@ -7,6 +7,7 @@ import {
   hasSisterSchoolLink,
   SISTER_SCHOOL_LINK,
 } from "@/lib/constants"
+import { isAsaKnowledgeEntryVisible } from "@/lib/feature-flags"
 import type { AsaKnowledgeEntry } from "@/types/asa"
 
 const { shortName, name, officeHoursLong, email, phone, whatsapp } = SCHOOL_INFO
@@ -416,5 +417,5 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
     })
   }
 
-  return entries
+  return entries.filter((entry) => isAsaKnowledgeEntryVisible(entry.id))
 }

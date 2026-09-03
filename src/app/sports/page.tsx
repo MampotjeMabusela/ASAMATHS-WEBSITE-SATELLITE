@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Calendar, Info, Trophy } from "lucide-react"
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
+import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import {
   SPORTS_INTRO,
   SPORTS_PROGRAMS,
@@ -25,6 +27,8 @@ export const metadata: Metadata = {
 }
 
 export default function SportsPage() {
+  if (!TEMPORARY_VISIBILITY.sportsPage) redirect("/")
+
   return (
     <>
       <section id="asa-sports" className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-16 pt-32">

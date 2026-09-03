@@ -1,4 +1,6 @@
 /** Printed address and map search string — keep in sync everywhere (footer, contact, fees, maps). */
+import { isNavLinkVisible } from "@/lib/feature-flags"
+
 export const SCHOOL_MAP_ADDRESS =
   "601 Rabat and Conakry Street, Thembisa" as const
 
@@ -58,7 +60,7 @@ export type NavLinkItem = {
 
 export const NAV_HOME: NavLinkItem = { label: "Home", href: "/" }
 
-export const NAV_LEARN: NavLinkItem[] = [
+const NAV_LEARN_ALL: NavLinkItem[] = [
   { label: "About", href: "/about" },
   { label: "Subjects", href: "/subjects" },
   { label: "Sports", href: "/sports" },
@@ -66,6 +68,9 @@ export const NAV_LEARN: NavLinkItem[] = [
   { label: "Gallery", href: "/gallery" },
   { label: "Uniform Catalog", href: "/uniform-catalog" },
 ]
+
+/** Respects temporary visibility flags in `feature-flags.ts`. */
+export const NAV_LEARN: NavLinkItem[] = NAV_LEARN_ALL.filter((link) => isNavLinkVisible(link.href))
 
 export const NAV_JOIN: NavLinkItem[] = [
   { label: "Admissions", href: "/admissions", highlight: true },

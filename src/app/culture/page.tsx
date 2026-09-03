@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Calendar, Info, Music2 } from "lucide-react"
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
+import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import {
   CULTURE_ACTIVITIES,
   CULTURE_INTRO,
@@ -25,6 +27,8 @@ export const metadata: Metadata = {
 }
 
 export default function CulturePage() {
+  if (!TEMPORARY_VISIBILITY.culturePage) redirect("/")
+
   return (
     <>
       <section id="asa-culture" className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-16 pt-32">

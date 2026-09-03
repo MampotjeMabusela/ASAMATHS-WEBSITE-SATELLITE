@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { redirect } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Info, Ruler, Shirt, ShoppingBag } from "lucide-react"
@@ -10,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
+import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import {
   UNIFORM_CATALOG_IMAGE,
   UNIFORM_ITEMS,
@@ -86,6 +88,8 @@ function UniformItemCard({ item }: { item: UniformItem }) {
 }
 
 export default function UniformCatalogPage() {
+  if (!TEMPORARY_VISIBILITY.uniformCatalogPage) redirect("/")
+
   return (
     <>
       <section
