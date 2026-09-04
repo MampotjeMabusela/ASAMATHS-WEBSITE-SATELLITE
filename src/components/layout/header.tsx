@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-  const [headerAnchorPx, setHeaderAnchorPx] = useState(112)
+  const [headerAnchorPx, setHeaderAnchorPx] = useState(148)
   const pathname = usePathname()
   const headerChromeRef = useRef<HTMLDivElement>(null)
 
@@ -82,21 +82,21 @@ export function Header() {
         </div>
 
         <div className="container-custom border-b border-gray-100/90">
-          {/* Main row */}
-          <div className="flex h-16 items-center gap-2 md:h-20 md:gap-4">
+          {/* Brand row — logo and CTAs never share space with nav links */}
+          <div className="flex min-h-16 items-center justify-between gap-3 py-2 md:min-h-[4.5rem] md:py-2.5">
             <Link
               href="/"
-              className="group flex min-w-0 flex-1 items-center gap-2 rounded-xl py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:gap-3 md:flex-none md:gap-4"
+              className="group relative z-10 flex min-w-0 max-w-[calc(100%-3.5rem)] shrink-0 items-center gap-2 rounded-xl py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:max-w-none sm:gap-3 md:gap-4"
             >
               <SiteLogo variant="header" isScrolled={isScrolled} />
               <div className="hidden min-w-0 flex-col justify-center border-l border-gray-200/80 pl-3 sm:flex sm:h-[3.9rem] sm:pl-4 md:h-[4.375rem] md:pl-5">
-                <p className="font-display text-[1.02rem] font-semibold leading-snug tracking-tight text-primary-950 md:text-lg">
+                <p className="whitespace-nowrap font-display text-[1.02rem] font-semibold leading-snug tracking-tight text-primary-950 md:text-lg">
                   {SCHOOL_INFO.shortName}
                 </p>
-                <p className="mt-0.5 text-[0.625rem] font-semibold uppercase leading-none tracking-[0.18em] text-primary-600/90 md:text-[0.6875rem]">
+                <p className="mt-0.5 whitespace-nowrap text-[0.625rem] font-semibold uppercase leading-none tracking-[0.18em] text-primary-600/90 md:text-[0.6875rem]">
                   {BRAND.motto}
                 </p>
-                <p className="mt-1.5 hidden text-xs font-medium text-gray-500 md:block md:text-[0.8125rem]">
+                <p className="mt-1.5 hidden whitespace-nowrap text-xs font-medium text-gray-500 md:block md:text-[0.8125rem]">
                   {SCHOOL_INFO.suburb}
                 </p>
               </div>
@@ -110,32 +110,8 @@ export function Header() {
               </div>
             </Link>
 
-            {/* Desktop nav — Learn | Join | Conduct */}
-            <nav
-              className="hidden flex-1 items-center justify-end gap-1 md:flex lg:gap-1.5"
-              aria-label="Main navigation"
-            >
-              <NavLink href={NAV_HOME.href} label={NAV_HOME.label} pathname={pathname} />
-              <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
-              {NAV_LEARN.map((link) => (
-                <NavLink key={link.href} href={link.href} label={link.label} pathname={pathname} />
-              ))}
-              <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
-              {NAV_JOIN.map((link) => (
-                <NavLink
-                  key={link.href}
-                  href={link.href}
-                  label={link.label}
-                  pathname={pathname}
-                  highlight={link.highlight}
-                />
-              ))}
-              <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
-              <NavLink href={NAV_CONDUCT.href} label={NAV_CONDUCT.label} pathname={pathname} />
-            </nav>
-
             {/* CTA + Mobile toggle */}
-            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="relative z-10 flex shrink-0 items-center gap-2 sm:gap-3">
               {hasSisterSchoolLink() ? (
                 <a
                   href={SISTER_SCHOOL_LINK.url}
@@ -177,6 +153,30 @@ export function Header() {
               </button>
             </div>
           </div>
+
+          {/* Desktop nav — dedicated row so links never overlap the crest */}
+          <nav
+            className="hidden border-t border-gray-100/80 md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-0.5 md:gap-y-1 md:px-1 md:py-2.5 lg:justify-end lg:gap-1 lg:px-0"
+            aria-label="Main navigation"
+          >
+            <NavLink href={NAV_HOME.href} label={NAV_HOME.label} pathname={pathname} />
+            <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
+            {NAV_LEARN.map((link) => (
+              <NavLink key={link.href} href={link.href} label={link.label} pathname={pathname} />
+            ))}
+            <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
+            {NAV_JOIN.map((link) => (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                pathname={pathname}
+                highlight={link.highlight}
+              />
+            ))}
+            <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
+            <NavLink href={NAV_CONDUCT.href} label={NAV_CONDUCT.label} pathname={pathname} />
+          </nav>
         </div>
       </div>
 
