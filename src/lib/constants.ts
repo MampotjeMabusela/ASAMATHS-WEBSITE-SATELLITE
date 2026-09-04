@@ -65,6 +65,7 @@ const NAV_LEARN_ALL: NavLinkItem[] = [
   { label: "Subjects", href: "/subjects" },
   { label: "Sports", href: "/sports" },
   { label: "Culture", href: "/culture" },
+  { label: "Calendar", href: "/calendar" },
   { label: "Gallery", href: "/gallery" },
   { label: "Uniform Catalog", href: "/uniform-catalog" },
 ]

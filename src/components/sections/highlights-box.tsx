@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { BookOpen, CalendarDays, Megaphone, Music2, Sparkles, Trophy } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -109,7 +110,13 @@ export function HighlightsBox({ className }: { className?: string }) {
           </p>
         </div>
         <p className="mt-2 text-xs text-primary-200/80">
-          Sports, culture, academic updates &amp; school notices for this week.
+          Sports, culture, academic updates &amp; school notices for this week.{" "}
+          <Link
+            href="/calendar#asa-calendar"
+            className="font-medium text-accent-300 underline decoration-accent-400/60 underline-offset-2 hover:text-accent-200"
+          >
+            View calendar
+          </Link>
         </p>
       </div>
 

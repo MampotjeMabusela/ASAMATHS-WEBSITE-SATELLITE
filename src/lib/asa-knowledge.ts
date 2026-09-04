@@ -304,6 +304,28 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
       linkLabel: "Culture page",
     },
     {
+      id: "calendar",
+      priority: 1,
+      keywords: [
+        "calendar",
+        "calender",
+        "schedule",
+        "dates",
+        "events",
+        "highlights",
+        "what's on",
+        "whats on",
+        "this week",
+        "fixtures",
+        "timetable",
+        "school dates",
+      ],
+      buildAnswer: () =>
+        `Our **Calendar** shows the same weekly notices as the homepage **Highlights** box — sports fixtures, cultural events, academic dates, and general school announcements.`,
+      navigateTo: "/calendar#asa-calendar",
+      linkLabel: "School calendar",
+    },
+    {
       id: "uniform",
       priority: 1,
       keywords: [

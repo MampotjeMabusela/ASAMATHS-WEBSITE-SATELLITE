@@ -15,6 +15,12 @@ export type Highlight = {
   description: string
   /** Optional — e.g. "Wed 4 Sep" or "This Friday, 14:00" */
   when?: string
+  /** ISO start date (YYYY-MM-DD) — used by the Calendar page */
+  startDate?: string
+  /** ISO end date for multi-day highlights */
+  endDate?: string
+  /** 24-hour time HH:mm */
+  time?: string
 }
 
 export type HighlightsWeek = {
@@ -46,6 +52,8 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       description:
         "Formal assessments continue this week. Study timetables were shared in class — please check bags and WhatsApp groups.",
       when: "Mon 31 Aug – Fri 4 Sep",
+      startDate: "2026-08-31",
+      endDate: "2026-09-04",
     },
     {
       id: "soccer-fixtures",
@@ -54,6 +62,8 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       description:
         "House teams play after school on the main field. Spectators welcome — learners must stay in designated areas.",
       when: "Wed 2 Sep · 14:30",
+      startDate: "2026-09-02",
+      time: "14:30",
     },
     {
       id: "heritage-prep",
@@ -62,6 +72,7 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       description:
         "Cultural groups meet during lunch to prepare performances for our Heritage Day celebration later this month.",
       when: "Fri 4 Sep",
+      startDate: "2026-09-04",
     },
     {
       id: "admissions-open",
@@ -69,6 +80,8 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       title: "2027 admissions enquiries open",
       description:
         "Families interested in joining Asamaths next year may book a campus visit or start an online application on our Admissions page.",
+      when: "From Fri 4 Sep",
+      startDate: "2026-09-04",
     },
   ],
 }
