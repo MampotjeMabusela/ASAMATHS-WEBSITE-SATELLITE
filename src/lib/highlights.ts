@@ -35,9 +35,9 @@ export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
 
 /** Current week's highlights — edit weekly */
 export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
-  weekLabel: "Week of 2–6 September 2026",
-  updatedAt: "2026-09-02",
-  updatedLabel: "2 Sep 2026",
+  weekLabel: "Week of 31 August – 4 September 2026",
+  updatedAt: "2026-09-04",
+  updatedLabel: "4 Sep 2026",
   items: [
     {
       id: "term3-assessments",
@@ -45,7 +45,7 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       title: "Term 3 assessments underway",
       description:
         "Formal assessments continue this week. Study timetables were shared in class — please check bags and WhatsApp groups.",
-      when: "Mon – Fri",
+      when: "Mon 31 Aug – Fri 4 Sep",
     },
     {
       id: "soccer-fixtures",
@@ -53,7 +53,7 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       title: "Inter-house soccer fixtures",
       description:
         "House teams play after school on the main field. Spectators welcome — learners must stay in designated areas.",
-      when: "Wed 3 Sep · 14:30",
+      when: "Wed 2 Sep · 14:30",
     },
     {
       id: "heritage-prep",
@@ -61,7 +61,7 @@ export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
       title: "Heritage Day programme planning",
       description:
         "Cultural groups meet during lunch to prepare performances for our Heritage Day celebration later this month.",
-      when: "Thu 4 Sep",
+      when: "Fri 4 Sep",
     },
     {
       id: "admissions-open",
