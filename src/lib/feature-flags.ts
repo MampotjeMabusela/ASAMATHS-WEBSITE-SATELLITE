@@ -6,6 +6,7 @@ export const TEMPORARY_VISIBILITY = {
   sportsPage: true,
   culturePage: true,
   uniformCatalogPage: true,
+  uniformCatalogImages: false,
   calendarPage: true,
 } as const
 

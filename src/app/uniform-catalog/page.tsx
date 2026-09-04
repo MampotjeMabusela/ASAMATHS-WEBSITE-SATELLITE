@@ -30,7 +30,7 @@ function PriceListRow({ item }: { item: UniformPriceItem }) {
       <div className="flex items-start justify-between gap-4 px-4 py-3.5 sm:px-6 sm:py-4">
         <div className="min-w-0 flex-1 space-y-3">
           <span className="font-medium text-gray-900">{item.name}</span>
-          {item.images?.length ? (
+          {item.images?.length && TEMPORARY_VISIBILITY.uniformCatalogImages ? (
             <UniformItemImages images={item.images} itemName={item.name} />
           ) : null}
         </div>
