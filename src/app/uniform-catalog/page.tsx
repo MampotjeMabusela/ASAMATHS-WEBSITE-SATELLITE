@@ -1,88 +1,69 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Info, Ruler, Shirt, ShoppingBag } from "lucide-react"
+import { ArrowRight, GraduationCap, Info, ShoppingBag } from "lucide-react"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
 import { PageBanner } from "@/components/shared/page-banner"
 import { CTABanner } from "@/components/sections/cta-banner"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import {
-  UNIFORM_CATALOG_IMAGE,
-  UNIFORM_ITEMS,
   UNIFORM_POLICY_NOTES,
-  type UniformItem,
+  UNIFORM_PRICE_LISTS,
+  type UniformPriceItem,
+  type UniformPriceList,
 } from "@/lib/uniform-catalog"
+import { UniformItemImages } from "@/components/uniform/uniform-item-images"
 import { CAMPUS_PHOTOS } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Uniform Catalog",
-  description: `Official school uniform catalog for ${SCHOOL_INFO.shortName} — items, sizes, and prices for all learners.`,
+  description: `Official school uniform price list for ${SCHOOL_INFO.shortName} — items and prices by grade band.`,
 }
 
-const ALL_LEARNERS_LABEL = "All learners"
-
-function SizeChips({ sizes }: { sizes: string[] }) {
+function PriceListRow({ item }: { item: UniformPriceItem }) {
   return (
-    <div className="flex flex-wrap gap-1.5">
-      {sizes.map((size) => (
-        <span
-          key={size}
-          className="inline-flex min-w-[2rem] items-center justify-center rounded-md border border-primary-100 bg-primary-50/80 px-2 py-0.5 text-xs font-medium text-primary-800"
-        >
-          {size}
+    <li className="border-b border-gray-100 last:border-b-0">
+      <div className="flex items-start justify-between gap-4 px-4 py-3.5 sm:px-6 sm:py-4">
+        <div className="min-w-0 flex-1 space-y-3">
+          <span className="font-medium text-gray-900">{item.name}</span>
+          {item.images?.length ? (
+            <UniformItemImages images={item.images} itemName={item.name} />
+          ) : null}
+        </div>
+        <span className="shrink-0 pt-0.5 font-display text-base font-bold text-primary-800 sm:text-lg">
+          {item.price}
         </span>
-      ))}
-    </div>
+      </div>
+    </li>
   )
 }
 
-function UniformItemCard({ item }: { item: UniformItem }) {
+function UniformPriceListSection({ list }: { list: UniformPriceList }) {
   return (
     <Card className="overflow-hidden border-gray-200 shadow-sm">
-      <div className="grid md:grid-cols-[minmax(0,280px)_1fr]">
-        <div className="relative flex min-h-[280px] items-center justify-center bg-gradient-to-b from-white to-gray-50 p-6 md:min-h-[320px]">
-          <Image
-            src={item.imageSrc}
-            alt={item.imageAlt}
-            width={480}
-            height={640}
-            className="h-auto max-h-[300px] w-auto max-w-full object-contain drop-shadow-md md:max-h-[340px]"
-            sizes="(max-width: 768px) 80vw, 280px"
-            quality={95}
-          />
+      <CardHeader className="border-b border-primary-100 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-700 pb-4 text-center text-white">
+        <CardTitle className="font-display text-xl uppercase tracking-wide sm:text-2xl">{list.title}</CardTitle>
+        <p className="mt-1 font-display text-lg font-bold text-accent-300 sm:text-xl">{list.subtitle}</p>
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-sm font-medium text-primary-100">
+          <GraduationCap className="h-4 w-4 shrink-0" aria-hidden />
+          {list.grades}
+        </p>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 sm:px-6">
+          <span>Item</span>
+          <span>Price</span>
         </div>
-        <div className="flex flex-col border-t border-gray-100 md:border-l md:border-t-0">
-          <CardHeader className="border-b border-gray-100 bg-gray-50/80 pb-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <CardTitle className="font-display text-xl">{item.name}</CardTitle>
-                <CardDescription className="mt-2 max-w-none text-sm leading-relaxed text-gray-600">
-                  {item.description}
-                </CardDescription>
-              </div>
-              <Badge variant="accent" className="shrink-0 px-3 py-1 text-base font-bold">
-                {item.price}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="flex flex-1 flex-col justify-center space-y-3 py-5">
-            <div>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                <Ruler className="h-3.5 w-3.5" aria-hidden />
-                Available sizes
-              </p>
-              <SizeChips sizes={item.sizes} />
-            </div>
-            {item.notes ? <p className="text-xs text-gray-500">{item.notes}</p> : null}
-          </CardContent>
-        </div>
-      </div>
+        <ul role="list">
+          {list.items.map((item) => (
+            <PriceListRow key={item.id} item={item} />
+          ))}
+        </ul>
+      </CardContent>
     </Card>
   )
 }
@@ -101,7 +82,7 @@ export default function UniformCatalogPage() {
             <PageIntro
               eyebrow="Dress code"
               title="Uniform Catalog"
-              subtitle="Official school uniform items with photos, sizes, and guide prices for Asamaths learners"
+              subtitle="Official uniform price lists by grade band for Asamaths learners"
               breadcrumbs={[{ label: "Uniform Catalog" }]}
             />
           </FadeIn>
@@ -149,41 +130,13 @@ export default function UniformCatalogPage() {
             </Card>
           </FadeIn>
 
-          <FadeIn delay={0.1}>
-            <div className="space-y-5">
-              <div className="flex items-center gap-2">
-                <Shirt className="h-5 w-5 text-primary-600" aria-hidden />
-                <h2 className="font-display text-2xl font-bold text-gray-900">{ALL_LEARNERS_LABEL}</h2>
-              </div>
-              <div className="grid gap-6">
-                {UNIFORM_ITEMS.map((item) => (
-                  <UniformItemCard key={item.id} item={item} />
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.24}>
-            <div className="mt-12 space-y-3">
-              <h2 className="font-display text-xl font-bold text-gray-900">Full catalog poster</h2>
-              <p className="text-sm text-gray-600">
-                Save or print the official price list for quick reference when ordering at the
-                office.
-              </p>
-              <div className="mx-auto max-w-[560px] overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-lg shadow-primary-900/5 sm:p-6">
-                <Image
-                  src={UNIFORM_CATALOG_IMAGE}
-                  alt="Asamaths Institute official school uniform catalog with all items, prices, and sizes"
-                  width={750}
-                  height={1094}
-                  className="h-auto w-full object-contain"
-                  sizes="(max-width: 768px) 92vw, 560px"
-                  quality={100}
-                  priority={false}
-                />
-              </div>
-            </div>
-          </FadeIn>
+          <div className="space-y-10">
+            {UNIFORM_PRICE_LISTS.map((list, index) => (
+              <FadeIn key={list.id} delay={0.1 + index * 0.04}>
+                <UniformPriceListSection list={list} />
+              </FadeIn>
+            ))}
+          </div>
 
           <FadeIn delay={0.28}>
             <Card className="mt-10 border-amber-100 bg-amber-50/60">
@@ -194,16 +147,14 @@ export default function UniformCatalogPage() {
                     <CardTitle className="font-display text-lg text-amber-950">
                       Uniform policy reminders
                     </CardTitle>
-                    <CardDescription className="mt-2 text-amber-900/80">
-                      <ul className="space-y-2 text-sm leading-relaxed">
-                        {UNIFORM_POLICY_NOTES.map((note) => (
-                          <li key={note} className="flex gap-2">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-600" />
-                            {note}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardDescription>
+                    <ul className="mt-2 space-y-2 text-sm leading-relaxed text-amber-900/80">
+                      {UNIFORM_POLICY_NOTES.map((note) => (
+                        <li key={note} className="flex gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-600" />
+                          {note}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </CardHeader>

@@ -78,12 +78,7 @@ function HighlightItem({ item }: { item: Highlight }) {
 }
 
 export function HighlightsBox({ className }: { className?: string }) {
-  const { weekLabel, items, updatedAt } = CURRENT_HIGHLIGHTS
-  const updatedLabel = new Date(updatedAt).toLocaleDateString("en-ZA", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
+  const { weekLabel, items, updatedAt, updatedLabel } = CURRENT_HIGHLIGHTS
 
   return (
     <aside

@@ -323,7 +323,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
         "school clothes",
       ],
       buildAnswer: () =>
-        `Our **Uniform Catalog** lists official items, sizes, and guide prices — including girls skirt, navy and grey trousers, jerseys, tie, socks, golf t-shirt, and track suit. Visit the school office to confirm stock and place orders.`,
+        `Our **Uniform Catalog** lists official uniform items and prices by grade band — including shirts, jerseys, tracksuits, blazers, and sports wear. Visit the school office to confirm stock and place orders.`,
       navigateTo: "/uniform-catalog#asa-uniform-catalog",
       linkLabel: "Uniform Catalog",
     },

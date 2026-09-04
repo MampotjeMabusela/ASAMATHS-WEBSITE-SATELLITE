@@ -21,6 +21,8 @@ export type HighlightsWeek = {
   weekLabel: string
   /** ISO date when this list was last updated (YYYY-MM-DD) */
   updatedAt: string
+  /** Human-readable update label — keep in sync with `updatedAt`. */
+  updatedLabel: string
   items: Highlight[]
 }
 
@@ -35,6 +37,7 @@ export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
 export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
   weekLabel: "Week of 2–6 September 2026",
   updatedAt: "2026-09-02",
+  updatedLabel: "2 Sep 2026",
   items: [
     {
       id: "term3-assessments",

@@ -13,6 +13,23 @@ const sourcesDir = path.join(root, "scripts", "_uniform-sources")
 const outDir = path.join(root, "public", "images", "uniform", "items")
 
 const ITEMS = [
+  { id: "shirt-long-sleeve", file: "shirt-long-sleeve.jpg" },
+  { id: "shirt-short-sleeve", file: "shirt-short-sleeve.jpg" },
+  { id: "sports-tshirt", file: "sports-tshirt.jpg" },
+  { id: "jersey-red-stripes", file: "jersey-red-stripes.jpg" },
+  { id: "pullover-red-stripes", file: "pullover-red-stripes.jpg" },
+  { id: "summer-tracksuit", file: "summer-tracksuit.jpg" },
+  { id: "winter-tracksuit", file: "winter-tracksuit.jpg" },
+  { id: "blazer", file: "blazer.jpg" },
+  { id: "red-drimac", file: "red-drimac.jpg" },
+  { id: "gray-red-tie-striped", file: "gray-red-tie-striped.jpg" },
+  { id: "gray-red-tie-stripe", file: "gray-red-tie-stripe.jpg" },
+  { id: "gray-red-socks", file: "gray-red-socks.jpg" },
+  { id: "sun-hat", file: "sun-hat.jpg" },
+  { id: "winter-woollen-hat", file: "winter-woollen-hat.jpg" },
+  { id: "gray-skirt", file: "gray-skirt.jpg" },
+  { id: "sports-white-shorts", file: "sports-white-shorts.jpg" },
+  { id: "tunic", file: "tunic.jpg" },
   { id: "girls-skirt", file: "girls-skirt.png" },
   { id: "boys-pants", file: "boys-pants.png" },
   { id: "girls-jersey", file: "girls-jersey.png" },

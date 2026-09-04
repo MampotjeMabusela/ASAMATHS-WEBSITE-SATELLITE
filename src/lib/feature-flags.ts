@@ -2,10 +2,10 @@
  * Temporary visibility toggles — flip to `true` when ready to publish again.
  */
 export const TEMPORARY_VISIBILITY = {
-  homepageHighlights: false,
-  sportsPage: false,
-  culturePage: false,
-  uniformCatalogPage: false,
+  homepageHighlights: true,
+  sportsPage: true,
+  culturePage: true,
+  uniformCatalogPage: true,
 } as const
 
 export function isNavLinkVisible(href: string): boolean {
