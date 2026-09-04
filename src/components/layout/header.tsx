@@ -117,16 +117,10 @@ export function Header() {
             >
               <NavLink href={NAV_HOME.href} label={NAV_HOME.label} pathname={pathname} />
               <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
-              <span className="hidden px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 lg:inline">
-                Learn
-              </span>
               {NAV_LEARN.map((link) => (
                 <NavLink key={link.href} href={link.href} label={link.label} pathname={pathname} />
               ))}
               <span className="mx-0.5 hidden h-5 w-px bg-gray-200 lg:inline" aria-hidden />
-              <span className="hidden px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 lg:inline">
-                Join
-              </span>
               {NAV_JOIN.map((link) => (
                 <NavLink
                   key={link.href}
