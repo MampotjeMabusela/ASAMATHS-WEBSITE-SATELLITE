@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-  const [headerAnchorPx, setHeaderAnchorPx] = useState(148)
+  const [headerAnchorPx, setHeaderAnchorPx] = useState(168)
   const pathname = usePathname()
   const headerChromeRef = useRef<HTMLDivElement>(null)
 
@@ -82,29 +82,18 @@ export function Header() {
         </div>
 
         <div className="container-custom border-b border-gray-100/90">
-          {/* Brand row — logo and CTAs never share space with nav links */}
-          <div className="flex min-h-16 items-center justify-between gap-3 py-2 md:min-h-[4.5rem] md:py-2.5">
+          {/* Brand row — crest and CTAs */}
+          <div className="flex min-h-16 items-center justify-between gap-3 py-2 md:min-h-[4.25rem] md:py-2">
             <Link
               href="/"
-              className="group relative z-10 flex min-w-0 max-w-[calc(100%-3.5rem)] shrink-0 items-center gap-2 rounded-xl py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:max-w-none sm:gap-3 md:gap-4"
+              className="group relative z-10 flex min-w-0 max-w-[calc(100%-3.5rem)] shrink-0 items-center gap-2 rounded-xl py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:max-w-none sm:gap-3"
             >
               <SiteLogo variant="header" isScrolled={isScrolled} />
-              <div className="hidden min-w-0 flex-col justify-center border-l border-gray-200/80 pl-3 sm:flex sm:h-[3.9rem] sm:pl-4 md:h-[4.375rem] md:pl-5">
-                <p className="whitespace-nowrap font-display text-[1.02rem] font-semibold leading-snug tracking-tight text-primary-950 md:text-lg">
-                  {SCHOOL_INFO.shortName}
-                </p>
-                <p className="mt-0.5 whitespace-nowrap text-[0.625rem] font-semibold uppercase leading-none tracking-[0.18em] text-primary-600/90 md:text-[0.6875rem]">
-                  {BRAND.motto}
-                </p>
-                <p className="mt-1.5 hidden whitespace-nowrap text-xs font-medium text-gray-500 md:block md:text-[0.8125rem]">
-                  {SCHOOL_INFO.suburb}
-                </p>
-              </div>
-              <div className="flex min-w-0 flex-col justify-center sm:hidden">
+              <div className="flex min-w-0 flex-col justify-center md:hidden">
                 <p className="truncate font-display text-[0.8125rem] font-semibold leading-tight text-primary-950 sm:text-sm">
                   {SCHOOL_INFO.shortName}
                 </p>
-                <p className="mt-0.5 truncate text-[0.58rem] font-medium uppercase tracking-wider text-primary-600">
+                <p className="mt-0.5 truncate text-[0.58rem] font-medium uppercase tracking-wider text-primary-600 sm:text-[0.625rem]">
                   {BRAND.motto}
                 </p>
               </div>
@@ -154,9 +143,24 @@ export function Header() {
             </div>
           </div>
 
+          {/* Desktop identity — centered above menu */}
+          <div className="hidden border-t border-gray-100/80 px-2 py-2.5 text-center md:block">
+            <Link
+              href="/"
+              className="inline-block rounded-lg px-2 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+            >
+              <p className="font-display text-lg font-semibold leading-snug tracking-tight text-primary-950 lg:text-xl">
+                {SCHOOL_INFO.shortName}
+              </p>
+              <p className="mt-1 text-[0.6875rem] font-semibold uppercase leading-none tracking-[0.18em] text-primary-600/90 lg:text-xs">
+                {BRAND.motto}
+              </p>
+            </Link>
+          </div>
+
           {/* Desktop nav — dedicated row so links never overlap the crest */}
           <nav
-            className="hidden border-t border-gray-100/80 md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-0.5 md:gap-y-1 md:px-1 md:py-2.5 lg:justify-end lg:gap-1 lg:px-0"
+            className="hidden border-t border-gray-100/80 md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-0.5 md:gap-y-1 md:px-1 md:py-2.5 lg:gap-1"
             aria-label="Main navigation"
           >
             <NavLink href={NAV_HOME.href} label={NAV_HOME.label} pathname={pathname} />

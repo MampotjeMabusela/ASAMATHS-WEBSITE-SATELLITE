@@ -24,7 +24,7 @@ export function Hero() {
   return (
     <section
       id="asa-home-hero"
-      className="relative flex min-h-[85svh] items-center overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 pt-24 scroll-mt-24 supports-[min-height:100dvh]:min-h-[85dvh] md:pt-36 md:scroll-mt-36"
+      className="relative flex min-h-[85svh] items-center overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 pt-24 scroll-mt-24 supports-[min-height:100dvh]:min-h-[85dvh] md:pt-40 md:scroll-mt-40"
     >
       {/* Optional depth: classroom layer (very subtle, right side) */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.14]">
