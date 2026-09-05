@@ -41,47 +41,33 @@ export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
 
 /** Current week's highlights — edit weekly */
 export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
-  weekLabel: "Week of 31 August – 4 September 2026",
-  updatedAt: "2026-09-04",
-  updatedLabel: "4 Sep 2026",
+  weekLabel: "Week of 1–5 September 2026",
+  updatedAt: "2026-09-05",
+  updatedLabel: "5 Sep 2026",
   items: [
     {
-      id: "term3-assessments",
-      category: "academic",
-      title: "Term 3 assessments underway",
-      description:
-        "Formal assessments continue this week. Study timetables were shared in class — please check bags and WhatsApp groups.",
-      when: "Mon 31 Aug – Fri 4 Sep",
-      startDate: "2026-08-31",
-      endDate: "2026-09-04",
-    },
-    {
-      id: "soccer-fixtures",
+      id: "sports-none",
       category: "sports",
-      title: "Inter-house soccer fixtures",
-      description:
-        "House teams play after school on the main field. Spectators welcome — learners must stay in designated areas.",
-      when: "Wed 2 Sep · 14:30",
-      startDate: "2026-09-02",
-      time: "14:30",
+      title: "No Updates",
+      description: "",
     },
     {
-      id: "heritage-prep",
+      id: "culture-none",
       category: "culture",
-      title: "Heritage Day programme planning",
-      description:
-        "Cultural groups meet during lunch to prepare performances for our Heritage Day celebration later this month.",
-      when: "Fri 4 Sep",
-      startDate: "2026-09-04",
+      title: "No Updates",
+      description: "",
     },
     {
-      id: "admissions-open",
+      id: "academic-none",
+      category: "academic",
+      title: "No Updates",
+      description: "",
+    },
+    {
+      id: "general-none",
       category: "general",
-      title: "2027 admissions enquiries open",
-      description:
-        "Families interested in joining Asamaths next year may book a campus visit or start an online application on our Admissions page.",
-      when: "From Fri 4 Sep",
-      startDate: "2026-09-04",
+      title: "No Updates",
+      description: "",
     },
   ],
 }

@@ -169,8 +169,8 @@ export function MobileNav({ isOpen, onClose, sisterSchool, anchorHeight }: Mobil
 function MobileNavMenu({ pathname, onClose }: { pathname: string; onClose: () => void }) {
   const sections: { title: string; links: NavLinkItem[] }[] = [
     { title: "", links: [NAV_HOME] },
-    { title: "", links: NAV_LEARN },
-    { title: "", links: NAV_JOIN },
+    { title: "Learn", links: NAV_LEARN },
+    { title: "Join", links: NAV_JOIN },
     { title: "", links: [NAV_CONDUCT] },
   ]
 

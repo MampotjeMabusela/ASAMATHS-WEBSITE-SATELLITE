@@ -71,7 +71,9 @@ function HighlightItem({ item }: { item: Highlight }) {
             ) : null}
           </div>
           <p className="font-display text-sm font-bold leading-snug text-white">{item.title}</p>
-          <p className="text-xs leading-relaxed text-primary-100/90">{item.description}</p>
+          {item.description ? (
+            <p className="text-xs leading-relaxed text-primary-100/90">{item.description}</p>
+          ) : null}
         </div>
       </div>
     </li>
