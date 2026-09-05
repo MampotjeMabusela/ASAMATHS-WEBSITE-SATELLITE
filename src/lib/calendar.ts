@@ -1,5 +1,6 @@
+import { toIsoDate } from "@/lib/dates"
 import {
-  CURRENT_HIGHLIGHTS,
+  getCurrentHighlights,
   HIGHLIGHT_CATEGORY_LABELS,
   type Highlight,
   type HighlightCategory,
@@ -52,8 +53,8 @@ export function highlightToCalendarEvent(item: Highlight, fallbackDate: string):
 }
 
 /** Calendar events derived from the current Highlights list (single source of truth). */
-export function getCalendarEventsFromHighlights(): CalendarEvent[] {
-  const { items, updatedAt } = CURRENT_HIGHLIGHTS
+export function getCalendarEventsFromHighlights(now = new Date()): CalendarEvent[] {
+  const { items, updatedAt } = getCurrentHighlights(now)
   return items.map((item) => highlightToCalendarEvent(item, updatedAt))
 }
 
@@ -78,12 +79,7 @@ export function parseIsoDate(isoDate: string): Date {
   return new Date(year, (month ?? 1) - 1, day ?? 1, 12, 0, 0, 0)
 }
 
-export function toIsoDate(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
-}
+export { toIsoDate }
 
 export function shiftYearMonth(yearMonth: string, delta: number): string {
   const [year, month] = yearMonth.split("-").map(Number)

@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf"
 import fs from "fs"
 import path from "path"
 import { BRAND, SCHOOL_INFO } from "@/lib/constants"
-import { APPLICATION_GRADES, APPLICATION_SCHOOL_YEARS } from "@/lib/application-constants"
+import { APPLICATION_GRADES, getApplicationSchoolYears } from "@/lib/application-constants"
 import type { ApplicationFiles, ApplicationFormValues } from "@/lib/application-schema"
 
 const PRIMARY = { r: 30, g: 58, b: 138 }
@@ -317,7 +317,7 @@ export function buildApplicationPdf(): Buffer {
   )
   doc.setFontSize(7)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(`School years: ${APPLICATION_SCHOOL_YEARS.join("  ·  ")}`, MARGIN_L, y)
+  doc.text(`School years: ${getApplicationSchoolYears().join("  ·  ")}`, MARGIN_L, y)
   y += 8
 
   y = sectionBar(doc, "B. Primary parent / guardian", y)

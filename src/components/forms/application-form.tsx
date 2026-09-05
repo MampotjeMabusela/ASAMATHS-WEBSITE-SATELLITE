@@ -24,13 +24,13 @@ import { FormSelect } from "@/components/forms/form-select"
 import { SCHOOL_INFO } from "@/lib/constants"
 import {
   APPLICATION_GRADES,
-  APPLICATION_SCHOOL_YEARS,
+  getApplicationSchoolYears,
   GUARDIAN_RELATIONSHIPS,
   LEARNER_GENDERS,
   REFERRAL_SOURCES,
 } from "@/lib/application-constants"
 import {
-  APPLICATION_DEFAULT_VALUES,
+  getApplicationDefaultValues,
   APPLICATION_STEP_FIELDS,
   applicationFormSchema,
   createApplicationReference,
@@ -99,6 +99,9 @@ export function ApplicationForm() {
   const inbox = getInquiryInbox()
   const configured = isWeb3FormsConfigured()
 
+  const applicationDefaults = useMemo(() => getApplicationDefaultValues(), [])
+  const schoolYears = useMemo(() => getApplicationSchoolYears(), [])
+
   const {
     register,
     handleSubmit,
@@ -109,7 +112,7 @@ export function ApplicationForm() {
     formState: { errors, isSubmitting },
   } = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationFormSchema) as Resolver<ApplicationFormValues>,
-    defaultValues: APPLICATION_DEFAULT_VALUES,
+    defaultValues: applicationDefaults,
     mode: "onBlur",
   })
 
@@ -178,7 +181,7 @@ export function ApplicationForm() {
         message: `Your application was sent to ${inbox}. Our admissions team will contact you during school hours.`,
         ref,
       })
-      reset(APPLICATION_DEFAULT_VALUES)
+      reset(getApplicationDefaultValues())
       setStepIndex(0)
       window.scrollTo({ top: 0, behavior: "smooth" })
     } catch (err) {
@@ -266,7 +269,7 @@ export function ApplicationForm() {
           <div className="space-y-2">
             <Label htmlFor="schoolYear">School year applying for *</Label>
             <FormSelect id="schoolYear" {...register("schoolYear")}>
-              {APPLICATION_SCHOOL_YEARS.map((y) => (
+              {schoolYears.map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>

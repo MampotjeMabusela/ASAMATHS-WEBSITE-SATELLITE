@@ -1,10 +1,11 @@
 /**
- * Weekly Highlights — update this file each week with school announcements.
+ * Weekly Highlights — update `HIGHLIGHT_ITEMS` each week with school announcements.
  *
  * Categories: sports | culture | academic | general
- * Set `weekLabel` to the current week (e.g. "Week of 2–6 September 2026").
- * Replace `items` with that week's notices; newest or most important items first.
+ * Week label and "Updated" date are derived automatically from today's date.
  */
+
+import { formatShortDate, formatWeekLabel, toIsoDate, getCurrentDate } from "@/lib/dates"
 
 export type HighlightCategory = "sports" | "culture" | "academic" | "general"
 
@@ -27,7 +28,7 @@ export type HighlightsWeek = {
   weekLabel: string
   /** ISO date when this list was last updated (YYYY-MM-DD) */
   updatedAt: string
-  /** Human-readable update label — keep in sync with `updatedAt`. */
+  /** Human-readable update label — derived from `updatedAt`. */
   updatedLabel: string
   items: Highlight[]
 }
@@ -39,35 +40,43 @@ export const HIGHLIGHT_CATEGORY_LABELS: Record<HighlightCategory, string> = {
   general: "General",
 }
 
-/** Current week's highlights — edit weekly */
-export const CURRENT_HIGHLIGHTS: HighlightsWeek = {
-  weekLabel: "Week of 1–5 September 2026",
-  updatedAt: "2026-09-05",
-  updatedLabel: "5 Sep 2026",
-  items: [
-    {
-      id: "sports-none",
-      category: "sports",
-      title: "No Updates",
-      description: "",
-    },
-    {
-      id: "culture-none",
-      category: "culture",
-      title: "No Updates",
-      description: "",
-    },
-    {
-      id: "academic-none",
-      category: "academic",
-      title: "No Updates",
-      description: "",
-    },
-    {
-      id: "general-none",
-      category: "general",
-      title: "No Updates",
-      description: "",
-    },
-  ],
+/** Edit weekly — dates on the homepage and calendar are filled in automatically. */
+export const HIGHLIGHT_ITEMS: Highlight[] = [
+  {
+    id: "sports-none",
+    category: "sports",
+    title: "No Updates",
+    description: "",
+  },
+  {
+    id: "culture-none",
+    category: "culture",
+    title: "No Updates",
+    description: "",
+  },
+  {
+    id: "academic-none",
+    category: "academic",
+    title: "No Updates",
+    description: "",
+  },
+  {
+    id: "general-none",
+    category: "general",
+    title: "No Updates",
+    description: "",
+  },
+]
+
+/** Highlights with week label and update date derived from today. */
+export function getCurrentHighlights(now = new Date()): HighlightsWeek {
+  const today = getCurrentDate(now)
+  const updatedAt = toIsoDate(today)
+
+  return {
+    weekLabel: formatWeekLabel(today),
+    updatedAt,
+    updatedLabel: formatShortDate(today),
+    items: HIGHLIGHT_ITEMS,
+  }
 }

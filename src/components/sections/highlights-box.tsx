@@ -5,7 +5,7 @@ import { BookOpen, CalendarDays, Megaphone, Music2, Sparkles, Trophy } from "luc
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
-  CURRENT_HIGHLIGHTS,
+  getCurrentHighlights,
   HIGHLIGHT_CATEGORY_LABELS,
   type Highlight,
   type HighlightCategory,
@@ -81,7 +81,7 @@ function HighlightItem({ item }: { item: Highlight }) {
 }
 
 export function HighlightsBox({ className }: { className?: string }) {
-  const { weekLabel, items, updatedAt, updatedLabel } = CURRENT_HIGHLIGHTS
+  const { weekLabel, items, updatedAt, updatedLabel } = getCurrentHighlights()
 
   return (
     <aside

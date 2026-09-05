@@ -8,8 +8,9 @@ import { SchoolCalendar } from "@/components/calendar/school-calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
+import { getCurrentYearMonth } from "@/lib/dates"
 import { getCalendarEventsFromHighlights } from "@/lib/calendar"
-import { CURRENT_HIGHLIGHTS } from "@/lib/highlights"
+import { getCurrentHighlights } from "@/lib/highlights"
 
 export const metadata: Metadata = {
   title: "Calendar",
@@ -19,8 +20,9 @@ export const metadata: Metadata = {
 export default function CalendarPage() {
   if (!TEMPORARY_VISIBILITY.calendarPage) redirect("/")
 
+  const highlights = getCurrentHighlights()
   const events = getCalendarEventsFromHighlights()
-  const initialMonth = CURRENT_HIGHLIGHTS.updatedAt.slice(0, 7)
+  const initialMonth = getCurrentYearMonth()
 
   return (
     <>
@@ -56,7 +58,7 @@ export default function CalendarPage() {
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="text-sm text-gray-600">
-                  Current focus: <span className="font-medium text-gray-900">{CURRENT_HIGHLIGHTS.weekLabel}</span>
+                  Current focus: <span className="font-medium text-gray-900">{highlights.weekLabel}</span>
                 </p>
               </CardContent>
             </Card>
@@ -66,8 +68,8 @@ export default function CalendarPage() {
             <SchoolCalendar
               events={events}
               initialMonth={initialMonth}
-              weekLabel={CURRENT_HIGHLIGHTS.weekLabel}
-              updatedLabel={CURRENT_HIGHLIGHTS.updatedLabel}
+              weekLabel={highlights.weekLabel}
+              updatedLabel={highlights.updatedLabel}
             />
           </FadeIn>
         </div>

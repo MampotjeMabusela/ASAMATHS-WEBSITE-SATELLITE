@@ -7,6 +7,7 @@ import {
   hasSisterSchoolLink,
   SISTER_SCHOOL_LINK,
 } from "@/lib/constants"
+import { getCurrentCalendarYear } from "@/lib/dates"
 import { isAsaKnowledgeEntryVisible } from "@/lib/feature-flags"
 import type { AsaKnowledgeEntry } from "@/types/asa"
 
@@ -248,7 +249,7 @@ export function getAsaKnowledgeBase(): AsaKnowledgeEntry[] {
         "afford",
       ],
       buildAnswer: () =>
-        `**${shortName}** is fee-paying; amounts depend on grade and services. The **Fees** page explains the **2026** schedule, payment options, and banking details. For your child's exact amount or a payment plan, contact the office — they'll give you the current figures.`,
+        `**${shortName}** is fee-paying; amounts depend on grade and services. The **Fees** page explains the **${getCurrentCalendarYear()}** schedule, payment options, and banking details. For your child's exact amount or a payment plan, contact the office — they'll give you the current figures.`,
       navigateTo: "/fees#asa-fees",
       linkLabel: "Fees page",
       suggestions: ["How do I apply?", "Contact details"],

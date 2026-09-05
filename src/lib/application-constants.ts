@@ -1,3 +1,5 @@
+import { getApplicationSchoolYears } from "@/lib/dates"
+
 /** Grades offered for online applications (aligned with fees page). */
 export const APPLICATION_GRADES = [
   "Grade R",
@@ -12,7 +14,7 @@ export const APPLICATION_GRADES = [
   "Grade 9",
 ] as const
 
-export const APPLICATION_SCHOOL_YEARS = ["2026", "2027"] as const
+export { getApplicationSchoolYears }
 
 export const GUARDIAN_RELATIONSHIPS = [
   "Mother",

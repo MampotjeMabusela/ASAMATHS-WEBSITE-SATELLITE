@@ -27,25 +27,29 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion"
 import { SCHOOL_INFO } from "@/lib/constants"
+import { getCurrentCalendarYear } from "@/lib/dates"
 import { PageBanner } from "@/components/shared/page-banner"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
 import { CAMPUS_PHOTOS, photoSrc } from "@/lib/student-photos"
 
-export const metadata: Metadata = {
-  title: "School Fees — 2026",
-  description: `2026 school fees structure for ${SCHOOL_INFO.shortName}: registration, tuition by grade, payment options, and banking details.`,
+export async function generateMetadata(): Promise<Metadata> {
+  const year = getCurrentCalendarYear()
+  return {
+    title: `School Fees — ${year}`,
+    description: `${year} school fees structure for ${SCHOOL_INFO.shortName}: registration, tuition by grade, payment options, and banking details.`,
+  }
 }
 
-/** As published on the 2026 fees schedule (office contact on document). Address matches site-wide `SCHOOL_INFO.address`. */
+/** As published on the current fees schedule (office contact on document). Address matches site-wide `SCHOOL_INFO.address`. */
 const FEES_OFFICE = {
-  telDisplay: "011 925 8074",
-  telHref: `tel:${SCHOOL_INFO.rawPhone}`,
+  telDisplay: "012 725 8044",
+  telHref: "tel:+27127258044",
   faxDisplay: "086 4653 150",
-  mobileDisplay: "061 532 5019",
-  mobileHref: `tel:+${SCHOOL_INFO.rawWhatsApp}`,
-  emailDisplay: SCHOOL_INFO.email,
-  emailHref: `mailto:${SCHOOL_INFO.email}`,
-  gdeLabel: `GDE ${SCHOOL_INFO.natEmis}`,
+  mobileDisplay: "061 530 9416",
+  mobileHref: "tel:+27615309416",
+  emailDisplay: "asamathsinstituteoflearning@gmail.com",
+  emailHref: "mailto:asamathsinstituteoflearning@gmail.com",
+  gdeLabel: "GDE 700400979",
 } as const
 
 const tuitionRows: {
@@ -88,11 +92,12 @@ const bankDetails = {
   referenceHint: "Use the learner’s name, surname, and grade (e.g. Kagiso Makamo Grade 4).",
 } as const
 
-const faqs = [
-  {
-    q: "Is the registration fee refundable?",
-    a: "No. The registration fee is non-refundable, as stated on the official 2026 fees schedule.",
-  },
+const faqs = (year: number) =>
+  [
+    {
+      q: "Is the registration fee refundable?",
+      a: `No. The registration fee is non-refundable, as stated on the official ${year} fees schedule.`,
+    },
   {
     q: "What is the difference between registration and re-registration?",
     a: "New enrolments pay the registration fee (R1000.00). Returning learners pay the re-registration fee (R450.00). A late re-registration fee of R500.00 applies if re-registration is not completed on time—confirm dates with the office.",
@@ -105,15 +110,18 @@ const faqs = [
     q: "When are termly or yearly fees due?",
     a: "Option B (termly) must be paid by the 3rd as advised for each term. Option C (yearly) is due before 31 January. Confirm exact dates on the letter from the office.",
   },
-]
+] as const
 
 export default function FeesPage() {
+  const feesYear = getCurrentCalendarYear()
+  const feeFaqs = faqs(feesYear)
+
   return (
     <>
       <section id="asa-fees" className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-24 pt-32 md:pb-16">
         <div className="container-custom">
           <PageIntro
-            eyebrow="2026 fee schedule"
+            eyebrow={`${feesYear} fee schedule`}
             title="School Fees"
             subtitle="Registration, tuition, payment options, and banking details"
             breadcrumbs={[{ label: "Fees" }]}
@@ -196,7 +204,7 @@ export default function FeesPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="font-display text-xl text-primary-950">Registration fees</CardTitle>
                   <CardDescription className="text-primary-800/90">
-                    As per the 2026 schedule — please confirm dates with the office.
+                    As per the {feesYear} schedule — please confirm dates with the office.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -242,7 +250,7 @@ export default function FeesPage() {
                     Visit or call the office for payment plans and proof of deposit.
                   </p>
                   <p className="mt-2 text-sm text-primary-100/95">
-                    {SCHOOL_INFO.shortName} · {SCHOOL_INFO.suburb}
+                    {SCHOOL_INFO.shortName} · {SCHOOL_INFO.suburb}, {SCHOOL_INFO.city}
                   </p>
                 </div>
               </div>
@@ -253,7 +261,7 @@ export default function FeesPage() {
           <FadeIn delay={0.1}>
             <Card className="mt-10 border-gray-100 shadow-sm">
               <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-white to-primary-50/30 pb-4">
-                <CardTitle className="font-display text-2xl text-gray-900">2026 tuition fees</CardTitle>
+                <CardTitle className="font-display text-2xl text-gray-900">{feesYear} tuition fees</CardTitle>
                 <CardDescription>Amounts per grade — monthly, termly, or yearly payment.</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
@@ -383,7 +391,7 @@ export default function FeesPage() {
                 <div className="mb-8 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/95 p-4 backdrop-blur-[2px]">
                   <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" aria-hidden />
                   <p className="text-sm text-amber-900">
-                    <strong>Please note:</strong> This page reflects the 2026 schedule supplied to families.
+                    <strong>Please note:</strong> This page reflects the {feesYear} schedule supplied to families.
                     Final interpretation, due dates for each term, and any updates are confirmed by the school
                     office. Website totals are for convenience; your deposit slip and school correspondence remain
                     authoritative.
@@ -392,7 +400,7 @@ export default function FeesPage() {
 
                 <h3 className="mb-6 font-display text-2xl font-bold text-gray-900">Frequently asked questions</h3>
                 <Accordion type="single" collapsible className="text-left">
-                  {faqs.map((faq, i) => (
+                  {feeFaqs.map((faq, i) => (
                     <AccordionItem key={faq.q} value={`faq-${i}`}>
                       <AccordionTrigger className="text-left">{faq.q}</AccordionTrigger>
                       <AccordionContent>
