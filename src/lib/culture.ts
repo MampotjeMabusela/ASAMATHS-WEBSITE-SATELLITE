@@ -57,22 +57,10 @@ export const CULTURE_ACTIVITIES: CultureActivity[] = [
 
 export const UPCOMING_CULTURE: CultureEvent[] = [
   {
-    id: "heritage-rehearsal",
-    title: "Heritage Day dress rehearsal",
-    when: "Fridays · 13:30 – 15:00",
-    description: "Cultural groups rehearse performances for the Heritage Day programme.",
-  },
-  {
-    id: "assembly-performances",
-    title: "Monthly cultural assembly",
-    when: "First Friday of each month",
-    description: "Grade groups share songs, poems, or short items celebrating language and tradition.",
-  },
-  {
-    id: "heritage-day",
-    title: "Heritage Day celebrations",
-    when: "September (date confirmed by office)",
-    description: "Full-school programme with performances, traditional dress, and community guests.",
+    id: "no-updates",
+    title: "No Updates",
+    when: "",
+    description: "",
   },
 ]
 

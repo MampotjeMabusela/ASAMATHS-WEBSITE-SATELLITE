@@ -1,11 +1,9 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Calendar, Info, Trophy } from "lucide-react"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
-import { PageBanner } from "@/components/shared/page-banner"
 import { CTABanner } from "@/components/sections/cta-banner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,8 +16,6 @@ import {
   SPORTS_VALUES,
   UPCOMING_SPORTS,
 } from "@/lib/sports"
-import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
-import { STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Sports",
@@ -39,19 +35,6 @@ export default function SportsPage() {
               title="Sports"
               subtitle={`Teamwork, fitness, and school spirit at ${SCHOOL_INFO.shortName}`}
               breadcrumbs={[{ label: "Sports" }]}
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.04}>
-            <PageBanner
-              src={STUDENT_PHOTOS.sports}
-              alt={`Learners playing sport on the field at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
-              headline="Strong bodies, strong character"
-              subline="Physical education and competitive sport for every grade."
-              badge="Sport"
-              variant="wide"
-              objectPosition="center 40%"
-              className="mb-10"
             />
           </FadeIn>
 
@@ -91,20 +74,6 @@ export default function SportsPage() {
             </div>
 
             <div className="space-y-6">
-              <FadeIn delay={0.12}>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-md ring-1 ring-gray-200">
-                  <Image
-                    src={photoSrc(STUDENT_PHOTOS.playground)}
-                    alt={`Learners active outdoors at ${SCHOOL_INFO.shortName}`}
-                    fill
-                    placeholder="blur"
-                    blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-                    className="object-cover object-center"
-                    sizes="(max-width: 1024px) 100vw, 400px"
-                  />
-                </div>
-              </FadeIn>
-
               <FadeIn delay={0.14}>
                 <Card className="border-emerald-100 bg-emerald-50/50">
                   <CardHeader>
@@ -119,8 +88,12 @@ export default function SportsPage() {
                     {UPCOMING_SPORTS.map((item) => (
                       <div key={item.id} className="border-b border-emerald-100/80 pb-4 last:border-0 last:pb-0">
                         <p className="font-semibold text-emerald-950">{item.title}</p>
-                        <p className="mt-0.5 text-xs font-medium text-emerald-800">{item.when}</p>
-                        <p className="mt-1 text-sm text-emerald-900/80">{item.description}</p>
+                        {item.when ? (
+                          <p className="mt-0.5 text-xs font-medium text-emerald-800">{item.when}</p>
+                        ) : null}
+                        {item.description ? (
+                          <p className="mt-1 text-sm text-emerald-900/80">{item.description}</p>
+                        ) : null}
                       </div>
                     ))}
                   </CardContent>
@@ -173,6 +146,7 @@ export default function SportsPage() {
         description="Browse photos of campus life, classrooms, and sport in our gallery."
         buttonText="View Gallery"
         buttonHref="/gallery"
+        showBackgroundImage={false}
       />
     </>
   )

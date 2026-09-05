@@ -3,7 +3,6 @@ import { redirect } from "next/navigation"
 import { CalendarDays } from "lucide-react"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
-import { PageBanner } from "@/components/shared/page-banner"
 import { CTABanner } from "@/components/sections/cta-banner"
 import { SchoolCalendar } from "@/components/calendar/school-calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,7 +10,6 @@ import { SCHOOL_INFO } from "@/lib/constants"
 import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import { getCalendarEventsFromHighlights } from "@/lib/calendar"
 import { CURRENT_HIGHLIGHTS } from "@/lib/highlights"
-import { CAMPUS_PHOTOS } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Calendar",
@@ -37,19 +35,6 @@ export default function CalendarPage() {
               title="Calendar"
               subtitle={`Weekly school dates and notices for ${SCHOOL_INFO.shortName}`}
               breadcrumbs={[{ label: "Calendar" }]}
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.04}>
-            <PageBanner
-              src={CAMPUS_PHOTOS.classroomGroup}
-              alt={`Learners in class at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
-              headline="Plan the week ahead"
-              subline="Sports, culture, academic updates, and school notices in one place."
-              badge="Calendar"
-              variant="compact"
-              objectPosition="center 35%"
-              className="mb-10"
             />
           </FadeIn>
 
@@ -93,6 +78,7 @@ export default function CalendarPage() {
         description="Contact the school office during office hours for times, venues, and learner requirements."
         buttonText="Contact Us"
         buttonHref="/contact"
+        showBackgroundImage={false}
       />
     </>
   )

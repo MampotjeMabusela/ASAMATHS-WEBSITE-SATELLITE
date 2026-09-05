@@ -62,22 +62,10 @@ export const SPORTS_PROGRAMS: SportProgram[] = [
 
 export const UPCOMING_SPORTS: SportsFixture[] = [
   {
-    id: "athletics-trials",
-    title: "Inter-house athletics trials",
-    when: "Wednesdays · 08:00 – 10:00",
-    description: "Trials on the main field. Learners must wear sports uniform and bring water.",
-  },
-  {
-    id: "soccer-fixtures",
-    title: "Inter-house soccer fixtures",
-    when: "Selected Wednesdays · after school",
-    description: "House teams play on the main field. Spectators welcome in designated areas.",
-  },
-  {
-    id: "sports-day",
-    title: "Annual sports day",
-    when: "Term 3 (date announced by office)",
-    description: "Full-day programme of athletics, relays, and house competitions. Families invited.",
+    id: "no-updates",
+    title: "No Updates",
+    when: "",
+    description: "",
   },
 ]
 

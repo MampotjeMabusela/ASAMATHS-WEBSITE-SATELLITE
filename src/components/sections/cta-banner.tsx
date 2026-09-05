@@ -11,6 +11,7 @@ interface CTABannerProps {
   description?: string
   buttonText?: string
   buttonHref?: string
+  showBackgroundImage?: boolean
 }
 
 export function CTABanner({
@@ -18,24 +19,27 @@ export function CTABanner({
   description = `Contact ${SCHOOL_INFO.shortName} today to learn more about our admission process, fees, and how we can partner in your child's educational journey.`,
   buttonText = "Send an Inquiry",
   buttonHref = "/contact#asa-contact-form",
+  showBackgroundImage = true,
 }: CTABannerProps) {
   return (
     <section
       id="asa-home-cta"
       className="relative scroll-mt-24 overflow-hidden py-20"
     >
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={photoSrc(STUDENT_PHOTOS.sports)}
-          alt=""
-          fill
-          placeholder="blur"
-          blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-          className="object-cover object-[center_40%]"
-          sizes="100vw"
-          aria-hidden
-        />
-      </div>
+      {showBackgroundImage ? (
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={photoSrc(STUDENT_PHOTOS.sports)}
+            alt=""
+            fill
+            placeholder="blur"
+            blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
+            className="object-cover object-[center_40%]"
+            sizes="100vw"
+            aria-hidden
+          />
+        </div>
+      ) : null}
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary-950/95 via-primary-900/92 to-primary-950/95" />
 
       <div className="container-custom relative z-10 text-center">

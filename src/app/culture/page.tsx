@@ -1,11 +1,9 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, Calendar, Info, Music2 } from "lucide-react"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
-import { PageBanner } from "@/components/shared/page-banner"
 import { CTABanner } from "@/components/sections/cta-banner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,8 +16,6 @@ import {
   CULTURE_VALUES,
   UPCOMING_CULTURE,
 } from "@/lib/culture"
-import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
-import { STUDENT_PHOTOS, photoSrc } from "@/lib/student-photos"
 
 export const metadata: Metadata = {
   title: "Culture",
@@ -39,19 +35,6 @@ export default function CulturePage() {
               title="Culture"
               subtitle={`Heritage, creativity, and community at ${SCHOOL_INFO.shortName}`}
               breadcrumbs={[{ label: "Culture" }]}
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.04}>
-            <PageBanner
-              src={STUDENT_PHOTOS.classroomCelebration}
-              alt={`Learners celebrating together at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
-              headline="Celebrating identity and belonging"
-              subline="Music, language, and tradition in everyday school life."
-              badge="Culture"
-              variant="wide"
-              objectPosition="center 35%"
-              className="mb-10"
             />
           </FadeIn>
 
@@ -91,20 +74,6 @@ export default function CulturePage() {
             </div>
 
             <div className="space-y-6">
-              <FadeIn delay={0.12}>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-md ring-1 ring-gray-200">
-                  <Image
-                    src={photoSrc(STUDENT_PHOTOS.foundation)}
-                    alt={`Foundation-phase learners learning at ${SCHOOL_INFO.shortName}`}
-                    fill
-                    placeholder="blur"
-                    blurDataURL={STUDENT_PHOTO_BLUR_DATA_URL}
-                    className="object-cover object-center"
-                    sizes="(max-width: 1024px) 100vw, 400px"
-                  />
-                </div>
-              </FadeIn>
-
               <FadeIn delay={0.14}>
                 <Card className="border-violet-100 bg-violet-50/50">
                   <CardHeader>
@@ -119,8 +88,12 @@ export default function CulturePage() {
                     {UPCOMING_CULTURE.map((item) => (
                       <div key={item.id} className="border-b border-violet-100/80 pb-4 last:border-0 last:pb-0">
                         <p className="font-semibold text-violet-950">{item.title}</p>
-                        <p className="mt-0.5 text-xs font-medium text-violet-800">{item.when}</p>
-                        <p className="mt-1 text-sm text-violet-900/80">{item.description}</p>
+                        {item.when ? (
+                          <p className="mt-0.5 text-xs font-medium text-violet-800">{item.when}</p>
+                        ) : null}
+                        {item.description ? (
+                          <p className="mt-1 text-sm text-violet-900/80">{item.description}</p>
+                        ) : null}
                       </div>
                     ))}
                   </CardContent>
@@ -173,6 +146,7 @@ export default function CulturePage() {
         description="Discover our history, values, and leadership on the About page."
         buttonText="About Us"
         buttonHref="/about"
+        showBackgroundImage={false}
       />
     </>
   )
