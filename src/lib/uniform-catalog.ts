@@ -9,6 +9,8 @@ export type UniformPriceItem = {
   name: string
   price: string
   images?: UniformItemImage[]
+  /** When true, product photos display in the catalog table (overrides global image toggle). */
+  showImages?: boolean
 }
 
 export type UniformPriceList = {
@@ -20,7 +22,7 @@ export type UniformPriceList = {
 }
 
 /** Bump when any public uniform item image changes so browsers fetch fresh files. */
-export const UNIFORM_IMAGES_VERSION = "8"
+export const UNIFORM_IMAGES_VERSION = "10"
 
 export function uniformItemSrc(path: string): string {
   const base = path.split("?")[0] ?? path
@@ -42,36 +44,36 @@ const SHIRT_IMAGES: UniformItemImage[] = [
 
 const SPORTS_TSHIRT_IMAGES: UniformItemImage[] = [
   {
-    src: uniformItemSrc("/images/uniform/items/sports-tshirt.png"),
-    alt: "Red sports T-shirt with Asamaths logo",
+    src: uniformItemSrc("/images/uniform/items/sports-tshirt.jpg"),
+    alt: "Green sports T-shirt with Asamaths logo",
   },
 ]
 
 const JERSEY_RED_STRIPES_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/jersey-red-stripes.png"),
-    alt: "Grey school jersey with red stripes and Asamaths logo",
+    alt: "Grey school jersey with green stripes and Asamaths logo",
   },
 ]
 
 const PULLOVER_RED_STRIPES_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/pullover-red-stripes.png"),
-    alt: "Grey school pullover with red stripes and Asamaths logo",
+    alt: "Grey school pullover with green stripes and Asamaths logo",
   },
 ]
 
 const SUMMER_TRACKSUIT_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/summer-tracksuit.png"),
-    alt: "Grey summer tracksuit with red stripes and Asamaths logo",
+    alt: "Grey summer tracksuit with green stripes and Asamaths logo",
   },
 ]
 
 const WINTER_TRACKSUIT_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/winter-tracksuit.png"),
-    alt: "Grey winter tracksuit with red stripes and Asamaths logo",
+    alt: "Grey winter tracksuit with green stripes and Asamaths logo",
   },
 ]
 
@@ -85,46 +87,46 @@ const BLAZER_IMAGES: UniformItemImage[] = [
 const RED_DRIMAC_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/red-drimac.png"),
-    alt: "Red school drimac with Asamaths logo",
+    alt: "Green school drimac with Asamaths logo",
   },
 ]
 
 const GRAY_RED_TIE_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/gray-red-tie-striped.png"),
-    alt: "Grey and red striped school tie",
+    alt: "Grey and green striped school tie",
   },
   {
     src: uniformItemSrc("/images/uniform/items/gray-red-tie-stripe.png"),
-    alt: "Grey school tie with red stripe",
+    alt: "Grey school tie with green stripe",
   },
 ]
 
 const GRAY_RED_SOCKS_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/gray-red-socks.png"),
-    alt: "Grey school socks with red stripes",
+    alt: "Grey school socks with green stripes",
   },
 ]
 
 const SUN_HAT_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/sun-hat.png"),
-    alt: "Red school sun hat with Asamaths logo",
+    alt: "Green school sun hat with Asamaths logo",
   },
 ]
 
 const WINTER_WOOLLEN_HAT_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/winter-woollen-hat.png"),
-    alt: "Grey winter woollen school hat with red pom-pom",
+    alt: "Grey winter woollen school hat with green pom-pom",
   },
 ]
 
 const GRAY_SKIRT_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/gray-skirt.png"),
-    alt: "Grey school skirt with red trim",
+    alt: "Grey school skirt with green trim",
   },
 ]
 
@@ -138,7 +140,7 @@ const SPORTS_WHITE_SHORTS_IMAGES: UniformItemImage[] = [
 const TUNIC_IMAGES: UniformItemImage[] = [
   {
     src: uniformItemSrc("/images/uniform/items/tunic.png"),
-    alt: "Grey school tunic with red trim and Asamaths logo",
+    alt: "Grey school tunic with green trim and Asamaths logo",
   },
 ]
 
@@ -150,17 +152,17 @@ export const UNIFORM_PRICE_LISTS: UniformPriceList[] = [
     subtitle: "GRADE R-6",
     grades: "Grade R – 6",
     items: [
-      { id: "shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES },
-      { id: "sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES },
-      { id: "jersey-red-stripes", name: "Jersey(Red Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES },
-      { id: "pullover-red-stripes", name: "Pullover (Red Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES },
+      { id: "shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES, showImages: true },
+      { id: "sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES, showImages: true },
+      { id: "jersey-red-stripes", name: "Jersey(Green Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES },
+      { id: "pullover-red-stripes", name: "Pullover (Green Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES },
       { id: "summer-tracksuit", name: "Summer Tracksuit", price: "R670.00", images: SUMMER_TRACKSUIT_IMAGES },
       { id: "winter-tracksuit", name: "Winter Tracksuit", price: "R750.00", images: WINTER_TRACKSUIT_IMAGES },
-      { id: "red-drimac", name: "Red Drimac", price: "R450.00", images: RED_DRIMAC_IMAGES },
+      { id: "red-drimac", name: "Green Drimac", price: "R450.00", images: RED_DRIMAC_IMAGES },
       { id: "blazer", name: "Blazer", price: "R750.00", images: BLAZER_IMAGES },
       { id: "tunic", name: "Tunic", price: "R400.00", images: TUNIC_IMAGES },
-      { id: "gray-red-tie", name: "Gray and Red Tie", price: "R150.00", images: GRAY_RED_TIE_IMAGES },
-      { id: "gray-red-socks", name: "Gray and Red Socks", price: "R100.00", images: GRAY_RED_SOCKS_IMAGES },
+      { id: "gray-red-tie", name: "Gray and Green Tie", price: "R150.00", images: GRAY_RED_TIE_IMAGES },
+      { id: "gray-red-socks", name: "Gray and Green Socks", price: "R100.00", images: GRAY_RED_SOCKS_IMAGES },
       { id: "sun-hat", name: "Sun hat", price: "R200.00", images: SUN_HAT_IMAGES },
       { id: "winter-woollen-hat", name: "Winter woollen hat", price: "R200.00", images: WINTER_WOOLLEN_HAT_IMAGES },
       { id: "gray-skirt", name: "Gray Skirt", price: "R200.00", images: GRAY_SKIRT_IMAGES },
@@ -173,16 +175,16 @@ export const UNIFORM_PRICE_LISTS: UniformPriceList[] = [
     subtitle: "GRADE 7-9",
     grades: "Grade 7 – 9",
     items: [
-      { id: "g79-shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES },
-      { id: "g79-sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES },
-      { id: "g79-jersey-red-stripes", name: "Jersey(Red Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES },
-      { id: "g79-pullover-red-stripes", name: "Pullover (Red Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES },
+      { id: "g79-shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES, showImages: true },
+      { id: "g79-sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES, showImages: true },
+      { id: "g79-jersey-red-stripes", name: "Jersey(Green Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES },
+      { id: "g79-pullover-red-stripes", name: "Pullover (Green Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES },
       { id: "g79-summer-tracksuit", name: "Summer Tracksuit", price: "R670.00", images: SUMMER_TRACKSUIT_IMAGES },
       { id: "g79-winter-tracksuit", name: "Winter Tracksuit", price: "R750.00", images: WINTER_TRACKSUIT_IMAGES },
-      { id: "g79-red-drimac", name: "Red Drimac", price: "R450.00", images: RED_DRIMAC_IMAGES },
+      { id: "g79-red-drimac", name: "Green Drimac", price: "R450.00", images: RED_DRIMAC_IMAGES },
       { id: "g79-blazer", name: "Blazer", price: "R750.00", images: BLAZER_IMAGES },
-      { id: "g79-gray-red-tie", name: "Gray and Red Tie", price: "R150.00", images: GRAY_RED_TIE_IMAGES },
-      { id: "g79-gray-red-socks", name: "Gray and Red Socks", price: "R100.00", images: GRAY_RED_SOCKS_IMAGES },
+      { id: "g79-gray-red-tie", name: "Gray and Green Tie", price: "R150.00", images: GRAY_RED_TIE_IMAGES },
+      { id: "g79-gray-red-socks", name: "Gray and Green Socks", price: "R100.00", images: GRAY_RED_SOCKS_IMAGES },
       { id: "g79-sun-hat", name: "Sun hat", price: "R200.00", images: SUN_HAT_IMAGES },
       { id: "g79-winter-woollen-hat", name: "Winter woollen hat", price: "R200.00", images: WINTER_WOOLLEN_HAT_IMAGES },
       { id: "g79-gray-skirt", name: "Gray Skirt", price: "R200.00", images: GRAY_SKIRT_IMAGES },
