@@ -1,71 +1,26 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { ArrowRight, GraduationCap, Info, ShoppingBag } from "lucide-react"
+import { ArrowRight, Info, ShoppingBag } from "lucide-react"
 import { FadeIn } from "@/components/shared/fade-in"
 import { PageIntro } from "@/components/shared/page-intro"
-import { PageBanner } from "@/components/shared/page-banner"
 import { CTABanner } from "@/components/sections/cta-banner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { TEMPORARY_VISIBILITY } from "@/lib/feature-flags"
 import {
+  UNIFORM_CATALOG_MID_IMAGE,
+  UNIFORM_CATALOG_TOP_IMAGE,
   UNIFORM_POLICY_NOTES,
   UNIFORM_PRICE_LISTS,
-  type UniformPriceItem,
-  type UniformPriceList,
 } from "@/lib/uniform-catalog"
-import { UniformItemImages } from "@/components/uniform/uniform-item-images"
-import { CAMPUS_PHOTOS } from "@/lib/student-photos"
+import { UniformPriceListSection } from "@/components/uniform/uniform-price-list"
 
 export const metadata: Metadata = {
   title: "Uniform Catalog",
   description: `Official school uniform price list for ${SCHOOL_INFO.shortName} — items and prices by grade band.`,
-}
-
-function PriceListRow({ item }: { item: UniformPriceItem }) {
-  return (
-    <li className="border-b border-gray-100 last:border-b-0">
-      <div className="flex items-start justify-between gap-4 px-4 py-3.5 sm:px-6 sm:py-4">
-        <div className="min-w-0 flex-1 space-y-3">
-          <span className="font-medium text-gray-900">{item.name}</span>
-          {item.images?.length && TEMPORARY_VISIBILITY.uniformCatalogImages ? (
-            <UniformItemImages images={item.images} itemName={item.name} />
-          ) : null}
-        </div>
-        <span className="shrink-0 pt-0.5 font-display text-base font-bold text-primary-800 sm:text-lg">
-          {item.price}
-        </span>
-      </div>
-    </li>
-  )
-}
-
-function UniformPriceListSection({ list }: { list: UniformPriceList }) {
-  return (
-    <Card className="overflow-hidden border-gray-200 shadow-sm">
-      <CardHeader className="border-b border-primary-100 bg-gradient-to-r from-primary-900 via-primary-800 to-primary-700 pb-4 text-center text-white">
-        <CardTitle className="font-display text-xl uppercase tracking-wide sm:text-2xl">{list.title}</CardTitle>
-        <p className="mt-1 font-display text-lg font-bold text-accent-300 sm:text-xl">{list.subtitle}</p>
-        <p className="mt-3 flex items-center justify-center gap-1.5 text-sm font-medium text-primary-100">
-          <GraduationCap className="h-4 w-4 shrink-0" aria-hidden />
-          {list.grades}
-        </p>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500 sm:px-6">
-          <span>Item</span>
-          <span>Price</span>
-        </div>
-        <ul role="list">
-          {list.items.map((item) => (
-            <PriceListRow key={item.id} item={item} />
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
-  )
 }
 
 export default function UniformCatalogPage() {
@@ -84,18 +39,6 @@ export default function UniformCatalogPage() {
               title="Uniform Catalog"
               subtitle="Official uniform price lists by grade band for Asamaths learners"
               breadcrumbs={[{ label: "Uniform Catalog" }]}
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.04}>
-            <PageBanner
-              src={CAMPUS_PHOTOS.friends}
-              alt={`Learners in school uniform at ${SCHOOL_INFO.shortName}, ${SCHOOL_INFO.suburb}`}
-              headline="Neat, proud, and ready to learn"
-              subline="Our uniform reflects discipline, identity, and belonging."
-              variant="compact"
-              objectPosition="center 40%"
-              className="mb-10"
             />
           </FadeIn>
 
@@ -131,11 +74,43 @@ export default function UniformCatalogPage() {
           </FadeIn>
 
           <div className="space-y-10">
-            {UNIFORM_PRICE_LISTS.map((list, index) => (
-              <FadeIn key={list.id} delay={0.1 + index * 0.04}>
-                <UniformPriceListSection list={list} />
-              </FadeIn>
-            ))}
+            {UNIFORM_PRICE_LISTS.flatMap((list, index) => {
+              const table = (
+                <FadeIn key={list.id} delay={0.1 + index * 0.04}>
+                  <UniformPriceListSection list={list} />
+                </FadeIn>
+              )
+
+              if (list.id !== "grade-r-6") return [table]
+
+              return [
+                <FadeIn key="uniform-catalog-top-image" delay={0.1 + index * 0.04 - 0.02}>
+                  <figure className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md ring-1 ring-gray-100">
+                    <Image
+                      src={UNIFORM_CATALOG_TOP_IMAGE.src}
+                      alt={UNIFORM_CATALOG_TOP_IMAGE.alt}
+                      width={UNIFORM_CATALOG_TOP_IMAGE.width}
+                      height={UNIFORM_CATALOG_TOP_IMAGE.height}
+                      className="mx-auto h-auto w-full object-contain"
+                      sizes="(max-width: 768px) 100vw, 896px"
+                    />
+                  </figure>
+                </FadeIn>,
+                table,
+                <FadeIn key="uniform-catalog-mid-image" delay={0.1 + index * 0.04 + 0.02}>
+                  <figure className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md ring-1 ring-gray-100">
+                    <Image
+                      src={UNIFORM_CATALOG_MID_IMAGE.src}
+                      alt={UNIFORM_CATALOG_MID_IMAGE.alt}
+                      width={UNIFORM_CATALOG_MID_IMAGE.width}
+                      height={UNIFORM_CATALOG_MID_IMAGE.height}
+                      className="mx-auto h-auto w-full object-contain"
+                      sizes="(max-width: 768px) 100vw, 896px"
+                    />
+                  </figure>
+                </FadeIn>,
+              ]
+            })}
           </div>
 
           <FadeIn delay={0.28}>

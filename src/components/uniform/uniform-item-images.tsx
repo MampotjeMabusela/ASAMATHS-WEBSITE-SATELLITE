@@ -10,16 +10,19 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 import type { UniformItemImage } from "@/lib/uniform-catalog"
 
 type UniformItemImagesProps = {
   images: UniformItemImage[]
   itemName: string
+  variant?: "default" | "compact"
 }
 
-export function UniformItemImages({ images, itemName }: UniformItemImagesProps) {
+export function UniformItemImages({ images, itemName, variant = "default" }: UniformItemImagesProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const active = openIndex !== null ? images[openIndex] : null
+  const compact = variant === "compact"
 
   const onClose = useCallback(() => setOpenIndex(null), [])
 
@@ -33,28 +36,39 @@ export function UniformItemImages({ images, itemName }: UniformItemImagesProps) 
 
   return (
     <>
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className={cn("flex flex-wrap gap-2", compact ? "justify-start" : "justify-center gap-3")}>
         {images.map((image, index) => (
           <figure
             key={image.src}
-            className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+            className={cn(
+              "overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm",
+              compact ? "ring-1 ring-gray-100" : "rounded-xl"
+            )}
           >
             <button
               type="button"
               onClick={() => setOpenIndex(index)}
-              className="group relative block h-36 w-28 cursor-zoom-in sm:h-40 sm:w-32"
+              className={cn(
+                "group relative block cursor-zoom-in",
+                compact ? "h-24 w-32 sm:h-28 sm:w-40" : "h-36 w-44 sm:h-40 sm:w-52"
+              )}
               aria-label={`View larger image of ${itemName}${image.label ? ` (${image.label})` : ""}`}
             >
               <Image
                 src={image.src}
                 alt={image.alt}
                 fill
-                className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]"
-                sizes="128px"
+                className="object-contain p-1 transition-transform duration-200 group-hover:scale-[1.02] sm:p-1.5"
+                sizes={compact ? "96px" : "128px"}
               />
             </button>
             {image.label ? (
-              <figcaption className="border-t border-gray-100 bg-gray-50 px-2 py-1 text-center text-[11px] font-medium text-gray-600">
+              <figcaption
+                className={cn(
+                  "border-t border-gray-100 bg-gray-50 text-center font-medium text-gray-600",
+                  compact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-1 text-[11px]"
+                )}
+              >
                 {image.label}
               </figcaption>
             ) : null}
@@ -74,7 +88,7 @@ export function UniformItemImages({ images, itemName }: UniformItemImagesProps) 
               </DialogTitle>
               <DialogDescription className="sr-only">{active.alt}</DialogDescription>
 
-              <div className="relative mx-auto h-[min(62vh,22rem)] w-full rounded-lg bg-gray-50 ring-1 ring-gray-100">
+              <div className="relative mx-auto h-[min(70vh,28rem)] w-full rounded-lg bg-white ring-1 ring-gray-200">
                 <Image
                   src={active.src}
                   alt={active.alt}
