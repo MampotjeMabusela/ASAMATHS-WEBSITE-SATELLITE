@@ -22,7 +22,7 @@ export type UniformPriceList = {
 }
 
 /** Bump when any public uniform item image changes so browsers fetch fresh files. */
-export const UNIFORM_IMAGES_VERSION = "44"
+export const UNIFORM_IMAGES_VERSION = "45"
 
 export function uniformItemSrc(path: string): string {
   const base = path.split("?")[0] ?? path
@@ -51,15 +51,29 @@ const SPORTS_TSHIRT_IMAGES: UniformItemImage[] = [
 
 const JERSEY_RED_STRIPES_IMAGES: UniformItemImage[] = [
   {
-    src: uniformItemSrc("/images/uniform/items/jersey-red-stripes.png"),
+    src: uniformItemSrc("/images/uniform/items/jersey-red-stripes.jpg"),
     alt: "Grey school jersey with red stripes and Asamaths logo",
+  },
+]
+
+const JERSEY_MAROON_STRIPES_IMAGES: UniformItemImage[] = [
+  {
+    src: uniformItemSrc("/images/uniform/items/jersey-maroon-stripes-g79.png"),
+    alt: "Grey school jersey with maroon stripes and Asamaths logo",
   },
 ]
 
 const PULLOVER_RED_STRIPES_IMAGES: UniformItemImage[] = [
   {
-    src: uniformItemSrc("/images/uniform/items/pullover-red-stripes.png"),
+    src: uniformItemSrc("/images/uniform/items/pullover-red-stripes.jpg"),
     alt: "Grey school pullover with red stripes and Asamaths logo",
+  },
+]
+
+const PULLOVER_MAROON_STRIPES_IMAGES: UniformItemImage[] = [
+  {
+    src: uniformItemSrc("/images/uniform/items/pullover-maroon-stripes-g79.png"),
+    alt: "Grey school pullover with maroon stripes and Asamaths logo",
   },
 ]
 
@@ -236,8 +250,8 @@ export const UNIFORM_PRICE_LISTS: UniformPriceList[] = [
     items: [
       { id: "g79-shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES, showImages: true },
       { id: "g79-sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES, showImages: true },
-      { id: "g79-jersey-red-stripes", name: "Jersey(Maroon Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES, showImages: true },
-      { id: "g79-pullover-red-stripes", name: "Pullover (Maroon Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES, showImages: true },
+      { id: "g79-jersey-red-stripes", name: "Jersey(Maroon Stripes)", price: "R330.00", images: JERSEY_MAROON_STRIPES_IMAGES, showImages: true },
+      { id: "g79-pullover-red-stripes", name: "Pullover (Maroon Stripes)", price: "R270.00", images: PULLOVER_MAROON_STRIPES_IMAGES, showImages: true },
       { id: "g79-summer-tracksuit", name: "Summer Tracksuit", price: "R670.00", images: SUMMER_TRACKSUIT_G79_IMAGES, showImages: true },
       { id: "g79-winter-tracksuit", name: "Winter Tracksuit", price: "R750.00", images: WINTER_TRACKSUIT_G79_IMAGES, showImages: true },
       { id: "g79-red-drimac", name: "Maroon Drimac", price: "R450.00", images: MAROON_DRIMAC_IMAGES, showImages: true },
