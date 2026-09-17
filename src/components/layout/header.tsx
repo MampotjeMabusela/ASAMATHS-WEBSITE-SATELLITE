@@ -83,31 +83,23 @@ export function Header() {
 
         <div className="container-custom border-b border-gray-100/90">
           {/* Main row */}
-          <div className="flex h-16 items-center gap-2 md:h-20 md:gap-4">
+          <div className="flex min-h-16 items-center gap-2 py-2 md:min-h-20 md:gap-4 md:py-2.5">
             <Link
               href="/"
-              className="group flex min-w-0 flex-1 items-center gap-2 rounded-xl py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:gap-3 md:flex-none md:gap-4"
+              className="group flex min-w-0 max-w-[11rem] flex-1 flex-col items-center gap-1 rounded-xl py-0.5 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:max-w-[12rem] md:flex-none md:max-w-[13rem]"
             >
               <SiteLogo variant="header" isScrolled={isScrolled} />
-              <div className="hidden min-w-0 flex-col justify-center border-l border-gray-200/80 pl-3 sm:flex sm:h-[3.9rem] sm:pl-4 md:h-[4.375rem] md:pl-5">
-                <p className="font-display text-[1.02rem] font-semibold leading-snug tracking-tight text-primary-950 md:text-lg">
+              <div className="flex min-w-0 flex-col items-center">
+                <p className="font-display text-[0.8125rem] font-semibold leading-snug tracking-tight text-primary-950 sm:text-sm md:text-[1.02rem] md:leading-snug lg:text-lg">
                   {SCHOOL_INFO.shortName}
                 </p>
-                <p className="mt-0.5 text-[0.625rem] font-semibold uppercase leading-none tracking-[0.18em] text-primary-600/90 md:text-[0.6875rem]">
+                <p className="mt-0.5 text-[0.58rem] font-semibold uppercase leading-none tracking-[0.16em] text-primary-600/90 sm:text-[0.625rem] md:tracking-[0.18em] lg:text-[0.6875rem]">
                   {BRAND.motto}
                 </p>
-                <p className="mt-1.5 hidden text-xs font-medium text-gray-500 md:block md:text-[0.8125rem]">
+                <p className="mt-1 text-[0.65rem] font-medium text-gray-500 sm:text-xs md:text-[0.8125rem]">
                   {SCHOOL_INFO.suburb === SCHOOL_INFO.city
                     ? SCHOOL_INFO.suburb
                     : `${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}`}
-                </p>
-              </div>
-              <div className="flex min-w-0 flex-col justify-center sm:hidden">
-                <p className="truncate font-display text-[0.8125rem] font-semibold leading-tight text-primary-950 sm:text-sm">
-                  {SCHOOL_INFO.shortName}
-                </p>
-                <p className="mt-0.5 truncate text-[0.58rem] font-medium uppercase tracking-wider text-primary-600">
-                  {BRAND.motto}
                 </p>
               </div>
             </Link>
