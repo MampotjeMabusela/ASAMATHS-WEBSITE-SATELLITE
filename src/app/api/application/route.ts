@@ -25,7 +25,8 @@ export async function POST(request: Request) {
     const reference =
       String(body.applicationReference ?? "").trim() || createApplicationReference()
 
-    const { applicationReference: _ref, ...formFields } = body
+    const formFields = { ...body }
+    delete formFields.applicationReference
     const parsed = applicationFormSchema.safeParse(formFields)
     if (!parsed.success) {
       return NextResponse.json(
