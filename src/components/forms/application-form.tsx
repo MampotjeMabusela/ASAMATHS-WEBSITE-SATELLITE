@@ -35,7 +35,7 @@ import {
   applicationFormSchema,
   createApplicationReference,
 } from "@/lib/application-schema"
-import { getInquiryInbox, isWeb3FormsConfigured } from "@/lib/web3forms"
+import { getInquiryInbox } from "@/lib/web3forms"
 import type { ApplicationFormValues } from "@/types/application"
 import { cn } from "@/lib/utils"
 
@@ -87,7 +87,12 @@ function StepProgress({ current }: { current: number }) {
   )
 }
 
-export function ApplicationForm() {
+type ApplicationFormProps = {
+  /** Resolved on the server so a server-only WEB3FORMS_ACCESS_KEY still enables the form. */
+  formsEnabled?: boolean
+}
+
+export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
   const [stepIndex, setStepIndex] = useState(0)
   const [reference, setReference] = useState<string | null>(null)
   const [status, setStatus] = useState<{
@@ -97,7 +102,7 @@ export function ApplicationForm() {
   }>({ type: null, message: "" })
 
   const inbox = getInquiryInbox()
-  const configured = isWeb3FormsConfigured()
+  const configured = formsEnabled
 
   const applicationDefaults = useMemo(() => getApplicationDefaultValues(), [])
   const schoolYears = useMemo(() => getApplicationSchoolYears(), [])

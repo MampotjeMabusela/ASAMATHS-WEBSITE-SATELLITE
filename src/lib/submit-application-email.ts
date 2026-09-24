@@ -1,9 +1,9 @@
-import {
-  buildFilledApplicationPdf,
-  filledApplicationPdfFilename,
-} from "@/lib/application-pdf"
 import { buildApplicationFormData } from "@/lib/web3forms-application"
-import { WEB3FORMS_SUBMIT_URL, getWeb3FormsAccessKey, getWeb3FormsPublicAccessKey } from "@/lib/web3forms"
+import {
+  WEB3FORMS_SUBMIT_URL,
+  getWeb3FormsAccessKey,
+  getWeb3FormsPublicAccessKey,
+} from "@/lib/web3forms"
 import type { ApplicationFiles, ApplicationFormValues } from "@/types/application"
 
 type Web3FormsResponse = {
@@ -25,7 +25,14 @@ async function parseWeb3FormsResponse(res: Response) {
   }
 }
 
-/** Server-only: generates the filled PDF and emails it with the application. */
+/**
+ * Emails the application via Web3Forms as text fields only.
+ *
+ * Web3Forms Free does not support file attachments (Pro-only). Attaching the
+ * generated PDF previously caused every parent submission to fail. Full details
+ * are included in the email body instead. Set WEB3FORMS_ALLOW_ATTACHMENTS=true
+ * only if the account is on a Pro plan.
+ */
 export async function submitApplicationWithPdf(
   data: ApplicationFormValues,
   files: ApplicationFiles,
@@ -36,17 +43,32 @@ export async function submitApplicationWithPdf(
     return { ok: false, detail: "Application form is not configured yet." }
   }
 
+  const allowAttachments = process.env.WEB3FORMS_ALLOW_ATTACHMENTS === "true"
+
   try {
-    const pdfBuffer = buildFilledApplicationPdf(data, reference, files)
-    const pdfBlob = new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" })
-    const formData = buildApplicationFormData(
-      data,
-      files,
-      accessKey,
-      reference,
-      pdfBlob,
-      filledApplicationPdfFilename(reference)
-    )
+    let formData = buildApplicationFormData(data, files, accessKey, reference, {
+      includeAttachments: false,
+    })
+
+    if (allowAttachments) {
+      try {
+        const { buildFilledApplicationPdf, filledApplicationPdfFilename } = await import(
+          "@/lib/application-pdf"
+        )
+        const pdfBuffer = buildFilledApplicationPdf(data, reference, files)
+        const pdfBlob = new Blob([new Uint8Array(pdfBuffer)], { type: "application/pdf" })
+        formData = buildApplicationFormData(data, files, accessKey, reference, {
+          includeAttachments: true,
+          pdfBlob,
+          pdfFilename: filledApplicationPdfFilename(reference),
+        })
+      } catch (pdfErr) {
+        console.warn("Application PDF attachment skipped:", pdfErr)
+        formData = buildApplicationFormData(data, files, accessKey, reference, {
+          includeAttachments: false,
+        })
+      }
+    }
 
     const res = await fetch(WEB3FORMS_SUBMIT_URL, {
       method: "POST",
@@ -54,7 +76,7 @@ export async function submitApplicationWithPdf(
     })
     return parseWeb3FormsResponse(res)
   } catch (err) {
-    console.error("Application email with PDF error:", err)
+    console.error("Application email error:", err)
     return {
       ok: false,
       detail: "Could not reach the email service. Please try again or email the school directly.",

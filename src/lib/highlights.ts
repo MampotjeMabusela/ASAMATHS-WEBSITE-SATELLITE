@@ -61,10 +61,13 @@ export const HIGHLIGHT_ITEMS: Highlight[] = [
     description: "",
   },
   {
-    id: "general-none",
+    id: "general-port-elizabeth-trip",
     category: "general",
-    title: "No Updates",
+    title: "Trip to Port Elizabeth from the 15th – 18th October 2026",
     description: "",
+    when: "15–18 Oct",
+    startDate: "2026-10-15",
+    endDate: "2026-10-18",
   },
 ]
 

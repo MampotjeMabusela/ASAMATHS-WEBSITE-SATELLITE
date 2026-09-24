@@ -9,7 +9,13 @@ const FILE_FIELD_MAP: Record<keyof ApplicationFiles, string> = {
   guardianIdCopy: "guardian_id_copy",
 }
 
-function buildApplicationMessage(data: ApplicationFormValues, reference: string): string {
+function line(label: string, value: string | undefined | null): string {
+  const trimmed = (value ?? "").trim()
+  return `${label}: ${trimmed || "—"}`
+}
+
+/** Full application summary for the school inbox (works on Web3Forms Free — no file uploads). */
+export function buildApplicationMessage(data: ApplicationFormValues, reference: string): string {
   const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
   const guardianName = `${data.guardian1FirstName} ${data.guardian1LastName}`.trim()
   const submittedAt = new Date().toLocaleString("en-ZA", {
@@ -17,20 +23,82 @@ function buildApplicationMessage(data: ApplicationFormValues, reference: string)
     timeStyle: "short",
   })
 
-  return [
+  const sections: string[] = [
     "Online admission application received.",
     "",
-    `Reference: ${reference}`,
-    `School year: ${data.schoolYear}`,
-    `Learner: ${learnerName} (${data.gradeApplyingFor})`,
-    `Primary guardian: ${guardianName}`,
-    `Contact: ${data.guardian1Email} · ${data.guardian1Phone}`,
-    `Submitted: ${submittedAt}`,
+    "— APPLICATION —",
+    line("Reference", reference),
+    line("School year", data.schoolYear),
+    line("Submitted", submittedAt),
+    line("Campus", SCHOOL_INFO.name),
     "",
-    "The completed application is attached as a PDF — same layout as the printable admission form.",
+    "— PRIMARY GUARDIAN —",
+    line("Name", guardianName),
+    line("Relationship", data.guardian1Relationship),
+    line("Email", data.guardian1Email),
+    line("Phone", data.guardian1Phone),
+    line("SA ID", data.guardian1IdNumber),
+  ]
+
+  if (data.includeSecondGuardian) {
+    sections.push(
+      "",
+      "— SECOND GUARDIAN —",
+      line("Name", `${data.guardian2FirstName} ${data.guardian2LastName}`.trim()),
+      line("Relationship", data.guardian2Relationship),
+      line("Email", data.guardian2Email),
+      line("Phone", data.guardian2Phone)
+    )
+  }
+
+  sections.push(
     "",
-    "Supporting documents (birth certificate, school report, transfer letter, ID copy) can be brought to the school office or emailed separately with this reference.",
-  ].join("\n")
+    "— LEARNER —",
+    line("Name", learnerName),
+    line("Date of birth", data.learnerDateOfBirth),
+    line("Gender", data.learnerGender),
+    line("SA ID", data.learnerIdNumber),
+    line("Current grade", data.currentGrade),
+    line("Grade applying for", data.gradeApplyingFor),
+    line("Current / previous school", data.currentSchoolName),
+    line("Latest school reports available", data.hasPreviousSchoolReports === "yes" ? "Yes" : "Not yet"),
+    "",
+    "— ADDRESS —",
+    line("Street", data.physicalAddress),
+    line("Suburb", data.suburb),
+    line("City", data.city),
+    line("Postal code", data.postalCode),
+    "",
+    "— EMERGENCY CONTACT —",
+    line("Name", data.emergencyContactName),
+    line("Relationship", data.emergencyContactRelationship),
+    line("Phone", data.emergencyContactPhone),
+    "",
+    "— MEDICAL & SUPPORT —",
+    line("Allergies", data.allergies),
+    line("Medical conditions", data.medicalConditions),
+    line("Medication", data.medication),
+    line("Learning / support needs", data.specialNeeds),
+    "",
+    "— OTHER —",
+    line("How they heard about us", data.referralSource),
+    line("Additional notes", data.additionalNotes),
+    line("POPIA consent", data.popiaConsent ? "Yes" : "No"),
+    line("Declaration accurate", data.declarationAccurate ? "Yes" : "No"),
+    "",
+    "Supporting documents (birth certificate, school report, transfer letter, ID copy)",
+    "were not uploaded online — ask the family to bring them to the office or email",
+    `them separately quoting reference ${reference}.`
+  )
+
+  return sections.join("\n")
+}
+
+export type BuildApplicationFormDataOptions = {
+  /** PDF / document attachments require Web3Forms Pro. Default: false (Free plan). */
+  includeAttachments?: boolean
+  pdfBlob?: Blob
+  pdfFilename?: string
 }
 
 export function buildApplicationFormData(
@@ -38,11 +106,11 @@ export function buildApplicationFormData(
   files: ApplicationFiles,
   accessKey: string,
   reference: string,
-  pdfBlob?: Blob,
-  pdfFilename?: string
+  options: BuildApplicationFormDataOptions = {}
 ): FormData {
   const formData = new FormData()
   const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
+  const { includeAttachments = false, pdfBlob, pdfFilename } = options
 
   formData.append("access_key", accessKey)
   formData.append("subject", `Online Application ${reference} — ${learnerName} (${data.gradeApplyingFor})`)
@@ -58,13 +126,15 @@ export function buildApplicationFormData(
   formData.append("message", buildApplicationMessage(data, reference))
   formData.append("botcheck", "")
 
-  if (pdfBlob && pdfFilename) {
-    formData.append("application_form", pdfBlob, pdfFilename)
-  }
-
-  for (const [key, file] of Object.entries(files) as [keyof ApplicationFiles, File | null][]) {
-    if (file) {
-      formData.append(FILE_FIELD_MAP[key], file, file.name)
+  // Attachments are Pro-only on Web3Forms; skip on Free so submissions succeed.
+  if (includeAttachments) {
+    if (pdfBlob && pdfFilename) {
+      formData.append("application_form", pdfBlob, pdfFilename)
+    }
+    for (const [key, file] of Object.entries(files) as [keyof ApplicationFiles, File | null][]) {
+      if (file) {
+        formData.append(FILE_FIELD_MAP[key], file, file.name)
+      }
     }
   }
 

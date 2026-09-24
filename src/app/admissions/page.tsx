@@ -25,6 +25,7 @@ import { PageBanner } from "@/components/shared/page-banner"
 import { SCHOOL_INFO } from "@/lib/constants"
 import { STUDENT_PHOTO_BLUR_DATA_URL } from "@/lib/student-photo-blur"
 import { CAMPUS_PHOTOS, photoSrc } from "@/lib/student-photos"
+import { isWeb3FormsConfigured } from "@/lib/web3forms"
 
 export const metadata: Metadata = {
   title: "Admissions",
@@ -255,7 +256,7 @@ export default function AdmissionsPage() {
                   admissions team will follow up to arrange an interview and confirm placement.
                 </p>
               </div>
-              <ApplicationForm />
+              <ApplicationForm formsEnabled={isWeb3FormsConfigured()} />
             </div>
           </FadeIn>
 

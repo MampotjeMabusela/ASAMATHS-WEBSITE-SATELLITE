@@ -68,7 +68,7 @@ type RouteLimit = { limit: number; windowMs: number; maxBodyBytes?: number }
 
 export const API_ROUTE_LIMITS: Record<string, RouteLimit> = {
   "/api/contact": { limit: 12, windowMs: 15 * 60 * 1000, maxBodyBytes: 32_768 },
-  "/api/application": { limit: 20, windowMs: 60 * 60 * 1000, maxBodyBytes: 512 * 1024 },
+  "/api/application": { limit: 20, windowMs: 60 * 60 * 1000, maxBodyBytes: 4 * 1024 * 1024 },
 }
 
 export function enforceApiPostGuard(
