@@ -52,10 +52,12 @@ export function highlightToCalendarEvent(item: Highlight, fallbackDate: string):
   }
 }
 
-/** Calendar events derived from the current Highlights list (single source of truth). */
+/** Calendar events derived from Highlights that have real dates (skip "No Updates"). */
 export function getCalendarEventsFromHighlights(now = new Date()): CalendarEvent[] {
   const { items, updatedAt } = getCurrentHighlights(now)
-  return items.map((item) => highlightToCalendarEvent(item, updatedAt))
+  return items
+    .filter((item) => Boolean(item.startDate) && item.title.trim().toLowerCase() !== "no updates")
+    .map((item) => highlightToCalendarEvent(item, updatedAt))
 }
 
 export function formatCalendarMonthLabel(yearMonth: string): string {
