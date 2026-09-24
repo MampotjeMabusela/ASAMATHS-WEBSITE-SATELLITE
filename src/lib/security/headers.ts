@@ -20,13 +20,13 @@ export function applySecurityHeaders(response: NextResponse): void {
   const cspParts = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
-    "connect-src 'self' https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+    "connect-src 'self' https://api.web3forms.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
     "img-src 'self' data: blob: https:",
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
     "frame-src 'self' https://www.openstreetmap.org https://www.google.com https://maps.google.com",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://api.web3forms.com",
     "frame-ancestors 'none'",
     "object-src 'none'",
   ]

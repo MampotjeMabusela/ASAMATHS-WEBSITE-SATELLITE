@@ -168,14 +168,12 @@ export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
     setReference(ref)
 
     try {
-      const body = new FormData()
-      Object.entries(data).forEach(([k, val]) => {
-        if (typeof val === "boolean") body.append(k, val ? "true" : "false")
-        else body.append(k, String(val ?? ""))
+      // Text-only JSON via /api (same pattern as Contact on this campus — avoids CSP issues).
+      const res = await fetch("/api/application", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...data, applicationReference: ref }),
       })
-      body.append("applicationReference", ref)
-
-      const res = await fetch("/api/application", { method: "POST", body })
       const json = (await res.json()) as { error?: string; message?: string; reference?: string }
       if (!res.ok) {
         throw new Error(json.error || `Could not send application. Email ${inbox}.`)
