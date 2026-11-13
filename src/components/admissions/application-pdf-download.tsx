@@ -5,7 +5,6 @@ import { SCHOOL_INFO } from "@/lib/constants"
 import { APPLICATION_PDF_FILENAME } from "@/lib/application-pdf"
 
 const PDF_API = "/api/application/pdf"
-const PDF_STATIC = "/downloads/Asamaths-Admission-Application-Form.pdf"
 
 export function ApplicationPdfDownload() {
   return (
@@ -53,7 +52,7 @@ export function ApplicationPdfDownload() {
             </Button>
           </a>
           <a
-            href={PDF_STATIC}
+            href={PDF_API}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex sm:flex-1 lg:flex-none"

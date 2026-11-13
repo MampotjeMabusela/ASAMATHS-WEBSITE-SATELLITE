@@ -85,3 +85,140 @@
     opacity: 0.6;
   }
 }
+
+/* ── Festive Christmas / New Year decorations ─────────────────────────── */
+.festive-bulb {
+  display: inline-block;
+  width: 8px;
+  height: 10px;
+  margin-top: 2px;
+  border-radius: 40% 40% 45% 45%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.festive-bulb-twinkle {
+  animation: festive-twinkle 2.4s ease-in-out infinite;
+}
+
+.festive-snowflake {
+  animation-name: festive-snowfall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes festive-twinkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    filter: brightness(0.85);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.35);
+  }
+}
+
+@keyframes festive-snowfall {
+  0% {
+    transform: translate3d(0, -12px, 0);
+  }
+  100% {
+    transform: translate3d(18px, 110vh, 0);
+  }
+}
+
+.festive-firework {
+  width: 4px;
+  height: 4px;
+  transform: scale(var(--fw-scale, 1));
+}
+
+.festive-firework-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 9999px;
+  opacity: 0.95;
+  box-shadow: 0 0 12px var(--fw-color, #f5c542);
+}
+
+.festive-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 9999px;
+  opacity: 0;
+}
+
+.festive-firework-burst .festive-spark {
+  animation: festive-spark 2.8s ease-out infinite;
+}
+
+.festive-firework-burst .festive-firework-core {
+  animation: festive-core 2.8s ease-out infinite;
+}
+
+.festive-banner-shine {
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.18) 45%,
+    transparent 70%
+  );
+  animation: festive-shine 5s ease-in-out infinite;
+}
+
+@keyframes festive-spark {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.4);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--sx), var(--sy), 0) scale(0.2);
+  }
+}
+
+@keyframes festive-core {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+  55% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes festive-shine {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .festive-bulb-twinkle,
+  .festive-snowflake,
+  .festive-firework-burst .festive-spark,
+  .festive-firework-burst .festive-firework-core,
+  .festive-banner-shine {
+    animation: none !important;
+  }
+}

@@ -339,7 +339,31 @@ export function buildApplicationPdf(): Buffer {
     ],
     y
   )
-  y = fieldRow(doc, [{ label: "SA ID number (13 digits)", width: CONTENT_W }], y)
+  y = fieldRow(
+    doc,
+    [
+      { label: "Identity document (tick): ☐ SA ID   ☐ Passport", width: 90 },
+      { label: "Residency status", width: 84 },
+    ],
+    y
+  )
+  y = fieldRow(
+    doc,
+    [
+      { label: "SA ID number (13 digits) — if applicable", width: 90 },
+      { label: "Passport number — if no SA ID", width: 84 },
+    ],
+    y
+  )
+  y = fieldRow(doc, [{ label: "Country / nationality of origin", width: CONTENT_W }], y)
+  doc.setFontSize(7)
+  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
+  doc.text(
+    "Residency options: SA citizen · Permanent resident · Temporary residence · Asylum seeker · Refugee · Visitor / short-term · Other",
+    MARGIN_L,
+    y
+  )
+  y += 7
 
   y = sectionBar(doc, "C. Second parent / guardian (optional)", y)
   y = ensureSpace(doc, y, 40)
@@ -376,11 +400,21 @@ export function buildApplicationPdf(): Buffer {
     doc,
     [
       { label: "Date of birth (DD / MM / YYYY)", width: 58 },
-      { label: "Learner SA ID (if applicable)", width: 58 },
       { label: "Home language", width: 58 },
+      { label: "Identity: ☐ SA ID  ☐ Passport", width: 58 },
     ],
     y
   )
+  y = fieldRow(
+    doc,
+    [
+      { label: "Learner SA ID (if applicable)", width: 58 },
+      { label: "Passport number (if no SA ID)", width: 58 },
+      { label: "Country / nationality", width: 58 },
+    ],
+    y
+  )
+  y = fieldRow(doc, [{ label: "Residency status (SA citizen / permanent resident / temporary / asylum seeker / refugee / visitor / other)", width: CONTENT_W }], y)
   y = fieldRow(
     doc,
     [
@@ -459,7 +493,8 @@ export function buildApplicationPdf(): Buffer {
     "☐ Learner birth certificate (certified copy)",
     "☐ Latest school report card",
     "☐ Transfer / exit letter from previous school (if applicable)",
-    "☐ Parent / guardian ID copy",
+    "☐ Parent / guardian SA ID or passport copy",
+    "☐ Learner passport / asylum / permit documents (if no SA ID)",
     "☐ Immunisation / clinic card (if requested by office)",
   ]
   doc.setFontSize(8)
@@ -581,7 +616,31 @@ export function buildFilledApplicationPdf(
   )
   y = fieldRowFilled(
     doc,
-    [{ label: "SA ID number (13 digits)", value: data.guardian1IdNumber ?? "", width: CONTENT_W }],
+    [
+      { label: "Identity document", value: data.guardian1IdentityType ?? "South African ID", width: 90 },
+      { label: "Residency status", value: data.guardian1ResidencyStatus ?? "", width: 84 },
+    ],
+    y
+  )
+  y = fieldRowFilled(
+    doc,
+    [
+      {
+        label: "SA ID number (13 digits)",
+        value: data.guardian1IdNumber ?? "",
+        width: 90,
+      },
+      {
+        label: "Passport number",
+        value: data.guardian1PassportNumber ?? "",
+        width: 84,
+      },
+    ],
+    y
+  )
+  y = fieldRowFilled(
+    doc,
+    [{ label: "Country / nationality of origin", value: data.guardian1Nationality ?? "", width: CONTENT_W }],
     y
   )
 
@@ -642,11 +701,28 @@ export function buildFilledApplicationPdf(
       {
         label: "Date of birth (DD / MM / YYYY)",
         value: formatDisplayDate(data.learnerDateOfBirth),
-        width: 58,
+        width: 90,
       },
-      { label: "Learner SA ID (if applicable)", value: data.learnerIdNumber ?? "", width: 58 },
-      { label: "Home language", value: "", width: 58 },
+      {
+        label: "Identity document",
+        value: data.learnerIdentityType ?? "South African ID",
+        width: 84,
+      },
     ],
+    y
+  )
+  y = fieldRowFilled(
+    doc,
+    [
+      { label: "Learner SA ID (if applicable)", value: data.learnerIdNumber ?? "", width: 58 },
+      { label: "Passport number", value: data.learnerPassportNumber ?? "", width: 58 },
+      { label: "Country / nationality", value: data.learnerNationality ?? "", width: 58 },
+    ],
+    y
+  )
+  y = fieldRowFilled(
+    doc,
+    [{ label: "Residency status", value: data.learnerResidencyStatus ?? "", width: CONTENT_W }],
     y
   )
   y = fieldRowFilled(
@@ -708,7 +784,13 @@ export function buildFilledApplicationPdf(
     Boolean(files.transferLetter),
     y
   )
-  y = checkboxLineFilled(doc, "Parent / guardian ID copy", Boolean(files.guardianIdCopy), y)
+  y = checkboxLineFilled(
+    doc,
+    "Parent / guardian SA ID or passport copy",
+    Boolean(files.guardianIdCopy),
+    y
+  )
+  y = checkboxLineFilled(doc, "Learner passport / asylum / permit documents (if no SA ID)", false, y)
   y = checkboxLineFilled(doc, "Immunisation / clinic card (if requested by office)", false, y)
   if (!Object.values(files).some(Boolean)) {
     doc.setFontSize(7.5)

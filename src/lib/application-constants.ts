@@ -27,6 +27,23 @@ export const GUARDIAN_RELATIONSHIPS = [
 
 export const LEARNER_GENDERS = ["Female", "Male", "Prefer not to say"] as const
 
+/** Identity document options for SA and international applicants. */
+export const IDENTITY_DOCUMENT_TYPES = ["South African ID", "Passport"] as const
+
+/**
+ * Immigration / residency status for learners and guardians from SA or abroad.
+ * Used when the applicant does not hold (or does not use) a South African ID.
+ */
+export const RESIDENCY_STATUSES = [
+  "South African citizen",
+  "Permanent resident",
+  "Temporary residence permit",
+  "Asylum seeker",
+  "Refugee",
+  "Visitor / short-term stay",
+  "Other",
+] as const
+
 export const REFERRAL_SOURCES = [
   "Family or friend",
   "Social media",
@@ -83,8 +100,8 @@ export const APPLICATION_DOCUMENTS: {
   },
   {
     key: "guardianIdCopy",
-    label: "Parent or guardian ID copy",
+    label: "Parent or guardian ID / passport copy",
     required: false,
-    hint: "Optional — speeds up administration.",
+    hint: "Optional — SA ID or passport copy speeds up administration.",
   },
 ]

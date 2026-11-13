@@ -30,7 +30,11 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("Relationship", data.guardian1Relationship),
     line("Email", data.guardian1Email),
     line("Phone", data.guardian1Phone),
+    line("Identity document", data.guardian1IdentityType),
     line("SA ID", data.guardian1IdNumber),
+    line("Passport number", data.guardian1PassportNumber),
+    line("Country / nationality", data.guardian1Nationality),
+    line("Residency status", data.guardian1ResidencyStatus),
   ]
 
   if (data.includeSecondGuardian) {
@@ -50,7 +54,11 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("Name", learnerName),
     line("Date of birth", data.learnerDateOfBirth),
     line("Gender", data.learnerGender),
+    line("Identity document", data.learnerIdentityType),
     line("SA ID", data.learnerIdNumber),
+    line("Passport number", data.learnerPassportNumber),
+    line("Country / nationality", data.learnerNationality),
+    line("Residency status", data.learnerResidencyStatus),
     line("Current grade", data.currentGrade),
     line("Grade applying for", data.gradeApplyingFor),
     line("Current / previous school", data.currentSchoolName),
@@ -82,9 +90,10 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("POPIA consent", data.popiaConsent ? "Yes" : "No"),
     line("Declaration accurate", data.declarationAccurate ? "Yes" : "No"),
     "",
-    "Supporting documents (birth certificate, school report, transfer letter, ID copy)",
-    "were not uploaded online — ask the family to bring them to the office or email",
-    `them separately quoting reference ${reference}.`
+    "Supporting documents (birth certificate, school report, transfer letter,",
+    "SA ID or passport copy, asylum/permit papers if applicable) were not uploaded",
+    "online — ask the family to bring them to the office or email them separately",
+    `quoting reference ${reference}.`
   )
 
   return sections.join("\n")
