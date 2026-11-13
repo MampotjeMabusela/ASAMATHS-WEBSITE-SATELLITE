@@ -1,8 +1,10 @@
 /** Festive season window — Christmas & New Year site decorations. */
 
 export function isFestiveSeason(now = new Date()): boolean {
-  if (process.env.NEXT_PUBLIC_FESTIVE_DECOR === "true") return true
+  // Default ON for the festive season so production always shows décor
+  // unless explicitly disabled with NEXT_PUBLIC_FESTIVE_DECOR=false.
   if (process.env.NEXT_PUBLIC_FESTIVE_DECOR === "false") return false
+  if (process.env.NEXT_PUBLIC_FESTIVE_DECOR === "true") return true
 
   const month = now.getMonth() // 0-based
   const day = now.getDate()
