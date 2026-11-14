@@ -14,8 +14,12 @@ const MARGIN_L = 14
 const MARGIN_R = 196
 const CONTENT_W = MARGIN_R - MARGIN_L
 /** Reserved bottom band so body text never collides with the footer. */
-const FOOTER_BAND = 16
+const FOOTER_BAND = 22
 const PAGE_BOTTOM = 297 - FOOTER_BAND
+
+function schoolDescription(): string {
+  return `An independent ${SCHOOL_INFO.phase.toLowerCase()} in ${SCHOOL_INFO.suburb}, ${SCHOOL_INFO.city}, dedicated to providing quality education and fostering a disciplined, cohesive learning environment.`
+}
 
 function loadLogoDataUrl(): string | null {
   try {
@@ -39,7 +43,6 @@ function ensureSpace(doc: jsPDF, y: number, needed: number): number {
 /** Draw footer once per page at the end — never call mid-document (avoids overlapping text). */
 function drawPageFooter(doc: jsPDF, pageNum: number, totalPages: number) {
   const pageH = doc.internal.pageSize.getHeight()
-  const footerY = pageH - 8
 
   // Clear the footer band so nothing from the body shows through / stacks.
   doc.setFillColor(255, 255, 255)
@@ -47,16 +50,23 @@ function drawPageFooter(doc: jsPDF, pageNum: number, totalPages: number) {
 
   doc.setDrawColor(LINE.r, LINE.g, LINE.b)
   doc.setLineWidth(0.2)
-  doc.line(MARGIN_L, pageH - 14, MARGIN_R, pageH - 14)
+  doc.line(MARGIN_L, pageH - FOOTER_BAND + 2, MARGIN_R, pageH - FOOTER_BAND + 2)
 
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(7)
+  doc.setFontSize(6.5)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
 
-  const left = `${SCHOOL_INFO.shortName} — Online Admission Application`
-  const right = `Page ${pageNum} of ${totalPages}`
-  doc.text(left, MARGIN_L, footerY, { maxWidth: CONTENT_W - 28 })
-  doc.text(right, MARGIN_R, footerY, { align: "right" })
+  const lines = [
+    `${SCHOOL_INFO.shortName} · ${BRAND.motto} — Online Admission Application`,
+    SCHOOL_INFO.address,
+    `${SCHOOL_INFO.phone} · WhatsApp ${SCHOOL_INFO.whatsapp} · ${SCHOOL_INFO.email}`,
+    `${SCHOOL_INFO.officeHours} · Page ${pageNum} of ${totalPages}`,
+  ]
+  let fy = pageH - FOOTER_BAND + 6
+  for (const line of lines) {
+    doc.text(line, MARGIN_L, fy, { maxWidth: CONTENT_W })
+    fy += 3.2
+  }
 }
 
 function applyFooters(doc: jsPDF) {
@@ -282,7 +292,15 @@ function drawHeader(doc: jsPDF, logoDataUrl: string | null): number {
   doc.text(fitText(doc, BRAND.motto, textMaxW), textX, mottoY)
 
   // Form title sits fully below the logo + name block (no overlap).
-  let y = Math.max(top + logoSize, mottoY + 4) + 6
+  let y = Math.max(top + logoSize, mottoY + 4) + 3
+
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(7)
+  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
+  const blurb = doc.splitTextToSize(schoolDescription(), CONTENT_W) as string[]
+  doc.text(blurb.slice(0, 3), MARGIN_L, y)
+  y += Math.min(blurb.length, 3) * 3.4 + 4
+
   doc.setFont("helvetica", "bold")
   doc.setFontSize(13)
   doc.setTextColor(INK.r, INK.g, INK.b)
@@ -353,6 +371,7 @@ export function buildApplicationPdf(): Buffer {
   const logoDataUrl = loadLogoDataUrl()
 
   let y = drawHeader(doc, logoDataUrl)
+
   y = sectionBar(doc, "A. Application details", y)
   y = ensureSpace(doc, y, 20)
   y = fieldRow(
@@ -388,31 +407,7 @@ export function buildApplicationPdf(): Buffer {
     ],
     y
   )
-  y = fieldRow(
-    doc,
-    [
-      { label: "Identity document (tick): ☐ SA ID   ☐ Passport", width: 90 },
-      { label: "Residency status", width: 84 },
-    ],
-    y
-  )
-  y = fieldRow(
-    doc,
-    [
-      { label: "SA ID number (13 digits) — if applicable", width: 90 },
-      { label: "Passport number — if no SA ID", width: 84 },
-    ],
-    y
-  )
-  y = fieldRow(doc, [{ label: "Country / nationality of origin", width: CONTENT_W }], y)
-  doc.setFontSize(7)
-  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(
-    "Residency options: SA citizen · Permanent resident · Temporary residence · Asylum seeker · Refugee · Visitor / short-term · Other",
-    MARGIN_L,
-    y
-  )
-  y += 7
+  y = fieldRow(doc, [{ label: "SA ID number (13 digits)", width: CONTENT_W }], y)
 
   y = sectionBar(doc, "C. Second parent / guardian (optional)", y)
   y = ensureSpace(doc, y, 40)
@@ -449,21 +444,11 @@ export function buildApplicationPdf(): Buffer {
     doc,
     [
       { label: "Date of birth (DD / MM / YYYY)", width: 58 },
-      { label: "Home language", width: 58 },
-      { label: "Identity: ☐ SA ID  ☐ Passport", width: 58 },
-    ],
-    y
-  )
-  y = fieldRow(
-    doc,
-    [
       { label: "Learner SA ID (if applicable)", width: 58 },
-      { label: "Passport number (if no SA ID)", width: 58 },
-      { label: "Country / nationality", width: 58 },
+      { label: "Home language", width: 58 },
     ],
     y
   )
-  y = fieldRow(doc, [{ label: "Residency status (SA citizen / permanent resident / temporary / asylum seeker / refugee / visitor / other)", width: CONTENT_W }], y)
   y = fieldRow(
     doc,
     [
@@ -542,8 +527,7 @@ export function buildApplicationPdf(): Buffer {
     "☐ Learner birth certificate (certified copy)",
     "☐ Latest school report card",
     "☐ Transfer / exit letter from previous school (if applicable)",
-    "☐ Parent / guardian SA ID or passport copy",
-    "☐ Learner passport / asylum / permit documents (if no SA ID)",
+    "☐ Parent / guardian ID copy",
     "☐ Immunisation / clinic card (if requested by office)",
   ]
   doc.setFontSize(8)
@@ -622,6 +606,7 @@ export function buildFilledApplicationPdf(
   const guardianName = `${data.guardian1FirstName} ${data.guardian1LastName}`.trim()
 
   let y = drawHeader(doc, logoDataUrl)
+
   y = sectionBar(doc, "A. Application details", y)
   y = ensureSpace(doc, y, 24)
   y = fieldRowFilled(
@@ -786,13 +771,7 @@ export function buildFilledApplicationPdf(
     Boolean(files.transferLetter),
     y
   )
-  y = checkboxLineFilled(
-    doc,
-    "Parent / guardian SA ID or passport copy",
-    Boolean(files.guardianIdCopy),
-    y
-  )
-  y = checkboxLineFilled(doc, "Learner passport / asylum / permit documents (if no SA ID)", false, y)
+  y = checkboxLineFilled(doc, "Parent / guardian ID copy", Boolean(files.guardianIdCopy), y)
   y = checkboxLineFilled(doc, "Immunisation / clinic card (if requested by office)", false, y)
   if (!Object.values(files).some(Boolean)) {
     doc.setFontSize(7.5)

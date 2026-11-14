@@ -127,7 +127,7 @@ export function UniformCartPanel() {
     return null
   }
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     const error = validateDetails()
     if (error) {
       setStatus({ type: "error", message: error })
@@ -135,12 +135,22 @@ export function UniformCartPanel() {
     }
     const ref = reference ?? createUniformQuotationReference()
     setReference(ref)
-    const blob = buildUniformQuotationPdf(lines, details, ref)
-    downloadUniformQuotationPdf(blob, ref)
-    setStatus({
-      type: "success",
-      message: `PDF downloaded. Keep reference ${ref} when you pay or visit the office.`,
-    })
+    setSubmitting(true)
+    try {
+      const blob = await buildUniformQuotationPdf(lines, details, ref)
+      downloadUniformQuotationPdf(blob, ref)
+      setStatus({
+        type: "success",
+        message: `PDF downloaded. Keep reference ${ref} when you pay or visit the office.`,
+      })
+    } catch {
+      setStatus({
+        type: "error",
+        message: "Could not generate the PDF quotation. Please try again.",
+      })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleEmailSchool = async () => {
@@ -158,7 +168,7 @@ export function UniformCartPanel() {
 
     try {
       // Also generate the PDF locally for the parent to keep.
-      const blob = buildUniformQuotationPdf(lines, details, ref)
+      const blob = await buildUniformQuotationPdf(lines, details, ref)
       downloadUniformQuotationPdf(blob, ref)
 
       const res = await fetch("/api/uniform-order", {
