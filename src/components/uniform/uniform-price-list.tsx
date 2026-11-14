@@ -74,10 +74,14 @@ function UniformProductCard({
               href={item.paymentUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 font-display text-sm font-bold tabular-nums text-primary-900 ring-1 ring-primary-100 transition hover:bg-primary-100 hover:ring-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              aria-label={`Pay ${item.price} for ${item.name} via Yoco`}
+              className="inline-flex w-full items-center justify-between gap-2 rounded-lg bg-primary-800 px-3 py-2 font-display text-sm font-bold tabular-nums text-white shadow-sm ring-1 ring-primary-900/20 transition hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+              aria-label={`Pay ${item.price} for ${item.name} securely via Yoco`}
+              title="Pay now with card or bank account via Yoco"
             >
-              {item.price}
+              <span>{item.price}</span>
+              <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-primary-100">
+                Pay now
+              </span>
             </a>
           ) : (
             <p className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 font-display text-sm font-bold tabular-nums text-primary-900 ring-1 ring-primary-100">
