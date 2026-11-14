@@ -69,9 +69,21 @@ function UniformProductCard({
           <h3 className="font-display text-sm font-semibold leading-snug text-primary-950 sm:text-[0.95rem]">
             {item.name}
           </h3>
-          <p className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 font-display text-sm font-bold tabular-nums text-primary-900 ring-1 ring-primary-100">
-            {item.price}
-          </p>
+          {item.paymentUrl ? (
+            <a
+              href={item.paymentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 font-display text-sm font-bold tabular-nums text-primary-900 ring-1 ring-primary-100 transition hover:bg-primary-100 hover:ring-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              aria-label={`Pay ${item.price} for ${item.name} via Yoco`}
+            >
+              {item.price}
+            </a>
+          ) : (
+            <p className="inline-flex items-center rounded-md bg-primary-50 px-2 py-0.5 font-display text-sm font-bold tabular-nums text-primary-900 ring-1 ring-primary-100">
+              {item.price}
+            </p>
+          )}
         </div>
 
         <div className="mt-auto grid grid-cols-[1fr_auto] gap-2">

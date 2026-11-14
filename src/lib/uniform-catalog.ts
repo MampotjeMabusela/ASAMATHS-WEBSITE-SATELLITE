@@ -11,6 +11,8 @@ export type UniformPriceItem = {
   images?: UniformItemImage[]
   /** When true, product photos display in the catalog table (overrides global image toggle). */
   showImages?: boolean
+  /** Optional direct payment link (e.g. Yoco) opened from the price badge. */
+  paymentUrl?: string
 }
 
 export type UniformPriceList = {
@@ -225,7 +227,14 @@ export const UNIFORM_PRICE_LISTS: UniformPriceList[] = [
     subtitle: "GRADE R-6",
     grades: "Grade R – 6",
     items: [
-      { id: "shirt", name: "Shirt (Long/Short Sleeve)", price: "R240.00", images: SHIRT_IMAGES, showImages: true },
+      {
+        id: "shirt",
+        name: "Shirt (Long/Short Sleeve)",
+        price: "R240.00",
+        images: SHIRT_IMAGES,
+        showImages: true,
+        paymentUrl: "https://pay.yoco.com/r/1oKewN",
+      },
       { id: "sports-tshirt", name: "Sports T-shirt", price: "R370.00", images: SPORTS_TSHIRT_IMAGES, showImages: true },
       { id: "jersey-red-stripes", name: "Jersey(Red Stripes)", price: "R330.00", images: JERSEY_RED_STRIPES_IMAGES, showImages: true },
       { id: "pullover-red-stripes", name: "Pullover (Red Stripes)", price: "R270.00", images: PULLOVER_RED_STRIPES_IMAGES, showImages: true },
