@@ -16,13 +16,16 @@ import type { UniformItemImage } from "@/lib/uniform-catalog"
 type UniformItemImagesProps = {
   images: UniformItemImage[]
   itemName: string
-  variant?: "default" | "compact"
+  variant?: "default" | "compact" | "card"
 }
 
 export function UniformItemImages({ images, itemName, variant = "default" }: UniformItemImagesProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [cardIndex, setCardIndex] = useState(0)
   const active = openIndex !== null ? images[openIndex] : null
   const compact = variant === "compact"
+  const card = variant === "card"
+  const cardImage = images[Math.min(cardIndex, images.length - 1)]
 
   const onClose = useCallback(() => setOpenIndex(null), [])
 
@@ -33,6 +36,92 @@ export function UniformItemImages({ images, itemName, variant = "default" }: Uni
   const goNext = useCallback(() => {
     setOpenIndex((i) => (i === null ? null : (i + 1) % images.length))
   }, [images.length])
+
+  if (card && cardImage) {
+    return (
+      <>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setOpenIndex(cardIndex)}
+            className="group relative block aspect-[5/4] w-full cursor-zoom-in"
+            aria-label={`View larger image of ${itemName}${cardImage.label ? ` (${cardImage.label})` : ""}`}
+          >
+            <Image
+              src={cardImage.src}
+              alt={cardImage.alt}
+              fill
+              className="object-contain p-2.5 transition-transform duration-300 group-hover:scale-[1.03] sm:p-3"
+              sizes="(max-width: 640px) 90vw, (max-width: 1280px) 33vw, 25vw"
+            />
+          </button>
+
+          {images.length > 1 ? (
+            <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1.5 px-2">
+              {images.map((image, index) => (
+                <button
+                  key={image.src}
+                  type="button"
+                  onClick={() => setCardIndex(index)}
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-semibold transition",
+                    index === cardIndex
+                      ? "bg-primary-900 text-white shadow-sm"
+                      : "bg-white/90 text-primary-800 ring-1 ring-primary-100 hover:bg-primary-50"
+                  )}
+                  aria-label={`Show ${image.label ?? `image ${index + 1}`} for ${itemName}`}
+                  aria-pressed={index === cardIndex}
+                >
+                  {image.label ?? index + 1}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        <Dialog open={active !== null} onOpenChange={(open) => !open && onClose()}>
+          <DialogContent className="w-[min(92vw,28rem)] max-w-none gap-3 border-gray-200 p-4 sm:p-5">
+            {active && openIndex !== null ? (
+              <>
+                <DialogTitle className="pr-8 text-center font-display text-base font-semibold text-gray-900 sm:text-lg">
+                  {itemName}
+                  {active.label ? (
+                    <span className="mt-0.5 block text-sm font-normal text-gray-500">{active.label}</span>
+                  ) : null}
+                </DialogTitle>
+                <DialogDescription className="sr-only">{active.alt}</DialogDescription>
+
+                <div className="relative mx-auto h-[min(70vh,28rem)] w-full rounded-lg bg-white ring-1 ring-gray-200">
+                  <Image
+                    src={active.src}
+                    alt={active.alt}
+                    fill
+                    className="object-contain p-3 sm:p-4"
+                    sizes="(max-width: 640px) 92vw, 28rem"
+                    priority
+                  />
+                </div>
+
+                {images.length > 1 ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Button type="button" variant="outline" size="icon" onClick={goPrev} aria-label="Previous image">
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="min-w-[3.5rem] text-center text-xs font-medium text-gray-500">
+                      {openIndex + 1} / {images.length}
+                    </span>
+                    <Button type="button" variant="outline" size="icon" onClick={goNext} aria-label="Next image">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : null}
+              </>
+            ) : null}
+          </DialogContent>
+        </Dialog>
+      </>
+    )
+  }
 
   return (
     <>

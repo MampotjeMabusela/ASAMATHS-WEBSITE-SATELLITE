@@ -1,13 +1,20 @@
 import { SCHOOL_INFO } from "@/lib/constants"
 import { WEB3FORMS_SUBMIT_URL, getWeb3FormsAccessKey, getWeb3FormsPublicAccessKey } from "@/lib/web3forms"
-import type { ApplicationFormValues } from "@/types/application"
+import type { ApplicationFiles, ApplicationFormValues } from "@/types/application"
+
+const FILE_FIELD_MAP: Record<keyof ApplicationFiles, string> = {
+  birthCertificate: "birth_certificate",
+  latestReport: "latest_report",
+  transferLetter: "transfer_letter",
+  guardianIdCopy: "guardian_id_copy",
+}
 
 function line(label: string, value: string | undefined | null): string {
   const trimmed = (value ?? "").trim()
   return `${label}: ${trimmed || "—"}`
 }
 
-/** Full application summary for the school inbox (text only — no PDF / file uploads). */
+/** Full application summary for the school inbox (works on Web3Forms Free — no file uploads). */
 export function buildApplicationMessage(data: ApplicationFormValues, reference: string): string {
   const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
   const guardianName = `${data.guardian1FirstName} ${data.guardian1LastName}`.trim()
@@ -30,11 +37,7 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("Relationship", data.guardian1Relationship),
     line("Email", data.guardian1Email),
     line("Phone", data.guardian1Phone),
-    line("Identity document", data.guardian1IdentityType),
     line("SA ID", data.guardian1IdNumber),
-    line("Passport number", data.guardian1PassportNumber),
-    line("Country / nationality", data.guardian1Nationality),
-    line("Residency status", data.guardian1ResidencyStatus),
   ]
 
   if (data.includeSecondGuardian) {
@@ -54,18 +57,11 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("Name", learnerName),
     line("Date of birth", data.learnerDateOfBirth),
     line("Gender", data.learnerGender),
-    line("Identity document", data.learnerIdentityType),
     line("SA ID", data.learnerIdNumber),
-    line("Passport number", data.learnerPassportNumber),
-    line("Country / nationality", data.learnerNationality),
-    line("Residency status", data.learnerResidencyStatus),
     line("Current grade", data.currentGrade),
     line("Grade applying for", data.gradeApplyingFor),
     line("Current / previous school", data.currentSchoolName),
-    line(
-      "Latest school reports available",
-      data.hasPreviousSchoolReports === "yes" ? "Yes" : "Not yet"
-    ),
+    line("Latest school reports available", data.hasPreviousSchoolReports === "yes" ? "Yes" : "Not yet"),
     "",
     "— ADDRESS —",
     line("Street", data.physicalAddress),
@@ -90,38 +86,59 @@ export function buildApplicationMessage(data: ApplicationFormValues, reference: 
     line("POPIA consent", data.popiaConsent ? "Yes" : "No"),
     line("Declaration accurate", data.declarationAccurate ? "Yes" : "No"),
     "",
-    "Supporting documents (birth certificate, school report, transfer letter,",
-    "SA ID or passport copy, asylum/permit papers if applicable) were not uploaded",
-    "online — ask the family to bring them to the office or email them separately",
-    `quoting reference ${reference}.`
+    "Supporting documents (birth certificate, school report, transfer letter, ID copy)",
+    "were not uploaded online — ask the family to bring them to the office or email",
+    `them separately quoting reference ${reference}.`
   )
 
   return sections.join("\n")
 }
 
-/** JSON payload for Web3Forms — same pattern as the working Contact inquiry form. */
-export function buildApplicationJsonPayload(
-  data: ApplicationFormValues,
-  accessKey: string,
-  reference: string
-) {
-  const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
+export type BuildApplicationFormDataOptions = {
+  /** PDF / document attachments require Web3Forms Pro. Default: false (Free plan). */
+  includeAttachments?: boolean
+  pdfBlob?: Blob
+  pdfFilename?: string
+}
 
-  return {
-    access_key: accessKey,
-    subject: `Online Application ${reference} — ${learnerName} (${data.gradeApplyingFor})`,
-    from_name: `${SCHOOL_INFO.shortName} Website`,
-    name: `${data.guardian1FirstName} ${data.guardian1LastName}`,
-    email: data.guardian1Email,
-    phone: data.guardian1Phone,
-    replyto: data.guardian1Email,
-    application_reference: reference,
-    school_year: data.schoolYear,
-    learner_name: learnerName,
-    grade_applying: data.gradeApplyingFor,
-    message: buildApplicationMessage(data, reference),
-    botcheck: "",
+export function buildApplicationFormData(
+  data: ApplicationFormValues,
+  files: ApplicationFiles,
+  accessKey: string,
+  reference: string,
+  options: BuildApplicationFormDataOptions = {}
+): FormData {
+  const formData = new FormData()
+  const learnerName = `${data.learnerFirstName} ${data.learnerLastName}`.trim()
+  const { includeAttachments = false, pdfBlob, pdfFilename } = options
+
+  formData.append("access_key", accessKey)
+  formData.append("subject", `Online Application ${reference} — ${learnerName} (${data.gradeApplyingFor})`)
+  formData.append("from_name", `${SCHOOL_INFO.shortName} Website`)
+  formData.append("name", `${data.guardian1FirstName} ${data.guardian1LastName}`)
+  formData.append("email", data.guardian1Email)
+  formData.append("phone", data.guardian1Phone)
+  formData.append("replyto", data.guardian1Email)
+  formData.append("application_reference", reference)
+  formData.append("school_year", data.schoolYear)
+  formData.append("learner_name", learnerName)
+  formData.append("grade_applying", data.gradeApplyingFor)
+  formData.append("message", buildApplicationMessage(data, reference))
+  formData.append("botcheck", "")
+
+  // Attachments are Pro-only on Web3Forms; skip on Free so submissions succeed.
+  if (includeAttachments) {
+    if (pdfBlob && pdfFilename) {
+      formData.append("application_form", pdfBlob, pdfFilename)
+    }
+    for (const [key, file] of Object.entries(files) as [keyof ApplicationFiles, File | null][]) {
+      if (file) {
+        formData.append(FILE_FIELD_MAP[key], file, file.name)
+      }
+    }
   }
+
+  return formData
 }
 
 type Web3FormsResponse = {
@@ -143,9 +160,9 @@ async function parseWeb3FormsResponse(res: Response) {
   }
 }
 
-/** Browser submit (recommended by Web3Forms — same approach as Contact). */
 export async function submitApplicationToWeb3FormsClient(
   data: ApplicationFormValues,
+  files: ApplicationFiles,
   reference: string
 ): Promise<{ ok: true } | { ok: false; status?: number; detail: string }> {
   const accessKey = getWeb3FormsPublicAccessKey()
@@ -154,13 +171,10 @@ export async function submitApplicationToWeb3FormsClient(
   }
 
   try {
+    const formData = buildApplicationFormData(data, files, accessKey, reference)
     const res = await fetch(WEB3FORMS_SUBMIT_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(buildApplicationJsonPayload(data, accessKey, reference)),
+      body: formData,
     })
     return parseWeb3FormsResponse(res)
   } catch (err) {
@@ -172,9 +186,9 @@ export async function submitApplicationToWeb3FormsClient(
   }
 }
 
-/** Server submit via JSON text only (no PDF / attachments). */
 export async function submitApplicationToWeb3Forms(
   data: ApplicationFormValues,
+  files: ApplicationFiles,
   reference: string
 ): Promise<{ ok: true } | { ok: false; status?: number; detail: string }> {
   const accessKey = getWeb3FormsAccessKey() || getWeb3FormsPublicAccessKey()
@@ -183,13 +197,10 @@ export async function submitApplicationToWeb3Forms(
   }
 
   try {
+    const formData = buildApplicationFormData(data, files, accessKey, reference)
     const res = await fetch(WEB3FORMS_SUBMIT_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(buildApplicationJsonPayload(data, accessKey, reference)),
+      body: formData,
     })
     return parseWeb3FormsResponse(res)
   } catch (err) {

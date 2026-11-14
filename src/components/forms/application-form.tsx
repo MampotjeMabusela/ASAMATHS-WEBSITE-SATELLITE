@@ -26,10 +26,8 @@ import {
   APPLICATION_GRADES,
   getApplicationSchoolYears,
   GUARDIAN_RELATIONSHIPS,
-  IDENTITY_DOCUMENT_TYPES,
   LEARNER_GENDERS,
   REFERRAL_SOURCES,
-  RESIDENCY_STATUSES,
 } from "@/lib/application-constants"
 import {
   getApplicationDefaultValues,
@@ -125,8 +123,6 @@ export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
 
   const values = watch()
   const includeSecondGuardian = watch("includeSecondGuardian")
-  const guardian1IdentityType = watch("guardian1IdentityType")
-  const learnerIdentityType = watch("learnerIdentityType")
 
   const currentStep = STEPS[stepIndex]
 
@@ -172,12 +168,14 @@ export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
     setReference(ref)
 
     try {
-      // Text-only JSON via /api (same pattern as Contact on this campus — avoids CSP issues).
-      const res = await fetch("/api/application", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...data, applicationReference: ref }),
+      const body = new FormData()
+      Object.entries(data).forEach(([k, val]) => {
+        if (typeof val === "boolean") body.append(k, val ? "true" : "false")
+        else body.append(k, String(val ?? ""))
       })
+      body.append("applicationReference", ref)
+
+      const res = await fetch("/api/application", { method: "POST", body })
       const json = (await res.json()) as { error?: string; message?: string; reference?: string }
       if (!res.ok) {
         throw new Error(json.error || `Could not send application. Email ${inbox}.`)
@@ -308,76 +306,22 @@ export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
               <FieldError id="g1-ph" message={errors.guardian1Phone?.message} />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="guardian1Relationship">Relationship to learner *</Label>
-            <FormSelect id="guardian1Relationship" {...register("guardian1Relationship")}>
-              {GUARDIAN_RELATIONSHIPS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </FormSelect>
-          </div>
-          <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4 space-y-4">
-            <p className="text-sm font-semibold text-gray-900">Identity &amp; residency</p>
-            <p className="text-xs text-gray-600">
-              Use a South African ID if available. Applicants from other countries may use a passport
-              and select their residency status.
-            </p>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="guardian1IdentityType">Identity document *</Label>
-                <FormSelect id="guardian1IdentityType" {...register("guardian1IdentityType")}>
-                  {IDENTITY_DOCUMENT_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </FormSelect>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="guardian1ResidencyStatus">Residency status *</Label>
-                <FormSelect id="guardian1ResidencyStatus" {...register("guardian1ResidencyStatus")}>
-                  {RESIDENCY_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </FormSelect>
-                <FieldError id="g1-res" message={errors.guardian1ResidencyStatus?.message} />
-              </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="guardian1Relationship">Relationship to learner *</Label>
+              <FormSelect id="guardian1Relationship" {...register("guardian1Relationship")}>
+                {GUARDIAN_RELATIONSHIPS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </FormSelect>
             </div>
-            {guardian1IdentityType === "Passport" ? (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="guardian1PassportNumber">Passport number *</Label>
-                  <Input id="guardian1PassportNumber" {...register("guardian1PassportNumber")} />
-                  <FieldError id="g1-pp" message={errors.guardian1PassportNumber?.message} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="guardian1Nationality">Country / nationality *</Label>
-                  <Input
-                    id="guardian1Nationality"
-                    placeholder="e.g. Zimbabwe, Nigeria, Mozambique"
-                    {...register("guardian1Nationality")}
-                  />
-                  <FieldError id="g1-nat" message={errors.guardian1Nationality?.message} />
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="guardian1IdNumber">SA ID number (optional)</Label>
-                  <Input id="guardian1IdNumber" inputMode="numeric" {...register("guardian1IdNumber")} />
-                  <FieldError id="g1-id" message={errors.guardian1IdNumber?.message} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="guardian1Nationality">Country / nationality</Label>
-                  <Input id="guardian1Nationality" {...register("guardian1Nationality")} />
-                  <FieldError id="g1-nat" message={errors.guardian1Nationality?.message} />
-                </div>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="guardian1IdNumber">SA ID number (optional)</Label>
+              <Input id="guardian1IdNumber" {...register("guardian1IdNumber")} />
+              <FieldError id="g1-id" message={errors.guardian1IdNumber?.message} />
+            </div>
           </div>
           <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-700">
             <input
@@ -462,66 +406,10 @@ export function ApplicationForm({ formsEnabled = true }: ApplicationFormProps) {
               </FormSelect>
             </div>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4 space-y-4">
-            <p className="text-sm font-semibold text-gray-900">Learner identity &amp; residency</p>
-            <p className="text-xs text-gray-600">
-              If the learner does not have a South African ID, select Passport and enter the passport
-              number, country of origin, and residency status (e.g. asylum seeker, permanent resident).
-            </p>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="learnerIdentityType">Identity document *</Label>
-                <FormSelect id="learnerIdentityType" {...register("learnerIdentityType")}>
-                  {IDENTITY_DOCUMENT_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </FormSelect>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="learnerResidencyStatus">Residency status *</Label>
-                <FormSelect id="learnerResidencyStatus" {...register("learnerResidencyStatus")}>
-                  {RESIDENCY_STATUSES.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </FormSelect>
-                <FieldError id="l-res" message={errors.learnerResidencyStatus?.message} />
-              </div>
-            </div>
-            {learnerIdentityType === "Passport" ? (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="learnerPassportNumber">Passport number *</Label>
-                  <Input id="learnerPassportNumber" {...register("learnerPassportNumber")} />
-                  <FieldError id="l-pp" message={errors.learnerPassportNumber?.message} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="learnerNationality">Country / nationality *</Label>
-                  <Input
-                    id="learnerNationality"
-                    placeholder="e.g. Zimbabwe, Nigeria, Mozambique"
-                    {...register("learnerNationality")}
-                  />
-                  <FieldError id="l-nat" message={errors.learnerNationality?.message} />
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="learnerIdNumber">Learner SA ID (optional)</Label>
-                  <Input id="learnerIdNumber" inputMode="numeric" {...register("learnerIdNumber")} />
-                  <FieldError id="l-id" message={errors.learnerIdNumber?.message} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="learnerNationality">Country / nationality</Label>
-                  <Input id="learnerNationality" {...register("learnerNationality")} />
-                  <FieldError id="l-nat" message={errors.learnerNationality?.message} />
-                </div>
-              </div>
-            )}
+          <div className="space-y-2">
+            <Label htmlFor="learnerIdNumber">Learner SA ID (optional)</Label>
+            <Input id="learnerIdNumber" {...register("learnerIdNumber")} />
+            <FieldError id="l-id" message={errors.learnerIdNumber?.message} />
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">

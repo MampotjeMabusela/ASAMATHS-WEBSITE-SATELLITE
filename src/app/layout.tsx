@@ -8,7 +8,7 @@ import { ScrollToTop } from "@/components/shared/scroll-to-top"
 import { FestiveDecor } from "@/components/shared/festive-decor"
 import { AsaChat } from "@/components/shared/asa-chat"
 import { WhatsAppFloat } from "@/components/shared/whatsapp-float"
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { BRAND, SCHOOL_INFO } from "@/lib/constants"
 

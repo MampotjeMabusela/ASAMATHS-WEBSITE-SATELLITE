@@ -4,10 +4,8 @@ import {
   APPLICATION_GRADES,
   getApplicationSchoolYears,
   GUARDIAN_RELATIONSHIPS,
-  IDENTITY_DOCUMENT_TYPES,
   MAX_APPLICATION_FILE_BYTES,
   MAX_APPLICATION_TOTAL_BYTES,
-  RESIDENCY_STATUSES,
   type ApplicationDocumentKey,
 } from "@/lib/application-constants"
 import { SCHOOL_INFO } from "@/lib/constants"
@@ -29,59 +27,7 @@ const saIdOptional = z
     message: "SA ID must be 13 digits if provided",
   })
 
-const passportOptional = z
-  .string()
-  .optional()
-  .or(z.literal(""))
-  .refine((v) => !v || /^[A-Za-z0-9]{5,20}$/.test(v.replace(/\s/g, "")), {
-    message: "Passport number looks invalid (5–20 letters or digits)",
-  })
-
-const identityTypeEnum = z.enum(IDENTITY_DOCUMENT_TYPES as unknown as [string, ...string[]])
-const residencyEnum = z.enum(RESIDENCY_STATUSES as unknown as [string, ...string[]])
 const gradeEnum = z.enum(APPLICATION_GRADES as unknown as [string, ...string[]])
-
-function refineIdentityFields(
-  ctx: z.RefinementCtx,
-  prefix: "guardian1" | "learner",
-  data: {
-    identityType: string
-    idNumber?: string
-    passportNumber?: string
-    nationality?: string
-    residencyStatus: string
-  }
-) {
-  const idNumber = (data.idNumber ?? "").replace(/\s/g, "")
-  const passport = (data.passportNumber ?? "").replace(/\s/g, "")
-  const nationality = (data.nationality ?? "").trim()
-  const isPassport = data.identityType === "Passport"
-  const isForeignResident = data.residencyStatus !== "South African citizen"
-
-  if (isPassport && !passport) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Passport number is required when Passport is selected",
-      path: [`${prefix}PassportNumber`],
-    })
-  }
-
-  if (!isPassport && idNumber && !/^\d{13}$/.test(idNumber)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "SA ID must be 13 digits if provided",
-      path: [`${prefix}IdNumber`],
-    })
-  }
-
-  if ((isPassport || isForeignResident) && nationality.length < 2) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Country / nationality is required for non-SA ID or foreign residency",
-      path: [`${prefix}Nationality`],
-    })
-  }
-}
 
 export const applicationFormSchema = z
   .object({
@@ -93,11 +39,7 @@ export const applicationFormSchema = z
     guardian1LastName: z.string().min(2, "Last name is required"),
     guardian1Email: z.string().email("Valid email is required"),
     guardian1Phone: phone,
-    guardian1IdentityType: identityTypeEnum.default("South African ID"),
     guardian1IdNumber: saIdOptional.default(""),
-    guardian1PassportNumber: passportOptional.default(""),
-    guardian1Nationality: z.string().max(80).default(""),
-    guardian1ResidencyStatus: residencyEnum.default("South African citizen"),
     guardian1Relationship: z.enum(GUARDIAN_RELATIONSHIPS as unknown as [string, ...string[]]),
 
     includeSecondGuardian: z.boolean(),
@@ -114,11 +56,7 @@ export const applicationFormSchema = z
       .min(1, "Date of birth is required")
       .refine((d) => !Number.isNaN(Date.parse(d)), "Enter a valid date"),
     learnerGender: z.string().default(""),
-    learnerIdentityType: identityTypeEnum.default("South African ID"),
     learnerIdNumber: saIdOptional.default(""),
-    learnerPassportNumber: passportOptional.default(""),
-    learnerNationality: z.string().max(80).default(""),
-    learnerResidencyStatus: residencyEnum.default("South African citizen"),
     currentGrade: gradeEnum,
     currentSchoolName: z.string().min(2, "Current or previous school name is required"),
     gradeApplyingFor: gradeEnum,
@@ -153,21 +91,6 @@ export const applicationFormSchema = z
     }),
   })
   .superRefine((data, ctx) => {
-    refineIdentityFields(ctx, "guardian1", {
-      identityType: data.guardian1IdentityType,
-      idNumber: data.guardian1IdNumber,
-      passportNumber: data.guardian1PassportNumber,
-      nationality: data.guardian1Nationality,
-      residencyStatus: data.guardian1ResidencyStatus,
-    })
-    refineIdentityFields(ctx, "learner", {
-      identityType: data.learnerIdentityType,
-      idNumber: data.learnerIdNumber,
-      passportNumber: data.learnerPassportNumber,
-      nationality: data.learnerNationality,
-      residencyStatus: data.learnerResidencyStatus,
-    })
-
     if (!data.includeSecondGuardian) return
     if (!data.guardian2FirstName?.trim()) {
       ctx.addIssue({
@@ -201,11 +124,7 @@ export const APPLICATION_STEP_FIELDS = {
     "guardian1LastName",
     "guardian1Email",
     "guardian1Phone",
-    "guardian1IdentityType",
     "guardian1IdNumber",
-    "guardian1PassportNumber",
-    "guardian1Nationality",
-    "guardian1ResidencyStatus",
     "guardian1Relationship",
     "includeSecondGuardian",
     "guardian2FirstName",
@@ -219,11 +138,7 @@ export const APPLICATION_STEP_FIELDS = {
     "learnerLastName",
     "learnerDateOfBirth",
     "learnerGender",
-    "learnerIdentityType",
     "learnerIdNumber",
-    "learnerPassportNumber",
-    "learnerNationality",
-    "learnerResidencyStatus",
     "currentGrade",
     "currentSchoolName",
     "gradeApplyingFor",
@@ -245,49 +160,41 @@ export const APPLICATION_STEP_FIELDS = {
 export function getApplicationDefaultValues(): ApplicationFormValues {
   return {
     schoolYear: getApplicationSchoolYears()[0],
-    guardian1FirstName: "",
-    guardian1LastName: "",
-    guardian1Email: "",
-    guardian1Phone: "",
-    guardian1IdentityType: "South African ID",
-    guardian1IdNumber: "",
-    guardian1PassportNumber: "",
-    guardian1Nationality: "South Africa",
-    guardian1ResidencyStatus: "South African citizen",
-    guardian1Relationship: "Mother",
-    includeSecondGuardian: false,
-    guardian2FirstName: "",
-    guardian2LastName: "",
-    guardian2Email: "",
-    guardian2Phone: "",
-    guardian2Relationship: "",
-    learnerFirstName: "",
-    learnerLastName: "",
-    learnerDateOfBirth: "",
-    learnerGender: "",
-    learnerIdentityType: "South African ID",
-    learnerIdNumber: "",
-    learnerPassportNumber: "",
-    learnerNationality: "South Africa",
-    learnerResidencyStatus: "South African citizen",
-    currentGrade: "Grade R",
-    currentSchoolName: "",
-    gradeApplyingFor: "Grade R",
-    hasPreviousSchoolReports: "yes",
-    physicalAddress: "",
-    suburb: SCHOOL_INFO.suburb,
-    city: SCHOOL_INFO.city,
-    postalCode: "",
-    emergencyContactName: "",
-    emergencyContactPhone: "",
-    emergencyContactRelationship: "",
-    allergies: "",
-    medicalConditions: "",
-    medication: "",
-    specialNeeds: "",
-    referralSource: "",
-    additionalNotes: "",
-    popiaConsent: false,
+  guardian1FirstName: "",
+  guardian1LastName: "",
+  guardian1Email: "",
+  guardian1Phone: "",
+  guardian1IdNumber: "",
+  guardian1Relationship: "Mother",
+  includeSecondGuardian: false,
+  guardian2FirstName: "",
+  guardian2LastName: "",
+  guardian2Email: "",
+  guardian2Phone: "",
+  guardian2Relationship: "",
+  learnerFirstName: "",
+  learnerLastName: "",
+  learnerDateOfBirth: "",
+  learnerGender: "",
+  learnerIdNumber: "",
+  currentGrade: "Grade R",
+  currentSchoolName: "",
+  gradeApplyingFor: "Grade R",
+  hasPreviousSchoolReports: "yes",
+  physicalAddress: "",
+  suburb: SCHOOL_INFO.suburb,
+  city: SCHOOL_INFO.city,
+  postalCode: "",
+  emergencyContactName: "",
+  emergencyContactPhone: "",
+  emergencyContactRelationship: "",
+  allergies: "",
+  medicalConditions: "",
+  medication: "",
+  specialNeeds: "",
+  referralSource: "",
+  additionalNotes: "",
+  popiaConsent: false,
     declarationAccurate: false,
   }
 }

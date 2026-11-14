@@ -13,6 +13,9 @@ const LINE = { r: 203, g: 213, b: 225 }
 const MARGIN_L = 14
 const MARGIN_R = 196
 const CONTENT_W = MARGIN_R - MARGIN_L
+/** Reserved bottom band so body text never collides with the footer. */
+const FOOTER_BAND = 16
+const PAGE_BOTTOM = 297 - FOOTER_BAND
 
 function loadLogoDataUrl(): string | null {
   try {
@@ -26,34 +29,63 @@ function loadLogoDataUrl(): string | null {
 }
 
 function ensureSpace(doc: jsPDF, y: number, needed: number): number {
-  const pageH = doc.internal.pageSize.getHeight()
-  if (y + needed > pageH - 18) {
+  if (y + needed > PAGE_BOTTOM) {
     doc.addPage()
-    drawPageFooter(doc, doc.getNumberOfPages())
-    return 22
+    return 18
   }
   return y
 }
 
-function drawPageFooter(doc: jsPDF, pageNum: number) {
+/** Draw footer once per page at the end — never call mid-document (avoids overlapping text). */
+function drawPageFooter(doc: jsPDF, pageNum: number, totalPages: number) {
   const pageH = doc.internal.pageSize.getHeight()
-  doc.setFontSize(8)
+  const footerY = pageH - 8
+
+  // Clear the footer band so nothing from the body shows through / stacks.
+  doc.setFillColor(255, 255, 255)
+  doc.rect(0, pageH - FOOTER_BAND, 210, FOOTER_BAND, "F")
+
+  doc.setDrawColor(LINE.r, LINE.g, LINE.b)
+  doc.setLineWidth(0.2)
+  doc.line(MARGIN_L, pageH - 14, MARGIN_R, pageH - 14)
+
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(7)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(
-    `${SCHOOL_INFO.shortName} — Admission Application · ${SCHOOL_INFO.email}`,
-    MARGIN_L,
-    pageH - 10
-  )
-  doc.text(`Page ${pageNum}`, MARGIN_R, pageH - 10, { align: "right" })
+
+  const left = `${SCHOOL_INFO.shortName} — Online Admission Application`
+  const right = `Page ${pageNum} of ${totalPages}`
+  doc.text(left, MARGIN_L, footerY, { maxWidth: CONTENT_W - 28 })
+  doc.text(right, MARGIN_R, footerY, { align: "right" })
+}
+
+function applyFooters(doc: jsPDF) {
+  const totalPages = doc.getNumberOfPages()
+  for (let p = 1; p <= totalPages; p++) {
+    doc.setPage(p)
+    drawPageFooter(doc, p, totalPages)
+  }
+}
+
+function fitText(doc: jsPDF, text: string, maxWidth: number): string {
+  const trimmed = text.trim()
+  if (!trimmed) return ""
+  if (doc.getTextWidth(trimmed) <= maxWidth) return trimmed
+  let s = trimmed
+  while (s.length > 1 && doc.getTextWidth(`${s}…`) > maxWidth) {
+    s = s.slice(0, -1)
+  }
+  return `${s}…`
 }
 
 function sectionBar(doc: jsPDF, title: string, y: number): number {
+  y = ensureSpace(doc, y, 12)
   doc.setFillColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
   doc.rect(MARGIN_L, y, CONTENT_W, 7, "F")
   doc.setFont("helvetica", "bold")
   doc.setFontSize(10)
   doc.setTextColor(255, 255, 255)
-  doc.text(title, MARGIN_L + 3, y + 5)
+  doc.text(fitText(doc, title, CONTENT_W - 6), MARGIN_L + 3, y + 5)
   doc.setTextColor(INK.r, INK.g, INK.b)
   return y + 11
 }
@@ -63,45 +95,50 @@ function fieldRow(
   labels: { label: string; width?: number }[],
   y: number
 ): number {
-  const gap = 4
+  const gap = 3
   let x = MARGIN_L
-  const totalW = CONTENT_W
-  const defaultW = totalW / labels.length - gap
+  const defaultW = CONTENT_W / labels.length - gap
 
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(8)
+  doc.setFontSize(7.5)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
 
   for (const item of labels) {
-    const w = item.width ?? defaultW
-    doc.text(item.label, x, y)
+    const w = Math.min(item.width ?? defaultW, MARGIN_R - x)
+    if (w < 8) break
+    const labelLines = doc.splitTextToSize(item.label, w) as string[]
+    doc.text(labelLines.slice(0, 2), x, y)
+    const labelH = Math.min(labelLines.length, 2) * 3.2
     doc.setDrawColor(LINE.r, LINE.g, LINE.b)
     doc.setLineWidth(0.2)
-    doc.line(x, y + 2.5, x + w, y + 2.5)
+    doc.line(x, y + labelH + 1, x + w, y + labelH + 1)
     x += w + gap
   }
 
   doc.setTextColor(INK.r, INK.g, INK.b)
-  return y + 10
+  return y + 12
 }
 
 function fieldBlock(doc: jsPDF, label: string, y: number, height = 10): number {
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(8)
+  doc.setFontSize(7.5)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(label, MARGIN_L, y)
+  doc.text(fitText(doc, label, CONTENT_W), MARGIN_L, y)
   doc.setDrawColor(LINE.r, LINE.g, LINE.b)
   doc.rect(MARGIN_L, y + 2, CONTENT_W, height)
   return y + height + 6
 }
 
 function checkboxLine(doc: jsPDF, label: string, y: number): number {
+  y = ensureSpace(doc, y, 6)
   doc.setDrawColor(LINE.r, LINE.g, LINE.b)
   doc.rect(MARGIN_L, y - 3, 3.5, 3.5)
+  doc.setFont("helvetica", "normal")
   doc.setFontSize(8)
   doc.setTextColor(INK.r, INK.g, INK.b)
-  doc.text(label, MARGIN_L + 6, y)
-  return y + 5
+  const lines = doc.splitTextToSize(label, CONTENT_W - 8) as string[]
+  doc.text(lines, MARGIN_L + 6, y)
+  return y + Math.max(5, lines.length * 4)
 }
 
 function formatDisplayDate(value?: string | Date): string {
@@ -117,71 +154,79 @@ function fieldRowFilled(
   fields: { label: string; value: string; width?: number }[],
   y: number
 ): number {
-  const gap = 4
+  const gap = 3
   let x = MARGIN_L
   const defaultW = CONTENT_W / fields.length - gap
   let rowBottom = y + 10
 
-  doc.setFont("helvetica", "normal")
-  doc.setFontSize(8)
-  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-
   for (const field of fields) {
-    const w = field.width ?? defaultW
-    doc.text(field.label, x, y)
+    const w = Math.min(field.width ?? defaultW, MARGIN_R - x)
+    if (w < 8) break
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(7)
+    doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
+    const labelLines = doc.splitTextToSize(field.label, w) as string[]
+    doc.text(labelLines.slice(0, 2), x, y)
+    const labelH = Math.min(labelLines.length, 2) * 3
+
     doc.setDrawColor(LINE.r, LINE.g, LINE.b)
-    doc.line(x, y + 2.5, x + w, y + 2.5)
+    doc.line(x, y + labelH + 1, x + w, y + labelH + 1)
 
     if (field.value.trim()) {
       doc.setFont("helvetica", "bold")
-      doc.setFontSize(9)
+      doc.setFontSize(8.5)
       doc.setTextColor(INK.r, INK.g, INK.b)
       const lines = doc.splitTextToSize(field.value.trim(), w - 1) as string[]
-      doc.text(lines, x + 0.5, y + 6.5)
-      rowBottom = Math.max(rowBottom, y + 6.5 + (lines.length - 1) * 4)
-      doc.setFont("helvetica", "normal")
-      doc.setFontSize(8)
-      doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
+      const valueY = y + labelH + 4.5
+      doc.text(lines.slice(0, 3), x + 0.5, valueY)
+      rowBottom = Math.max(rowBottom, valueY + Math.min(lines.length, 3) * 3.8)
     }
 
     x += w + gap
   }
 
-  return rowBottom
+  return rowBottom + 2
 }
 
 function fieldBlockFilled(doc: jsPDF, label: string, value: string, y: number, height = 10): number {
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(8)
+  doc.setFontSize(7.5)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(label, MARGIN_L, y)
-  doc.setDrawColor(LINE.r, LINE.g, LINE.b)
-  doc.rect(MARGIN_L, y + 2, CONTENT_W, height)
+  doc.text(fitText(doc, label, CONTENT_W), MARGIN_L, y)
 
-  if (value.trim()) {
-    doc.setFontSize(9)
+  const valueLines = value.trim()
+    ? (doc.splitTextToSize(value.trim(), CONTENT_W - 4) as string[])
+    : []
+  const boxH = Math.max(height, valueLines.length > 0 ? valueLines.length * 4 + 4 : height)
+  doc.setDrawColor(LINE.r, LINE.g, LINE.b)
+  doc.rect(MARGIN_L, y + 2, CONTENT_W, boxH)
+
+  if (valueLines.length > 0) {
+    doc.setFontSize(8.5)
     doc.setTextColor(INK.r, INK.g, INK.b)
-    const lines = doc.splitTextToSize(value.trim(), CONTENT_W - 4) as string[]
-    doc.text(lines, MARGIN_L + 2, y + 6)
+    doc.text(valueLines, MARGIN_L + 2, y + 6)
   }
 
-  return y + height + 6
+  return y + boxH + 6
 }
 
 function checkboxLineFilled(doc: jsPDF, label: string, checked: boolean, y: number): number {
+  y = ensureSpace(doc, y, 6)
   doc.setDrawColor(LINE.r, LINE.g, LINE.b)
   doc.rect(MARGIN_L, y - 3, 3.5, 3.5)
   if (checked) {
     doc.setFont("helvetica", "bold")
     doc.setFontSize(10)
     doc.setTextColor(INK.r, INK.g, INK.b)
-    doc.text("✓", MARGIN_L + 0.6, y)
+    doc.text("X", MARGIN_L + 0.7, y)
   }
   doc.setFont("helvetica", "normal")
   doc.setFontSize(8)
   doc.setTextColor(INK.r, INK.g, INK.b)
-  doc.text(label, MARGIN_L + 6, y)
-  return y + 5
+  const lines = doc.splitTextToSize(label, CONTENT_W - 8) as string[]
+  doc.text(lines, MARGIN_L + 6, y)
+  return y + Math.max(5, lines.length * 4)
 }
 
 function drawGradeChoices(doc: jsPDF, selectedGrade: string, y: number): number {
@@ -202,7 +247,7 @@ function drawGradeChoices(doc: jsPDF, selectedGrade: string, y: number): number 
       doc.setFont("helvetica", "bold")
       doc.setFontSize(8)
       doc.setTextColor(INK.r, INK.g, INK.b)
-      doc.text("✓", gx + 0.5, y)
+      doc.text("X", gx + 0.5, y)
     }
     doc.setFont("helvetica", "normal")
     doc.setFontSize(7)
@@ -215,86 +260,92 @@ function drawGradeChoices(doc: jsPDF, selectedGrade: string, y: number): number 
 }
 
 function drawHeader(doc: jsPDF, logoDataUrl: string | null): number {
-  let y = 14
+  const top = 12
+  const logoSize = 22
+  const textX = logoDataUrl ? MARGIN_L + logoSize + 4 : MARGIN_L
+  const textMaxW = MARGIN_R - textX
 
   if (logoDataUrl) {
-    doc.addImage(logoDataUrl, "PNG", MARGIN_L, y, 24, 24)
+    doc.addImage(logoDataUrl, "PNG", MARGIN_L, top, logoSize, logoSize)
   }
-
-  const textX = logoDataUrl ? MARGIN_L + 28 : MARGIN_L
-  doc.setFont("helvetica", "bold")
-  doc.setFontSize(14)
-  doc.setTextColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
-  doc.text(SCHOOL_INFO.name, textX, y + 6)
-
-  doc.setFont("helvetica", "italic")
-  doc.setFontSize(9)
-  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(BRAND.motto, textX, y + 12)
 
   doc.setFont("helvetica", "bold")
   doc.setFontSize(12)
+  doc.setTextColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
+  const nameLines = doc.splitTextToSize(SCHOOL_INFO.name, textMaxW) as string[]
+  doc.text(nameLines.slice(0, 2), textX, top + 6)
+
+  doc.setFont("helvetica", "italic")
+  doc.setFontSize(8)
+  doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
+  const mottoY = top + 6 + Math.min(nameLines.length, 2) * 5
+  doc.text(fitText(doc, BRAND.motto, textMaxW), textX, mottoY)
+
+  // Form title sits fully below the logo + name block (no overlap).
+  let y = Math.max(top + logoSize, mottoY + 4) + 6
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(13)
   doc.setTextColor(INK.r, INK.g, INK.b)
-  doc.text("Learner Admission Application Form", MARGIN_L, y + 22)
+  doc.text("Online Admission Application", MARGIN_L, y)
+  y += 6
 
-  y += 30
-
-  doc.setFillColor(239, 246, 255)
-  doc.rect(MARGIN_L, y, CONTENT_W, 36, "F")
-  doc.setDrawColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
-  doc.setLineWidth(0.4)
-  doc.rect(MARGIN_L, y, CONTENT_W, 36)
+  const boxTop = y
+  const colW = (CONTENT_W - 6) / 2
+  const col1 = MARGIN_L + 3
+  const col2 = MARGIN_L + 3 + colW + 4
 
   doc.setFont("helvetica", "bold")
   doc.setFontSize(8)
   doc.setTextColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
-  doc.text("School & contact information", MARGIN_L + 3, y + 5)
 
+  // Measure contact lines first so the box height fits wrapped text.
   doc.setFont("helvetica", "normal")
-  doc.setFontSize(7.5)
-  doc.setTextColor(INK.r, INK.g, INK.b)
-
-  const col1 = MARGIN_L + 3
-  const col2 = MARGIN_L + 98
-  const linesL = [
+  doc.setFontSize(7)
+  const leftRaw = [
     `Address: ${SCHOOL_INFO.address}`,
     `Phone: ${SCHOOL_INFO.phone}`,
     `Alt phone: ${SCHOOL_INFO.phoneAlt}`,
     `WhatsApp: ${SCHOOL_INFO.whatsapp}`,
   ]
-  const linesR = [
+  const rightRaw = [
     `Email: ${SCHOOL_INFO.email}`,
     `Office hours: ${SCHOOL_INFO.officeHoursLong}`,
     `Principal: ${SCHOOL_INFO.principal} (${SCHOOL_INFO.principalYear})`,
     `NatEmis: ${SCHOOL_INFO.natEmis} · ${SCHOOL_INFO.phase}`,
   ]
+  const leftLines = leftRaw.flatMap((line) => doc.splitTextToSize(line, colW - 2) as string[])
+  const rightLines = rightRaw.flatMap((line) => doc.splitTextToSize(line, colW - 2) as string[])
+  const boxH = 8 + Math.max(leftLines.length, rightLines.length) * 3.6 + 3
 
-  let ly = y + 10
-  for (const line of linesL) {
-    doc.text(line, col1, ly)
-    ly += 4.5
-  }
-  ly = y + 10
-  for (const line of linesR) {
-    doc.text(line, col2, ly)
-    ly += 4.5
-  }
+  doc.setFillColor(239, 246, 255)
+  doc.rect(MARGIN_L, boxTop, CONTENT_W, boxH, "F")
+  doc.setDrawColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
+  doc.setLineWidth(0.4)
+  doc.rect(MARGIN_L, boxTop, CONTENT_W, boxH)
 
-  y += 42
+  doc.setFont("helvetica", "bold")
+  doc.setFontSize(8)
+  doc.setTextColor(PRIMARY.r, PRIMARY.g, PRIMARY.b)
+  doc.text("School and contact information", MARGIN_L + 3, boxTop + 5)
 
-  doc.setFontSize(7.5)
+  doc.setFont("helvetica", "normal")
+  doc.setFontSize(7)
+  doc.setTextColor(INK.r, INK.g, INK.b)
+  doc.text(leftLines, col1, boxTop + 10)
+  doc.text(rightLines, col2, boxTop + 10)
+
+  y = boxTop + boxH + 5
+
+  doc.setFontSize(7)
   doc.setTextColor(MUTED.r, MUTED.g, MUTED.b)
-  doc.text(
-    "Complete this form in block letters. Tick (✓) where applicable. Attach certified copies where noted. " +
-      "Return the completed form and documents to the school office or email " +
-      SCHOOL_INFO.email +
-      " (subject: Admission Application). You may also apply online at the school website.",
-    MARGIN_L,
-    y,
-    { maxWidth: CONTENT_W }
-  )
+  const instructions =
+    "Complete this form in block letters. Tick where applicable. Attach certified copies where noted. " +
+    `Return the completed form and documents to the school office or email ${SCHOOL_INFO.email} ` +
+    "(subject: Admission Application). You may also apply online on the school website."
+  const instructionLines = doc.splitTextToSize(instructions, CONTENT_W) as string[]
+  doc.text(instructionLines, MARGIN_L, y)
 
-  return y + 10
+  return y + instructionLines.length * 3.4 + 4
 }
 
 export function buildApplicationPdf(): Buffer {
@@ -302,8 +353,6 @@ export function buildApplicationPdf(): Buffer {
   const logoDataUrl = loadLogoDataUrl()
 
   let y = drawHeader(doc, logoDataUrl)
-  drawPageFooter(doc, 1)
-
   y = sectionBar(doc, "A. Application details", y)
   y = ensureSpace(doc, y, 20)
   y = fieldRow(
@@ -515,8 +564,9 @@ export function buildApplicationPdf(): Buffer {
     `I declare that the information provided is true and complete. I consent to ${SCHOOL_INFO.shortName} ` +
     `processing personal information in this application for enrolment purposes under the Protection of Personal ` +
     `Information Act (POPIA). I understand that placement is subject to interview, assessment, and availability.`
-  doc.text(decl, MARGIN_L, y, { maxWidth: CONTENT_W })
-  y += 18
+  const declLines = doc.splitTextToSize(decl, CONTENT_W) as string[]
+  doc.text(declLines, MARGIN_L, y)
+  y += declLines.length * 3.6 + 6
 
   y = fieldRow(
     doc,
@@ -547,12 +597,7 @@ export function buildApplicationPdf(): Buffer {
     y
   )
 
-  const totalPages = doc.getNumberOfPages()
-  for (let p = 1; p <= totalPages; p++) {
-    doc.setPage(p)
-    drawPageFooter(doc, p)
-  }
-
+  applyFooters(doc)
   return Buffer.from(doc.output("arraybuffer"))
 }
 
@@ -577,8 +622,6 @@ export function buildFilledApplicationPdf(
   const guardianName = `${data.guardian1FirstName} ${data.guardian1LastName}`.trim()
 
   let y = drawHeader(doc, logoDataUrl)
-  drawPageFooter(doc, 1)
-
   y = sectionBar(doc, "A. Application details", y)
   y = ensureSpace(doc, y, 24)
   y = fieldRowFilled(
@@ -616,31 +659,7 @@ export function buildFilledApplicationPdf(
   )
   y = fieldRowFilled(
     doc,
-    [
-      { label: "Identity document", value: data.guardian1IdentityType ?? "South African ID", width: 90 },
-      { label: "Residency status", value: data.guardian1ResidencyStatus ?? "", width: 84 },
-    ],
-    y
-  )
-  y = fieldRowFilled(
-    doc,
-    [
-      {
-        label: "SA ID number (13 digits)",
-        value: data.guardian1IdNumber ?? "",
-        width: 90,
-      },
-      {
-        label: "Passport number",
-        value: data.guardian1PassportNumber ?? "",
-        width: 84,
-      },
-    ],
-    y
-  )
-  y = fieldRowFilled(
-    doc,
-    [{ label: "Country / nationality of origin", value: data.guardian1Nationality ?? "", width: CONTENT_W }],
+    [{ label: "SA ID number (13 digits)", value: data.guardian1IdNumber ?? "", width: CONTENT_W }],
     y
   )
 
@@ -701,28 +720,11 @@ export function buildFilledApplicationPdf(
       {
         label: "Date of birth (DD / MM / YYYY)",
         value: formatDisplayDate(data.learnerDateOfBirth),
-        width: 90,
+        width: 58,
       },
-      {
-        label: "Identity document",
-        value: data.learnerIdentityType ?? "South African ID",
-        width: 84,
-      },
-    ],
-    y
-  )
-  y = fieldRowFilled(
-    doc,
-    [
       { label: "Learner SA ID (if applicable)", value: data.learnerIdNumber ?? "", width: 58 },
-      { label: "Passport number", value: data.learnerPassportNumber ?? "", width: 58 },
-      { label: "Country / nationality", value: data.learnerNationality ?? "", width: 58 },
+      { label: "Home language", value: "", width: 58 },
     ],
-    y
-  )
-  y = fieldRowFilled(
-    doc,
-    [{ label: "Residency status", value: data.learnerResidencyStatus ?? "", width: CONTENT_W }],
     y
   )
   y = fieldRowFilled(
@@ -821,8 +823,9 @@ export function buildFilledApplicationPdf(
     `I declare that the information provided is true and complete. I consent to ${SCHOOL_INFO.shortName} ` +
     `processing personal information in this application for enrolment purposes under the Protection of Personal ` +
     `Information Act (POPIA). I understand that placement is subject to interview, assessment, and availability.`
-  doc.text(decl, MARGIN_L, y, { maxWidth: CONTENT_W })
-  y += 18
+  const declLines = doc.splitTextToSize(decl, CONTENT_W) as string[]
+  doc.text(declLines, MARGIN_L, y)
+  y += declLines.length * 3.6 + 6
   y = fieldRowFilled(
     doc,
     [
@@ -852,12 +855,7 @@ export function buildFilledApplicationPdf(
     y
   )
 
-  const totalPages = doc.getNumberOfPages()
-  for (let p = 1; p <= totalPages; p++) {
-    doc.setPage(p)
-    drawPageFooter(doc, p)
-  }
-
+  applyFooters(doc)
   return Buffer.from(doc.output("arraybuffer"))
 }
 

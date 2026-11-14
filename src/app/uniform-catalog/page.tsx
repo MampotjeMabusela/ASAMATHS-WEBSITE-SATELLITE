@@ -17,17 +17,18 @@ import {
   UNIFORM_PRICE_LISTS,
 } from "@/lib/uniform-catalog"
 import { UniformPriceListSection } from "@/components/uniform/uniform-price-list"
+import { UniformShop } from "@/components/uniform/uniform-shop"
 
 export const metadata: Metadata = {
   title: "Uniform Catalog",
-  description: `Official school uniform price list for ${SCHOOL_INFO.shortName} — items and prices by grade band.`,
+  description: `Official school uniform price list and online cart for ${SCHOOL_INFO.shortName} — choose sizes, build a quotation, and email the school.`,
 }
 
 export default function UniformCatalogPage() {
   if (!TEMPORARY_VISIBILITY.uniformCatalogPage) redirect("/")
 
   return (
-    <>
+    <UniformShop>
       <section
         id="asa-uniform-catalog"
         className="scroll-mt-28 bg-gradient-to-br from-primary-50 to-white pb-16 pt-32"
@@ -35,45 +36,69 @@ export default function UniformCatalogPage() {
         <div className="container-custom">
           <FadeIn>
             <PageIntro
-              eyebrow="Dress code"
+              eyebrow="Dress code · shop"
               title="Uniform Catalog"
-              subtitle="Official uniform price lists by grade band for Asamaths learners"
+              subtitle="Browse official prices, add sizes to your cart, then download a PDF quotation or email your order to the school"
               breadcrumbs={[{ label: "Uniform Catalog" }]}
             />
           </FadeIn>
 
           <FadeIn delay={0.08}>
-            <Card className="mb-10 border-primary-100 bg-white/90">
-              <CardHeader className="pb-3">
+            <Card className="mb-10 overflow-hidden border-primary-100 bg-white/95 shadow-sm ring-1 ring-primary-950/5">
+              <CardHeader className="pb-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-700">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-100 to-primary-50 text-primary-800 ring-1 ring-primary-200/60">
                     <ShoppingBag className="h-5 w-5" />
                   </div>
-                  <div>
-                    <CardTitle className="font-display text-xl">How to order</CardTitle>
-                    <CardDescription className="mt-1 text-sm leading-relaxed">
-                      Visit the school office during office hours ({SCHOOL_INFO.officeHours}) to
-                      confirm sizes in stock, place orders, and collect uniform items. For
-                      questions, call{" "}
-                      <a href={`tel:${SCHOOL_INFO.rawPhone}`} className="font-medium text-primary-700 underline">
-                        {SCHOOL_INFO.phone}
-                      </a>{" "}
-                      or email{" "}
-                      <a
-                        href={`mailto:${SCHOOL_INFO.email}`}
-                        className="font-medium text-primary-700 underline"
-                      >
-                        {SCHOOL_INFO.email}
-                      </a>
-                      .
+                  <div className="min-w-0 flex-1">
+                    <CardTitle className="font-display text-xl text-primary-950">
+                      How to order online
+                    </CardTitle>
+                    <CardDescription className="mt-1 text-sm text-gray-600">
+                      Build a basket from the grid below, then download a quotation or email the school.
                     </CardDescription>
+                    <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <li className="rounded-xl border border-primary-100 bg-primary-50/50 p-3">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary-700">
+                          Step 01
+                        </p>
+                        <p className="mt-1.5 text-sm leading-relaxed text-primary-950">
+                          Choose a size and quantity on any item, then tap <strong>Add to cart</strong>.
+                        </p>
+                      </li>
+                      <li className="rounded-xl border border-primary-100 bg-primary-50/50 p-3">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary-700">
+                          Step 02
+                        </p>
+                        <p className="mt-1.5 text-sm leading-relaxed text-primary-950">
+                          Open your cart, review the basket, and continue to checkout.
+                        </p>
+                      </li>
+                      <li className="rounded-xl border border-primary-100 bg-primary-50/50 p-3">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary-700">
+                          Step 03
+                        </p>
+                        <p className="mt-1.5 text-sm leading-relaxed text-primary-950">
+                          Download a <strong>PDF quotation</strong> and/or email the order. Pay at the
+                          office ({SCHOOL_INFO.officeHours}) or by EFT using details staff provide —
+                          then email proof of payment to{" "}
+                          <a
+                            href={`mailto:${SCHOOL_INFO.email}`}
+                            className="font-medium text-primary-700 underline"
+                          >
+                            {SCHOOL_INFO.email}
+                          </a>{" "}
+                          with your quotation reference.
+                        </p>
+                      </li>
+                    </ol>
                   </div>
                 </div>
               </CardHeader>
             </Card>
           </FadeIn>
 
-          <div className="space-y-10">
+          <div className="space-y-12">
             {UNIFORM_PRICE_LISTS.flatMap((list, index) => {
               const table = (
                 <FadeIn key={list.id} delay={0.1 + index * 0.04}>
@@ -85,7 +110,7 @@ export default function UniformCatalogPage() {
 
               return [
                 <FadeIn key="uniform-catalog-top-image" delay={0.1 + index * 0.04 - 0.02}>
-                  <figure className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md ring-1 ring-gray-100">
+                  <figure className="overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-md ring-1 ring-primary-950/5">
                     <Image
                       src={UNIFORM_CATALOG_TOP_IMAGE.src}
                       alt={UNIFORM_CATALOG_TOP_IMAGE.alt}
@@ -98,7 +123,7 @@ export default function UniformCatalogPage() {
                 </FadeIn>,
                 table,
                 <FadeIn key="uniform-catalog-mid-image" delay={0.1 + index * 0.04 + 0.02}>
-                  <figure className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md ring-1 ring-gray-100">
+                  <figure className="overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-md ring-1 ring-primary-950/5">
                     <Image
                       src={UNIFORM_CATALOG_MID_IMAGE.src}
                       alt={UNIFORM_CATALOG_MID_IMAGE.alt}
@@ -152,6 +177,6 @@ export default function UniformCatalogPage() {
         buttonText="Apply for Admission"
         buttonHref="/admissions"
       />
-    </>
+    </UniformShop>
   )
 }
