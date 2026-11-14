@@ -159,7 +159,7 @@ export function buildUniformQuotationPdf(
   y = ensureSpace(doc, y, 40)
   doc.setFont("helvetica", "bold")
   doc.setFontSize(10)
-  doc.text("School banking details", MARGIN_L, y)
+  doc.text("Uniform account banking details (uniforms only)", MARGIN_L, y)
   y += 5
   doc.setFont("helvetica", "normal")
   doc.setFontSize(9)

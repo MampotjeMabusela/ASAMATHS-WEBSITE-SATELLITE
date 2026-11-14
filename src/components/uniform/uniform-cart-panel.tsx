@@ -249,8 +249,9 @@ export function UniformCartPanel() {
               ) : null}
               <p className="mt-3 text-sm text-green-800">{status.message}</p>
               <p className="mt-4 text-xs leading-relaxed text-green-700">
-                Pay at the school office or via EFT using the banking details on your PDF. Email
-                proof of payment to {SCHOOL_INFO.email} with your reference.
+                Pay at the school office or via EFT into the Asamaths Uniform Account (details on
+                your PDF and this page). Email proof of payment to {SCHOOL_INFO.email} with your
+                reference.
               </p>
               <Button className="mt-5" onClick={close}>
                 Close
@@ -396,19 +397,20 @@ export function UniformCartPanel() {
                     checked={paymentMethod === "eft"}
                     onChange={() => setPaymentMethod("eft")}
                   />
-                  I will pay / have paid by EFT into the school account
+                  I will pay / have paid by EFT into the Uniform Account
                 </label>
               </fieldset>
 
               {paymentMethod === "eft" ? (
                 <div className="space-y-3 rounded-xl border border-primary-100 bg-primary-50/50 p-3 text-sm text-primary-950">
-                  <p className="font-semibold">School bank account</p>
+                  <p className="font-semibold">Asamaths Uniform Account</p>
+                  <p className="text-xs text-primary-800/90">For uniform purchases only — not school fees.</p>
                   <ul className="space-y-1 text-xs leading-relaxed">
                     <li>Bank: {UNIFORM_BANK_DETAILS.bank}</li>
                     <li>Account name: {UNIFORM_BANK_DETAILS.accountName}</li>
                     <li>Account number: {UNIFORM_BANK_DETAILS.accountNumber}</li>
                     <li>Branch code: {UNIFORM_BANK_DETAILS.branchCode}</li>
-                    <li>{UNIFORM_BANK_DETAILS.referenceHint}</li>
+                    <li>Reference: {UNIFORM_BANK_DETAILS.referenceHint}</li>
                   </ul>
                   <div className="space-y-1.5">
                     <Label htmlFor="uni-pay-ref">Your EFT payment reference *</Label>
@@ -416,7 +418,7 @@ export function UniformCartPanel() {
                       id="uni-pay-ref"
                       value={paymentReference}
                       onChange={(e) => setPaymentReference(e.target.value)}
-                      placeholder="As shown on your bank transfer"
+                      placeholder="Name and Grade"
                     />
                   </div>
                   <p className="text-xs text-primary-800/90">

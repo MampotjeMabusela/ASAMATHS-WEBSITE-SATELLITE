@@ -18,6 +18,7 @@ import {
 } from "@/lib/uniform-catalog"
 import { UniformPriceListSection } from "@/components/uniform/uniform-price-list"
 import { UniformShop } from "@/components/uniform/uniform-shop"
+import { UNIFORM_BANK_DETAILS } from "@/lib/uniform-shop"
 
 export const metadata: Metadata = {
   title: "Uniform Catalog",
@@ -80,8 +81,8 @@ export default function UniformCatalogPage() {
                         </p>
                         <p className="mt-1.5 text-sm leading-relaxed text-primary-950">
                           Download a <strong>PDF quotation</strong> and/or email the order. Pay at the
-                          office ({SCHOOL_INFO.officeHours}) or by EFT using details staff provide —
-                          then email proof of payment to{" "}
+                          office ({SCHOOL_INFO.officeHours}) or by EFT into the{" "}
+                          <strong>Uniform Account</strong> below — then email proof of payment to{" "}
                           <a
                             href={`mailto:${SCHOOL_INFO.email}`}
                             className="font-medium text-primary-700 underline"
@@ -92,6 +93,48 @@ export default function UniformCatalogPage() {
                         </p>
                       </li>
                     </ol>
+                    <div className="mt-4 rounded-xl border border-primary-100 bg-primary-50/60 px-3 py-3 text-xs leading-relaxed text-primary-950 sm:text-sm">
+                      <p className="font-semibold uppercase tracking-[0.14em] text-primary-800">
+                        Uniform catalog bank details
+                      </p>
+                      <p className="mt-1 text-[0.7rem] text-primary-800/80 sm:text-xs">
+                        For uniform purchases only — not school fees.
+                      </p>
+                      <dl className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                        <div>
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-primary-700">
+                            Bank
+                          </dt>
+                          <dd>{UNIFORM_BANK_DETAILS.bank}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-primary-700">
+                            Account name
+                          </dt>
+                          <dd>{UNIFORM_BANK_DETAILS.accountName}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-primary-700">
+                            Account number
+                          </dt>
+                          <dd className="font-mono font-semibold tabular-nums">
+                            {UNIFORM_BANK_DETAILS.accountNumber}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-primary-700">
+                            Branch code
+                          </dt>
+                          <dd className="font-mono tabular-nums">{UNIFORM_BANK_DETAILS.branchCode}</dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-primary-700">
+                            Reference
+                          </dt>
+                          <dd>{UNIFORM_BANK_DETAILS.referenceHint}</dd>
+                        </div>
+                      </dl>
+                    </div>
                   </div>
                 </div>
               </CardHeader>

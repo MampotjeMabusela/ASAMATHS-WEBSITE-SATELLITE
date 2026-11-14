@@ -1,14 +1,13 @@
 import type { UniformPriceItem, UniformPriceList } from "@/lib/uniform-catalog"
 import { UNIFORM_PRICE_LISTS } from "@/lib/uniform-catalog"
 
-/** Banking details for uniform quotations (aligned with Fees page). */
+/** Banking details for uniform catalogue payments only (not school fees). */
 export const UNIFORM_BANK_DETAILS = {
   bank: "First National Bank",
-  accountName: "Asamath’s Institute of Learning",
-  accountNumber: "62623099571",
+  accountName: "Asamaths Uniform Account",
+  accountNumber: "63021795969",
   branchCode: "250655",
-  referenceHint:
-    "Use your quotation reference plus the learner’s surname (e.g. UNI-20261114-AB12 Mokoena).",
+  referenceHint: "Name and Grade",
 } as const
 
 export const UNIFORM_CLOTHING_SIZES = [
